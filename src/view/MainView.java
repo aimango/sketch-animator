@@ -11,7 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JSlider;
 
 import model.IView;
 import model.MainViewModel;
@@ -48,6 +50,7 @@ public class MainView extends JComponent implements IView {
 //		this.add(this.heightTF);
 //		this.add(new JLabel("Hypotenuse:"));
 //		this.add(this.hypoTF);
+
 	}
 
 	private void registerControllers() {
@@ -98,16 +101,15 @@ public class MainView extends JComponent implements IView {
 	}
 	
 	public MainView(MainViewModel aModel) {
-			super();
-			this.model = aModel;
-			this.layoutView();
-			this.registerControllers();
+		super();
+		this.model = aModel;
+		this.layoutView();
+		this.registerControllers();
 
-			// Add a this view as a listener to the model
-			this.model.addView(this);
+		// Add a this view as a listener to the model
+		this.model.addView(this);
 			
 		setDoubleBuffered(false);
-
 	}
 
 	public void paintComponent(Graphics g) {
