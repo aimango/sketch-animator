@@ -47,6 +47,14 @@ public class MainViewModel extends Object {
 		this.paths.add(path);
 	}
 	
+	public void removePath(int i){
+		this.paths.remove(i);
+	}
+	
+	public ArrayList<GeneralPath> getPaths(){
+		return paths;
+	}
+	
 	public boolean getClear(){
 		return this.cleared;
 	}

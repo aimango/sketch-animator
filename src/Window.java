@@ -8,9 +8,7 @@ import model.MainViewModel;
 import view.SliderView;
 import view.ToolbarView;
 
-// should make a view just for the toolbar.. would still add as North of the BorderLayout
-//Slider should be a view too, that extends IView.
-// Use ChangeListener since ActionListener only detects when you release the slider, not as you drag it.
+
 
 public class Window {
 	public static void main(String[] args) {
