@@ -20,7 +20,6 @@ public class MainViewModel extends Object {
 	private int state = 0; // {0,1,2,3,4} = {draw, erase, selection}. Default is draw
 	private boolean selected = false;
 	private int selectedIndex;
-	private boolean cleared = false;
 	
 	private int duration = 100; 
 	private boolean playing = false;
@@ -36,8 +35,12 @@ public class MainViewModel extends Object {
 		paths.add(currPath);
 		System.out.println("num paths "+ paths.size());
 	}
-	public void addSelectPath(){
-		//selectingPath.
+	
+	public ArrayList<Point> getSelectingPath(){
+		return this.selectingPath;
+	}
+	public ArrayList<ArrayList<Point>> getPaths(){
+		return paths;
 	}
 	
 	public void removePath(int i){
@@ -45,8 +48,11 @@ public class MainViewModel extends Object {
 		this.updateAllViews();
 	}
 	public void clearPaths(){
-		for (int i = paths.size()-1; i >= 0; i--)
+		for (int i = 0; i < paths.size(); i++){
 			this.paths.remove(i);
+		}
+		this.selectingPath = new ArrayList<Point>();
+		this.updateAllViews();
 	}
 
 	public void addPoint(Point point){
@@ -65,9 +71,9 @@ public class MainViewModel extends Object {
 			selectingPath.add(point);
 			if (!this.stillPainting){
 
-				System.out.println("Done drawing the selector");
+				System.out.println("Done drawing the selector"); // TODO: some crazy shizz here
 				//this.paths.set(paths.size()-1, currPath);
-				this.addSelectPath();
+				//this.addSelectPath();
 			}
 		}
 		this.updateAllViews();
@@ -75,7 +81,6 @@ public class MainViewModel extends Object {
 	
 	public void setStillPainting(boolean isPainting){
 		this.stillPainting = isPainting;
-		//this.addPath();
 	}
 	public boolean stillPainting(){
 		return this.stillPainting;
@@ -106,40 +111,27 @@ public class MainViewModel extends Object {
 	
 	public void setState(int state){
 		this.state = state;
-		this.updateAllViews(); // not sure if this is necessary
+		//this.updateAllViews(); // not sure if this is necessary
 	}
-	
 	public int getState(){
 		return this.state;
 	}
-	/** Add a new view of this triangle. */
+	
+	/** Add a new view. */
 	public void addView(IView view) {
 		this.views.add(view);
 		view.updateView();
 	}
 
-	/** Remove a view from this triangle. */
+	/** Remove a view. */
 	public void removeView(IView view) {
 		this.views.remove(view);
 	}
 
-	/** Update all the views that are viewing this triangle. */
+	/** Update all the views. */
 	private void updateAllViews() {
 		for (IView view : this.views) {
 			view.updateView();
 		}
-	}
-
-	public ArrayList<ArrayList<Point>> getPaths(){
-		return paths;
-	}
-	
-	public boolean getClear(){
-		return this.cleared;
-	}
-	
-	public void setClear(boolean toclear){
-		this.cleared = toclear;
-		this.updateAllViews();
 	}
 }

@@ -23,25 +23,41 @@ import model.IView;
 import model.MainViewModel;
 
 //Selection: use a dotted BasicStroke.. just check if this new path is around the old paths. Full object.s
-// Not really working X__X
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
 	Graphics2D graphics2D;
 	int currentX, currentY, oldX, oldY;
-	// GeneralPath currPath = null;
 	ArrayList<Point> currPath = null;
-	GeneralPath lassoPath = null;
 	private MainViewModel model;
-
+	private GeneralPath selectedPath;
+	
 	public void paintComponent(Graphics g) {
-		
 		Graphics2D g2 = (Graphics2D) g;
-		//clear();
+		int state = model.getState();
+		
+		if (state == 2){
+			ArrayList<Point> selectedPathPts = model.getSelectingPath();
+			int size = selectedPathPts.size();
+			if (size > 0){
+				selectedPath = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
+				selectedPath.moveTo(selectedPathPts.get(0).x, selectedPathPts.get(0).y);
+				for (int i = 1; i < size; i++){
+					selectedPath.lineTo(selectedPathPts.get(i).x, selectedPathPts.get(i).y);
+				}
+				if (!model.stillPainting()){
+					selectedPath.closePath();
+				}
+				final float dash1[] = { 5.0f };
+				final BasicStroke dashed = new BasicStroke(5.0f, BasicStroke.CAP_BUTT,
+						BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
+				g2.setColor(Color.BLUE);
+				g2.setStroke(dashed);
+				g2.draw(selectedPath);
+			}
+		}
 		ArrayList<ArrayList<Point>> paths = model.getPaths();
 		if (paths.size() > 0) {
-//			System.out.println("Now "+paths.size()+" paths");
-//			// System.out.println("number of paths is "+paths.size());
 			for (int i = 0; i < paths.size(); i++) { // separate objects
 				
 				int size = paths.get(i).size();
@@ -55,22 +71,11 @@ public class CanvasView extends JComponent implements IView {
 						Point to = paths.get(i).get(j);
 						path.lineTo(to.getX(), to.getY());
 						// System.out.println(to.getX() + " " + to.getY());
-						g2.setStroke(new BasicStroke(5));
-						
-						int state = model.getState();
-						if (state == 0)
-							g2.setColor(Color.BLACK);
-						else if (state == 2){
-							final float dash1[] = { 5.0f };
-							final BasicStroke dashed = new BasicStroke(5.0f, BasicStroke.CAP_BUTT,
-									BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
-							g2.setColor(Color.BLUE);
-							g2.setStroke(dashed);
-						}
-						g2.draw(path);
 					}
 				}
-
+				g2.setStroke(new BasicStroke(5));
+				g2.setColor(Color.BLACK);
+				g2.draw(path);
 			} 
 		}
 	}
@@ -85,11 +90,6 @@ public class CanvasView extends JComponent implements IView {
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		} else if (model.getState() == 2) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-		}
-
-		if (model.getClear() == true) {
-			clear();
-			model.setClear(false);
 		}
 		repaint();
 	}
@@ -106,11 +106,8 @@ public class CanvasView extends JComponent implements IView {
 	}
 
 	private void registerControllers() {
-		// // Add a controller to interpret user actions in the base text field
-
 
 		// need to listen for what state we are in. draw/erase/selection
-
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				model.setStillPainting(true);
@@ -120,7 +117,6 @@ public class CanvasView extends JComponent implements IView {
 					currPath = new ArrayList<Point>();
 					model.addPoint(new Point(oldX, oldY));
 				} else if (model.getState() == 1) { // erase
-					System.out.println("ERASE~");
 					ArrayList<ArrayList<Point>> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
 						int size = paths.get(i).size();
@@ -132,7 +128,7 @@ public class CanvasView extends JComponent implements IView {
 							//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
 							if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
 									&& oldY < y + 10) {
-								System.out.println("HIT");
+								System.out.println("Erasing this obj");
 								model.removePath(i);
 
 								break;
@@ -146,34 +142,29 @@ public class CanvasView extends JComponent implements IView {
 			}
 
 			public void mouseReleased(MouseEvent e) {
+				model.setStillPainting(false);
 				if (model.getState() == 0) {
-					model.setStillPainting(false);
+					
 					model.addPoint(new Point(currentX, currentY));
 
 				} else if (model.getState() == 2 && !model.getSelected()) {
-					model.setStillPainting(false);
 					model.addPoint(new Point(currentX, currentY));
 					
-					
-					/*
-					 * currPath.closePath();
-					 * 
-					 * ArrayList<GeneralPath> paths = model.getPaths();
-					 * System.out.println("# paths"+paths.size()); for (int i =
-					 * 0; i < paths.size(); i++){
-					 * 
-					 * double[][] points; points = getPoints(paths.get(i)); int
-					 * npoints = points[0].length; double[] xpoints, ypoints;
-					 * for (int j = 0; j < npoints; j++){ for (int k = 0; k <
-					 * npoints; k++){ System.out.print(points[j][k]); //wtffff }
-					 * } Polygon p = new Polygon(); Rectangle r =
-					 * paths.get(i).getBounds(); if (!currPath.contains(r)){
-					 * System.out.println("NO!"); break; } else { //if (i ==
-					 * paths.size() - 1){ System.out.println("YES!");
-					 * model.setSelected(true); model.setSelectedIndex(i); //so
-					 * now we should be able to drag this object } } currPath =
-					 * null;
-					 */
+					ArrayList<ArrayList<Point>> paths = model.getPaths();
+					for (int i = 0; i < paths.size(); i++) {
+						int size = paths.get(i).size();
+						for (int j = 0; j < size; j++) {
+
+							Point currPoint = paths.get(i).get(j);
+							if (!selectedPath.contains(currPoint)){
+								break;
+							} else if ( j == size-1){ // all pts inside, so select
+								System.out.println("Yay!"); // THIS WORKS!11one1
+								// now just need to 'outline' the object and allow drag/drop..
+							}
+						}
+						
+					}
 				}
 			}
 		});
@@ -182,7 +173,7 @@ public class CanvasView extends JComponent implements IView {
 				int state = model.getState();
 				currentX = e.getX();
 				currentY = e.getY();
-				if (state != 1 && model.getSelected()) {
+				if (state == 2 && model.getSelected()) {
 					System.out.println("Dragging the obj");
 					// if
 					// (model.getPaths().get(model.getSelectedIndex()).contains(oldX,
@@ -200,7 +191,6 @@ public class CanvasView extends JComponent implements IView {
 				}					
 			}
 		});
-
 	}
 
 	public CanvasView(MainViewModel aModel) {
@@ -225,43 +215,8 @@ public class CanvasView extends JComponent implements IView {
 	}
 
 	public void clearScreen(Graphics g){
-		
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getSize().width, getSize().height);
 		g.setColor(Color.black);
-	}
-	public void clear() {
-		model.clearPaths();
-		graphics2D.setPaint(Color.white);
-		graphics2D.fillRect(0, 0, getSize().width, getSize().height);
-		graphics2D.setPaint(Color.black);
-		repaint();
-	}
-
-	static double[][] getPoints(GeneralPath path) {
-		List<double[]> pointList = new ArrayList<double[]>();
-		double[] coords = new double[6];
-		int numSubPaths = 0;
-		for (PathIterator pi = path.getPathIterator(null); !pi.isDone(); pi
-				.next()) {
-			switch (pi.currentSegment(coords)) {
-			case PathIterator.SEG_MOVETO:
-				pointList.add(Arrays.copyOf(coords, 2));
-				++numSubPaths;
-				break;
-			case PathIterator.SEG_LINETO:
-				pointList.add(Arrays.copyOf(coords, 2));
-				break;
-			case PathIterator.SEG_CLOSE:
-				if (numSubPaths > 1) {
-					throw new IllegalArgumentException(
-							"Path contains multiple subpaths");
-				}
-				return pointList.toArray(new double[pointList.size()][]);
-			default:
-				throw new IllegalArgumentException("Path contains curves");
-			}
-		}
-		throw new IllegalArgumentException("Unclosed path");
 	}
 }
