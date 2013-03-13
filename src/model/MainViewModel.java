@@ -16,8 +16,8 @@ public class MainViewModel extends Object {
 	ArrayList<Point> currPath = new ArrayList<Point>();
 	ArrayList<Point> selectingPath = new ArrayList<Point>();
 	
-	private int state = 0; // {0,1,2,3,4} = {draw, erase, selection}. Default is draw
-	private boolean selected = false;
+	// {0,1,2,3,4} = {draw, erase, selection}. Default is draw
+	private int state = 0; 
 	private int selectedIndex = -1;
 	
 	private int duration = 100; 
@@ -25,14 +25,14 @@ public class MainViewModel extends Object {
 	private int FPS = 40;
 	private Timer t;
 	
-	// Override the default construtor, making it private.
+	// Override the default constructor, making it private.
 	public MainViewModel() {
 	}
 	
 	public void addPath() {
 		currPath = new ArrayList<Point>();
 		paths.add(currPath);
-		System.out.println("num paths "+ paths.size());
+		System.out.println("Added another path for a total of "+ paths.size()+ " paths");
 	}
 	
 	public ArrayList<Point> getSelectingPath(){
@@ -71,8 +71,7 @@ public class MainViewModel extends Object {
 		} else if (state == 2){
 			selectingPath.add(point);
 			if (!this.stillPainting){
-
-				System.out.println("Done drawing the selector"); // TODO: some crazy shizz here
+				System.out.println("Done drawing the selector"); 
 				//this.paths.set(paths.size()-1, currPath);
 				//this.addSelectPath();
 			}
@@ -85,14 +84,6 @@ public class MainViewModel extends Object {
 	}
 	public boolean stillPainting(){
 		return this.stillPainting;
-	}
-	
-	public void setSelected(boolean selected){
-		this.selected = selected;
-		
-	}
-	public boolean getSelected(){
-		return this.selected;
 	}
 	
 	public void setPlaying(boolean playing){
@@ -112,8 +103,8 @@ public class MainViewModel extends Object {
 	
 	public void setState(int state){
 		this.state = state;
-		//this.updateAllViews(); // not sure if this is necessary
 	}
+	
 	public int getState(){
 		return this.state;
 	}

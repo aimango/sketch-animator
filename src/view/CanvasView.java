@@ -58,16 +58,17 @@ public class CanvasView extends JComponent implements IView {
 				int size = paths.get(i).size();
 				System.out.println("Has "+ size + " points");
 				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
+				
 				if (size > 0) {
 					Point first = paths.get(i).get(0);
 					path.moveTo(first.getX(), first.getY());
-					// System.out.println(first.getX() + " " + first.getY());
+					
 					for (int j = 1; j < paths.get(i).size(); j++) {
 						Point to = paths.get(i).get(j);
 						path.lineTo(to.getX(), to.getY());
-						// System.out.println(to.getX() + " " + to.getY());
 					}
 				}
+				
 				g2.setStroke(new BasicStroke(5));
 				if (i == selected){
 					g2.setColor(Color.RED);
@@ -143,7 +144,7 @@ public class CanvasView extends JComponent implements IView {
 			public void mouseReleased(MouseEvent e) {
 				model.setStillPainting(false);
 				model.addPoint(new Point(currentX, currentY));
-				if (model.getState() == 2 && !model.getSelected()) {
+				if (model.getState() == 2) {
 					ArrayList<ArrayList<Point>> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
 						int size = paths.get(i).size();
@@ -151,7 +152,7 @@ public class CanvasView extends JComponent implements IView {
 							Point currPoint = paths.get(i).get(j);
 							if (!selectedPath.contains(currPoint)){
 								break;
-							} else if ( j == size-1){ // all pts inside, so select
+							} else if ( j == size-1){ // all pts inside, so we can select this one
 								System.out.println("Selected!"); 
 								model.setSelectedIndex(i);
 							}
@@ -163,6 +164,7 @@ public class CanvasView extends JComponent implements IView {
 				}
 			}
 		});
+
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
 				int state = model.getState();
@@ -194,7 +196,7 @@ public class CanvasView extends JComponent implements IView {
 		this.layoutView();
 		this.registerControllers();
 
-		// Add a this view as a listener to the model
+		// Add this view as a listener to the model
 		this.model.addView(this);
 
 		setDoubleBuffered(false);
