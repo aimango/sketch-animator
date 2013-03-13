@@ -2,7 +2,6 @@ package view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JSlider;
-import javax.swing.event.ChangeListener;
 
 import model.IView;
 import model.MainViewModel;

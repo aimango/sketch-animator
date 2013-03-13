@@ -1,10 +1,9 @@
 package model;
 
-import java.awt.geom.GeneralPath;
 import java.awt.Point;
-// Note!  Nothing from the view package is imported here.
 import java.util.ArrayList;
 import java.util.Timer;
+// Note!  Nothing from the view package is imported here.
 
 
 // need a start/end time for each path. or length
@@ -19,7 +18,7 @@ public class MainViewModel extends Object {
 	
 	private int state = 0; // {0,1,2,3,4} = {draw, erase, selection}. Default is draw
 	private boolean selected = false;
-	private int selectedIndex;
+	private int selectedIndex = -1;
 	
 	private int duration = 100; 
 	private boolean playing = false;
@@ -45,6 +44,10 @@ public class MainViewModel extends Object {
 	
 	public void removePath(int i){
 		this.paths.remove(i);
+		this.updateAllViews();
+	}
+	public void removeLasso(){
+		this.selectingPath = new ArrayList<Point>();
 		this.updateAllViews();
 	}
 	public void clearPaths(){

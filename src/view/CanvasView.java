@@ -5,28 +5,21 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.PathIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.JComponent;
 
 import model.IView;
 import model.MainViewModel;
 
-//Selection: use a dotted BasicStroke.. just check if this new path is around the old paths. Full object.s
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
-	Graphics2D graphics2D;
 	int currentX, currentY, oldX, oldY;
 	ArrayList<Point> currPath = null;
 	private MainViewModel model;
@@ -35,8 +28,9 @@ public class CanvasView extends JComponent implements IView {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		int state = model.getState();
+		int selected = model.getSelectedIndex();
 		
-		if (state == 2){
+		if (state == 2 && selected == -1){
 			ArrayList<Point> selectedPathPts = model.getSelectingPath();
 			int size = selectedPathPts.size();
 			if (size > 0){
@@ -56,6 +50,7 @@ public class CanvasView extends JComponent implements IView {
 				g2.draw(selectedPath);
 			}
 		}
+		
 		ArrayList<ArrayList<Point>> paths = model.getPaths();
 		if (paths.size() > 0) {
 			for (int i = 0; i < paths.size(); i++) { // separate objects
@@ -74,7 +69,11 @@ public class CanvasView extends JComponent implements IView {
 					}
 				}
 				g2.setStroke(new BasicStroke(5));
-				g2.setColor(Color.BLACK);
+				if (i == selected){
+					g2.setColor(Color.RED);
+				} else {
+					g2.setColor(Color.BLACK);
+				}
 				g2.draw(path);
 			} 
 		}
@@ -143,27 +142,23 @@ public class CanvasView extends JComponent implements IView {
 
 			public void mouseReleased(MouseEvent e) {
 				model.setStillPainting(false);
-				if (model.getState() == 0) {
-					
-					model.addPoint(new Point(currentX, currentY));
-
-				} else if (model.getState() == 2 && !model.getSelected()) {
-					model.addPoint(new Point(currentX, currentY));
-					
+				model.addPoint(new Point(currentX, currentY));
+				if (model.getState() == 2 && !model.getSelected()) {
 					ArrayList<ArrayList<Point>> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
 						int size = paths.get(i).size();
 						for (int j = 0; j < size; j++) {
-
 							Point currPoint = paths.get(i).get(j);
 							if (!selectedPath.contains(currPoint)){
 								break;
 							} else if ( j == size-1){ // all pts inside, so select
-								System.out.println("Yay!"); // THIS WORKS!11one1
-								// now just need to 'outline' the object and allow drag/drop..
+								System.out.println("Selected!"); 
+								model.setSelectedIndex(i);
 							}
 						}
-						
+					}
+					if (model.getSelectedIndex() == -1){ // didnt select anything. so remove lasso
+						model.removeLasso();
 					}
 				}
 			}
@@ -173,7 +168,7 @@ public class CanvasView extends JComponent implements IView {
 				int state = model.getState();
 				currentX = e.getX();
 				currentY = e.getY();
-				if (state == 2 && model.getSelected()) {
+				if (state == 2 && model.getSelectedIndex()!= -1) {
 					System.out.println("Dragging the obj");
 					// if
 					// (model.getPaths().get(model.getSelectedIndex()).contains(oldX,
