@@ -37,41 +37,43 @@ public class CanvasView extends JComponent implements IView {
 	private MainViewModel model;
 
 	public void paintComponent(Graphics g) {
+		
 		Graphics2D g2 = (Graphics2D) g;
+		//clear();
 		ArrayList<ArrayList<Point>> paths = model.getPaths();
 		if (paths.size() > 0) {
-			System.out.println("REPAINTSSS");
+			//System.out.println("REPAINTSSS");
+			System.out.println("Now "+paths.size()+" paths");
 			// System.out.println("number of paths is "+paths.size());
 			for (int i = 0; i < paths.size(); i++) { // separate objects
-
+				
 				int size = paths.get(i).size();
-				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD,
-						size);
+				System.out.println("Has "+ size + " points");
+				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
 				if (size > 0) {
 					Point first = paths.get(i).get(0);
 					path.moveTo(first.getX(), first.getY());
 					// System.out.println(first.getX() + " " + first.getY());
 					for (int j = 1; j < paths.get(i).size(); j++) {
-						// Point from = paths.get(i).get(j-1);
 						Point to = paths.get(i).get(j);
 						path.lineTo(to.getX(), to.getY());
 						// System.out.println(to.getX() + " " + to.getY());
-						graphics2D.setStroke(new BasicStroke(5));
-						graphics2D.setColor(Color.BLACK);
-						graphics2D.draw(path);
+						g2.setStroke(new BasicStroke(5));
+						g2.setColor(Color.BLACK);
+						g2.draw(path);
 					}
 				}
 
 			} 
-			
-			if (image == null) {
-				image = createImage(getSize().width, getSize().height);
-				graphics2D = (Graphics2D) image.getGraphics();
-				graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-						RenderingHints.VALUE_ANTIALIAS_ON);
-				clear();
-			}
-			g2.drawImage(image, 0, 0, null);
+//			
+//			if (image == null) {
+//				image = createImage(getSize().width, getSize().height);
+//				graphics2D = (Graphics2D) image.getGraphics();
+//				graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+//						RenderingHints.VALUE_ANTIALIAS_ON);
+//				clear();
+//			}
+//			g2.drawImage(image, 0, 0, null);
 		}
 	}
 
@@ -132,8 +134,7 @@ public class CanvasView extends JComponent implements IView {
 							Point currPoint = paths.get(i).get(j);
 							int x = currPoint.x;
 							int y = currPoint.y;
-							System.out.println("x,y " + x + " " + y
-									+ " pressed at " + oldX + " " + oldY);
+							//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
 							if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
 									&& oldY < y + 10) {
 								System.out.println("HIT");
@@ -141,7 +142,6 @@ public class CanvasView extends JComponent implements IView {
 
 								break;
 							}
-							repaint();
 						}
 						// if (paths.get(j).intersects(oldX, oldY, 1, 1)){ //
 						// doesnt really work....
@@ -211,26 +211,25 @@ public class CanvasView extends JComponent implements IView {
 					// // doesnt workk.
 					// }
 				} else if (state == 0) {
-					if (graphics2D != null) {
-						graphics2D.setStroke(new BasicStroke(5));
-						if (state == 2) {
-							final float dash1[] = { 5.0f };
-							final BasicStroke dashed = new BasicStroke(5.0f,
-									BasicStroke.CAP_BUTT,
-									BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
-							graphics2D.setColor(Color.BLUE);
-							graphics2D.setStroke(dashed);
 
-						}
+					if (state == 2) {
+						final float dash1[] = { 5.0f };
+						final BasicStroke dashed = new BasicStroke(5.0f,
+								BasicStroke.CAP_BUTT,
+								BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
+						graphics2D.setColor(Color.BLUE);
+						graphics2D.setStroke(dashed);
 
-						// if (currentX > oldX+3 && currentY > oldY+3){
-						model.addPoint(new Point(currentX, currentY));
-						repaint();
-						// }
-
-						// graphics2D.draw(currPath);
-						// graphics2D.drawLine(oldX, oldY, currentX, currentY);
 					}
+
+					// if (currentX > oldX+3 && currentY > oldY+3){
+					model.addPoint(new Point(currentX, currentY));
+					repaint();
+					// }
+
+					// graphics2D.draw(currPath);
+					// graphics2D.drawLine(oldX, oldY, currentX, currentY);
+				
 
 					repaint();
 					oldX = currentX;
@@ -262,6 +261,12 @@ public class CanvasView extends JComponent implements IView {
 		// t.start();
 	}
 
+	public void clearScreen(Graphics g){
+		
+		g.setColor(Color.white);
+		g.fillRect(0, 0, getSize().width, getSize().height);
+		g.setColor(Color.black);
+	}
 	public void clear() {
 		model.clearPaths();
 		graphics2D.setPaint(Color.white);
