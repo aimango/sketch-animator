@@ -51,9 +51,7 @@ public class MainViewModel extends Object {
 		this.updateAllViews();
 	}
 	public void clearPaths(){
-		for (int i = 0; i < paths.size(); i++){
-			this.paths.remove(i);
-		}
+		this.paths.clear();
 		this.selectingPath = new ArrayList<Point>();
 		this.updateAllViews();
 	}

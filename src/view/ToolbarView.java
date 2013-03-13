@@ -30,7 +30,6 @@ public class ToolbarView extends JPanel implements IView {
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clearPaths(); 
-				
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
 			}
 		});
@@ -38,7 +37,6 @@ public class ToolbarView extends JPanel implements IView {
 		JButton drawToggle = new JButton("Draw");
 		drawToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//stuff
 				model.setState(0);
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
@@ -46,15 +44,14 @@ public class ToolbarView extends JPanel implements IView {
 		JButton eraseToggle = new JButton("Erase");
 		eraseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//change the pointer to something else
 				model.setState(1);
+				// need to deselect
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 		JButton selectToggle = new JButton("Select");
 		selectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//change the pointer to something else
 				model.setState(2);
 				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			}
