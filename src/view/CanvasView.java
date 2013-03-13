@@ -22,13 +22,11 @@ import javax.swing.JComponent;
 import model.IView;
 import model.MainViewModel;
 
-//Erase: need to detect if we click on a path in the path list. not sure how intersects works for path..
 //Selection: use a dotted BasicStroke.. just check if this new path is around the old paths. Full object.s
 // Not really working X__X
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
-	Image image;
 	Graphics2D graphics2D;
 	int currentX, currentY, oldX, oldY;
 	// GeneralPath currPath = null;
@@ -42,9 +40,8 @@ public class CanvasView extends JComponent implements IView {
 		//clear();
 		ArrayList<ArrayList<Point>> paths = model.getPaths();
 		if (paths.size() > 0) {
-			//System.out.println("REPAINTSSS");
-			System.out.println("Now "+paths.size()+" paths");
-			// System.out.println("number of paths is "+paths.size());
+//			System.out.println("Now "+paths.size()+" paths");
+//			// System.out.println("number of paths is "+paths.size());
 			for (int i = 0; i < paths.size(); i++) { // separate objects
 				
 				int size = paths.get(i).size();
@@ -59,21 +56,22 @@ public class CanvasView extends JComponent implements IView {
 						path.lineTo(to.getX(), to.getY());
 						// System.out.println(to.getX() + " " + to.getY());
 						g2.setStroke(new BasicStroke(5));
-						g2.setColor(Color.BLACK);
+						
+						int state = model.getState();
+						if (state == 0)
+							g2.setColor(Color.BLACK);
+						else if (state == 2){
+							final float dash1[] = { 5.0f };
+							final BasicStroke dashed = new BasicStroke(5.0f, BasicStroke.CAP_BUTT,
+									BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
+							g2.setColor(Color.BLUE);
+							g2.setStroke(dashed);
+						}
 						g2.draw(path);
 					}
 				}
 
 			} 
-//			
-//			if (image == null) {
-//				image = createImage(getSize().width, getSize().height);
-//				graphics2D = (Graphics2D) image.getGraphics();
-//				graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-//						RenderingHints.VALUE_ANTIALIAS_ON);
-//				clear();
-//			}
-//			g2.drawImage(image, 0, 0, null);
 		}
 	}
 
@@ -119,12 +117,9 @@ public class CanvasView extends JComponent implements IView {
 				oldX = e.getX();
 				oldY = e.getY();
 				if (model.getState() == 0) {
-					currPath = new ArrayList<Point>();// GeneralPath(GeneralPath.WIND_NON_ZERO,
-														// 1);
-
+					currPath = new ArrayList<Point>();
 					model.addPoint(new Point(oldX, oldY));
-				}
-				if (model.getState() == 1) { // erase
+				} else if (model.getState() == 1) { // erase
 					System.out.println("ERASE~");
 					ArrayList<ArrayList<Point>> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
@@ -143,36 +138,23 @@ public class CanvasView extends JComponent implements IView {
 								break;
 							}
 						}
-						// if (paths.get(j).intersects(oldX, oldY, 1, 1)){ //
-						// doesnt really work....
-						// //model.removePath(j);
-						// repaint(); // need to remove somehow visually as
-						// well...
-						// System.out.print("HIT ");
-						// Rectangle r = paths.get(j).getBounds();
-						// System.out.println(oldX + " " + oldY +
-						// "Rect bounds are "+r.x+" " + r.y+ " "+ r.height +
-						// " " + r.width);
-						// } else{
-						// Rectangle r = paths.get(j).getBounds();
-						// System.out.println(oldX + " " + oldY +
-						// "Rect bounds are "+r.x+" " + r.y+ " "+ r.height +
-						// " " + r.width);
-						// }
 					}
-				}
+				} 
+//				else if (model.getState() == 2){ // select
+//					model.setSelected(true);
+//				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				if (model.getState() == 0) {
-					// currPath.closePath();
-					// model.addPath(currPath); // store the path for future
-					// usage
-					// currPath = null;
 					model.setStillPainting(false);
 					model.addPoint(new Point(currentX, currentY));
-					repaint();
+
 				} else if (model.getState() == 2 && !model.getSelected()) {
+					model.setStillPainting(false);
+					model.addPoint(new Point(currentX, currentY));
+					
+					
 					/*
 					 * currPath.closePath();
 					 * 
@@ -210,31 +192,12 @@ public class CanvasView extends JComponent implements IView {
 					// model.getPaths().get(model.getSelectedIndex()).transform(at);
 					// // doesnt workk.
 					// }
-				} else if (state == 0) {
-
-					if (state == 2) {
-						final float dash1[] = { 5.0f };
-						final BasicStroke dashed = new BasicStroke(5.0f,
-								BasicStroke.CAP_BUTT,
-								BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
-						graphics2D.setColor(Color.BLUE);
-						graphics2D.setStroke(dashed);
-
-					}
-
+				} else if (state == 0 || state == 2) {
 					// if (currentX > oldX+3 && currentY > oldY+3){
 					model.addPoint(new Point(currentX, currentY));
-					repaint();
-					// }
-
-					// graphics2D.draw(currPath);
-					// graphics2D.drawLine(oldX, oldY, currentX, currentY);
-				
-
-					repaint();
 					oldX = currentX;
 					oldY = currentY;
-				}
+				}					
 			}
 		});
 
