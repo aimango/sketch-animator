@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.geom.GeneralPath;
+import java.awt.Point;
 // Note!  Nothing from the view package is imported here.
 import java.util.ArrayList;
 import java.util.Timer;
@@ -10,7 +11,12 @@ import java.util.Timer;
 public class MainViewModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views = new ArrayList<IView>();
-	private ArrayList<GeneralPath> paths = new ArrayList<GeneralPath>();
+	//private ArrayList<GeneralPath> paths = new ArrayList<GeneralPath>();
+	
+	private ArrayList<ArrayList<Point>> paths = new ArrayList<ArrayList<Point>>();
+	private boolean stillPainting = true;
+	ArrayList<Point> currPath = new ArrayList<Point>();
+	
 	private int state = 0; // {0,1,2,3,4} = {draw, erase, selection}. Default is draw
 	private boolean selected = false;
 	private int selectedIndex;
@@ -24,8 +30,47 @@ public class MainViewModel extends Object {
 	public MainViewModel() {
 	}
 	
+	public void addPath() {
+		currPath = new ArrayList<Point>();
+		paths.add(currPath);
+		System.out.println("num paths "+ paths.size());
+	}
+	
+	public void removePath(int i){
+		this.paths.remove(i);
+		this.updateAllViews();
+	}
+	public void clearPaths(){
+		for (int i = paths.size()-1; i >= 0; i--)
+			this.paths.remove(i);
+	}
+
+	public void addPoint(Point point){
+		currPath.add(point);
+		if (this.stillPainting){
+			if (this.paths.size() == 0)
+				this.paths.add(currPath);
+			this.paths.set(paths.size()-1, currPath);
+		} else {
+			System.out.println("New PATH!");
+			this.paths.set(paths.size()-1, currPath);
+			this.addPath();
+		}
+			
+		this.updateAllViews();
+	}
+	
+	public void setStillPainting(boolean isPainting){
+		this.stillPainting = isPainting;
+		//this.addPath();
+	}
+	public boolean stillPainting(){
+		return this.stillPainting;
+	}
+	
 	public void setSelected(boolean selected){
 		this.selected = selected;
+		
 	}
 	public boolean getSelected(){
 		return this.selected;
@@ -71,16 +116,8 @@ public class MainViewModel extends Object {
 			view.updateView();
 		}
 	}
-	
-	public void addPath(GeneralPath path) {
-		this.paths.add(path);
-	}
-	
-	public void removePath(int i){
-		this.paths.remove(i);
-	}
-	
-	public ArrayList<GeneralPath> getPaths(){
+
+	public ArrayList<ArrayList<Point>> getPaths(){
 		return paths;
 	}
 	
