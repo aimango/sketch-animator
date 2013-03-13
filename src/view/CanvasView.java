@@ -7,17 +7,24 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.awt.geom.Point2D;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import model.IView;
 import model.MainViewModel;
@@ -35,6 +42,7 @@ public class CanvasView extends JComponent implements IView {
 	GeneralPath lassoPath = null;
 	private MainViewModel model;
 	
+	
 	/**
 	 * What to do when the model changes.
 	 */
@@ -49,6 +57,7 @@ public class CanvasView extends JComponent implements IView {
 		
 		if (model.getClear() == true){
 			clear();
+			model.setClear(false);
 		}
 	}
 
@@ -112,18 +121,32 @@ public class CanvasView extends JComponent implements IView {
 			        currPath = null;
 			        repaint();
 				}
-				else if (model.getState() == 2){
+				else if (model.getState() == 2 && !model.getSelected()){
 					currPath.closePath();
 					
 					ArrayList<GeneralPath> paths = model.getPaths();
 					System.out.println("# paths"+paths.size());
 					for (int i = 0; i < paths.size(); i++){
+						
+						double[][] points;
+						points = getPoints(paths.get(i));
+						int npoints = points[0].length;
+						double[] xpoints, ypoints;
+						for (int j = 0; j < npoints; j++){
+							for (int k = 0; k < npoints; k++){
+								System.out.print(points[j][k]); //wtffff
+							}
+						}
+						Polygon p = new Polygon();
 						Rectangle r = paths.get(i).getBounds();
 						if (!currPath.contains(r)){
 							System.out.println("NO!");
 							break;
-						} else if (i == paths.size() - 1){
+						} else {//if (i == paths.size() - 1){
 							System.out.println("YES!");
+							model.setSelected(true);
+							model.setSelectedIndex(i);
+							//so now we should be able to drag this object
 						}
 					}
 					currPath = null;
@@ -134,9 +157,17 @@ public class CanvasView extends JComponent implements IView {
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
 				int state = model.getState();
-				if (state != 1){
-					currentX = e.getX();
-					currentY = e.getY();
+				currentX = e.getX();
+				currentY = e.getY();
+				if (state != 1 && model.getSelected()){
+					System.out.println("Dragging the obj");
+					if (model.getPaths().get(model.getSelectedIndex()).contains(oldX, oldY)){
+						AffineTransform at = new AffineTransform();
+						at.translate(100,100);
+						model.getPaths().get(model.getSelectedIndex()).transform(at); // doesnt workk.
+					}
+				} 
+				else if (state != 1){
 					if (graphics2D != null){
 						graphics2D.setStroke(new BasicStroke(5));
 						if (state == 0){
@@ -146,7 +177,8 @@ public class CanvasView extends JComponent implements IView {
 						    final BasicStroke dashed = new BasicStroke(5.0f, BasicStroke.CAP_BUTT,
 						    		BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
 						    graphics2D.setColor(Color.BLUE);
-						    graphics2D.setStroke(dashed);    
+						    graphics2D.setStroke(dashed); 
+
 						} 
 						
 						if (currPath == null){
@@ -180,6 +212,15 @@ public class CanvasView extends JComponent implements IView {
 		this.model.addView(this);
 			
 		setDoubleBuffered(false);
+		
+		//TODO: activate this
+//		ActionListener repainter = new ActionListener(){
+//			public void actionPerformed(ActionEvent e){
+//				repaint();
+//			}
+//		};
+//		t = new Timer(1000/fps, repainter);
+//		t.start();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -198,5 +239,32 @@ public class CanvasView extends JComponent implements IView {
 		graphics2D.fillRect(0, 0, getSize().width, getSize().height);
 		graphics2D.setPaint(Color.black);
 		repaint();
+	}
+	
+	static double[][] getPoints(GeneralPath path) {
+	    List<double[]> pointList = new ArrayList<double[]>();
+	    double[] coords = new double[6];
+	    int numSubPaths = 0;
+	    for (PathIterator pi = path.getPathIterator(null);
+	         ! pi.isDone();
+	         pi.next()) {
+	        switch (pi.currentSegment(coords)) {
+	        case PathIterator.SEG_MOVETO:
+	            pointList.add(Arrays.copyOf(coords, 2));
+	            ++ numSubPaths;
+	            break;
+	        case PathIterator.SEG_LINETO:
+	            pointList.add(Arrays.copyOf(coords, 2));
+	            break;
+	        case PathIterator.SEG_CLOSE:
+	            if (numSubPaths > 1) {
+	                throw new IllegalArgumentException("Path contains multiple subpaths");
+	            }
+	            return pointList.toArray(new double[pointList.size()][]);
+	        default:
+	            throw new IllegalArgumentException("Path contains curves");
+	        }
+	    }
+	    throw new IllegalArgumentException("Unclosed path");
 	}
 }

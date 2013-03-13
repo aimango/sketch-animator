@@ -14,7 +14,8 @@ public class SliderView extends JSlider implements IView {
 
 	private static final long serialVersionUID = 1L;
 	private MainViewModel model;
-
+	
+	
 	public SliderView(MainViewModel aModel) {
 		super();
 		this.model = aModel;
@@ -23,7 +24,7 @@ public class SliderView extends JSlider implements IView {
 
 		// Add a this view as a listener to the model
 		this.model.addView(this);
-		
+		this.setValue(0);
 		this.setBorder(BorderFactory.createTitledBorder("Yippee"));
 		this.setMajorTickSpacing(20);
 		this.setMinorTickSpacing(5);
@@ -38,6 +39,9 @@ public class SliderView extends JSlider implements IView {
 	
 	@Override
 	public void updateView() {
+		if (model.getState() == 3){ // playing
+			//this.setValue(this.getValue()+FPS);
+		}
 		// TODO Auto-generated method stub
 	}
 }
