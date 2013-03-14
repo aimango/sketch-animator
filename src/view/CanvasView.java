@@ -26,7 +26,6 @@ public class CanvasView extends JComponent implements IView {
 	private static final long serialVersionUID = 1L;
 	
 	private int currentX, currentY, oldX, oldY;
-	private ArrayList<Point> currPath = null;
 	private MainModel model;
 	private GeneralPath selectedPath;
 	private Timer t;
@@ -117,7 +116,6 @@ public class CanvasView extends JComponent implements IView {
 				
 				if (model.getState() == 0) {
 					model.addPath();
-					currPath = new ArrayList<Point>();
 					model.addPoint(new Point(oldX, oldY));
 				} 
 				

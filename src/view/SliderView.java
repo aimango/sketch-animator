@@ -2,6 +2,8 @@ package view;
 
 import javax.swing.BorderFactory;
 import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import model.IView;
 import model.MainModel;
@@ -18,29 +20,30 @@ public class SliderView extends JSlider implements IView {
 	public SliderView(MainModel aModel) {
 		super();
 		this.model = aModel;
-		//this.layoutView();
 		this.registerControllers();
-
-		// Add a this view as a listener to the model
 		this.model.addView(this);
 		this.setValue(0);
 		this.setBorder(BorderFactory.createTitledBorder("Yippee"));
-		this.setMajorTickSpacing(20);
-		this.setMinorTickSpacing(5);
+		this.setMaximum(1);
 		this.setPaintTicks(true);
 		this.setPaintLabels(true);  
 	}
 
-
 	private void registerControllers() {
-		 this.addChangeListener(new BoundedChangeListener());
+	    this.addChangeListener(new ChangeListener() {
+	        public void stateChanged(ChangeEvent evt) {
+	          JSlider slider = (JSlider) evt.getSource();
+	          if (slider.getValueIsAdjusting()) {
+		          model.setFrame(slider.getValue());
+	          }
+	        }
+	    });
 	}
 	
 	@Override
 	public void updateView() {
-		if (model.getState() == 3){ // playing
-			//this.setValue(this.getValue()+FPS);
-		}
-		// TODO Auto-generated method stub
+		this.setMaximum(model.getTotalFrames());
+		this.setValue(model.getFrame());
+		this.setMinorTickSpacing(1);
 	}
 }

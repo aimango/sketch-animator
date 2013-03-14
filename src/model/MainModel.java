@@ -21,8 +21,6 @@ public class MainModel extends Object {
 	Segment selectingPath;
 	
 	private boolean playing = false;
-	private Timer t;
-	
 	
 	// Override the default constructor, making it private.
 	public MainModel() {
@@ -36,7 +34,15 @@ public class MainModel extends Object {
 	public int getFrame(){
 		return this.currframe;
 	}
-	
+	public int getTotalFrames(){
+		return this.totalframes;
+	}
+	public void setFrame(int frame){
+		if (frame <= totalframes){
+			this.currframe = frame;
+			this.updateAllViews();
+		}
+	}
 	public void increaseFrames(){
 		currframe++;
 		if (currframe > totalframes){
