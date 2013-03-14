@@ -35,6 +35,10 @@ public class CanvasView extends JComponent implements IView {
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, 800, 600);
+		g2.setColor(Color.BLACK);
+		
 		int state = model.getState();
 		ArrayList<Integer> selected = model.getSelectedIndices();
 		
@@ -43,19 +47,17 @@ public class CanvasView extends JComponent implements IView {
 		if (paths.size() > 0) {
 			for (int i = 0; i < paths.size(); i++) { // separate objects	
 				int size = paths.get(i).size();
-				//System.out.println("Has "+ size + " points");
+				
 				int currFrame = model.getFrame();
 				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
 				int isAlive = currFrame - paths.get(i).getStartTime();
-				;
+				
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
-				 System.out.println(paths.get(i).getEndTime() + " " + currFrame);
-				 
-				 
-				if (size > 0 && isAlive >= 0 ){ // X__X &&  paths.get(i).getEndTime() <= currFrame) { 
-					//get the transformed points based on frame number.....
-					ArrayList<Point> transformedPoints = paths.get(i).getTransformed(currFrame);
+				//System.out.println(paths.get(i).getEndTime() + " " + currFrame);
+				  
+				ArrayList<Point> transformedPoints = paths.get(i).getTransformed(currFrame);
+				if (transformedPoints.size() > 0){
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 					
@@ -135,61 +137,22 @@ public class CanvasView extends JComponent implements IView {
 				
 				
 				if (model.getState() == 0) {
-					System.out.println("New PATH!");
 					model.addPath();
 					currPath = new ArrayList<Point>();
 					model.addPoint(new Point(oldX, oldY));
 				} 
 				
-				else if (model.getState() == 1) { // ERASE!!!!
-					ArrayList<Segment> paths = model.getPaths();
-					for (int i = 0; i < paths.size(); i++) {
-						ArrayList<Point> points = paths.get(i).getTransformed(model.getFrame());
-						int size = points.size();
-						for (int j = 0; j < size; j++) {
-
-							Point currPoint = points.get(j);
-							int x = currPoint.x;
-							int y = currPoint.y;
-							//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
-							if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
-									&& oldY < y + 10) {
-								System.out.println("Erasing this obj");
-								model.removePath(i);
-								
-
-								break;
-							}
-						}
-					}
+				else if (model.getState() == 1) {
+					model.erase(oldX, oldY);
 				} 
-//				else if (model.getState() == 2){ // select
-//					model.setSelected(true);
-//				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				model.setStillPainting(false);
 				model.addPoint(new Point(currentX, currentY));
 				if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
-					
-					ArrayList<Segment> paths = model.getPaths();
-					for (int i = 0; i < paths.size(); i++) {
-						ArrayList<Point> points = paths.get(i).getTransformed(model.getFrame());
-						int size = points.size();
-						for (int j = 0; j < size; j++) {
-							Point currPoint = points.get(j);
-							if (!selectedPath.contains(currPoint)){
-								break;
-							} else if (j == size-1){ // all pts inside, so we can select this one
-								System.out.println("Selected!"); 
-								model.addSelectedIndex(i);
-							}
-						}
-					}
-					if (model.getSelectedIndices().size() == 0){ // didnt select anything. so remove lasso
-						model.removeLasso();
-					}
+					model.selectStuff(selectedPath);
+
 				}
 
 			}
@@ -201,40 +164,20 @@ public class CanvasView extends JComponent implements IView {
 				currentX = e.getX();
 				currentY = e.getY();
 				
-				ArrayList<Integer> selectedIndices = model.getSelectedIndices();
+				//ArrayList<Integer> selectedIndices = model.getSelectedIndices();
 				int numSelected = model.getSelectedIndices().size();
 				if (state == 2 && numSelected != 0) {
 					model.pushFrame();
-					int currFrame = model.getFrame();
-					System.out.println("Dragging the objs");
-					for (int i = 0; i < model.getPaths().size(); i++){
-						Segment s = model.getPaths().get(i);
-						//if (i != index)
-							s.addTranslate(0, 0, currFrame); //////// should grab its transform from prev
-						//if (s.getEndTime() == currFrame)
-							//s.setEndTime(currFrame);
-						
-					}
-					for (int index : selectedIndices){
-						model.getPaths().get(index).addTranslate(
-								currentX-oldX, currentY-oldY, currFrame);
-						
-						
-					}
-
-
-				} if (state == 0 || state == 2) {
+					model.addTranslate(currentX-oldX, currentY-oldY);
+				} 
+				if (state == 0 || state == 2) {
 					// if (currentX > oldX+3 && currentY > oldY+3){
 					model.addPoint(new Point(currentX, currentY));
 					oldX = currentX;
 					oldY = currentY;
-
 				}	
-
 				repaint();
-				
 			}
-			
 		});
 	}
 

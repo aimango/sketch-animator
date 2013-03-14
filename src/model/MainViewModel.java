@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Point;
+import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Timer;
 
@@ -67,6 +68,17 @@ public class MainViewModel extends Object {
 		System.out.println("Frame has been increased to "+ currframe);
 	}
 	
+	public void addTranslate(int x, int y){
+		int currFrame = this.getFrame();
+		System.out.println("Dragging the objs");
+		for (int i = 0; i < this.getPaths().size(); i++){
+			Segment s = this.getPaths().get(i);
+			s.addTranslate(0, 0, currFrame);
+		}
+		for (int index : selectedIndices){
+			this.getPaths().get(index).addTranslate(x, y, currFrame);	
+		}
+	}
 	public void decreaseFrames(){
 		if (currframe >0){
 			currframe--;
@@ -91,12 +103,54 @@ public class MainViewModel extends Object {
 	public ArrayList<Segment> getPaths(){
 		return paths;
 	}
+	public void erase(int oldX, int oldY){
+		ArrayList<Segment> paths = this.getPaths();
+		for (int i = 0; i < paths.size(); i++) {
+			ArrayList<Point> points = paths.get(i).getTransformed(this.getFrame());
+			int size = points.size();
+			for (int j = 0; j < size; j++) {
+
+				Point currPoint = points.get(j);
+				int x = currPoint.x;
+				int y = currPoint.y;
+				//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
+				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
+						&& oldY < y + 10) {
+					System.out.println("Erasing this obj");
+					this.removePath(i);
+					
+
+					break;
+				}
+			}
+		}
+	}
 	
+	public void selectStuff(GeneralPath selectedPath){
+		ArrayList<Segment> paths = this.getPaths();
+		for (int i = 0; i < paths.size(); i++) {
+			ArrayList<Point> points = paths.get(i).getTransformed(this.getFrame());
+			int size = points.size();
+			for (int j = 0; j < size; j++) {
+				Point currPoint = points.get(j);
+				if (!selectedPath.contains(currPoint)){
+					break;
+				} else if (j == size-1){ // all pts inside, so we can select this one
+					System.out.println("Selected!"); 
+					this.addSelectedIndex(i);
+				}
+			}
+		}
+		if (this.getSelectedIndices().size() == 0){ // didnt select anything. so remove lasso
+			this.removeLasso();
+		}
+	}
 	public void removePath(int i){
-		this.paths.remove(i);
-		//this.paths.get(i).setEndTime(currframe-1);
+		//this.paths.remove(i);
+		this.paths.get(i).setEndTime(currframe-1);
 		this.updateAllViews();
 	}
+	
 	public void removeLasso(){
 		this.selectingPath = new Segment(currframe, totalframes);
 		this.updateAllViews();
