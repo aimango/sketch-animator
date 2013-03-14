@@ -21,10 +21,6 @@ import model.IView;
 import model.MainViewModel;
 import model.Segment;
 
-//buggy:
-//when i erase, i need to save end time instead of actually removing <- CURRENTLY DOING.. very confusing.
-
-
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -156,17 +152,16 @@ public class CanvasView extends JComponent implements IView {
 				
 				int numSelected = model.getSelectedIndices().size();
 				if (state == 4 && numSelected != 0) {
-					//model.pushFrame();
 					model.addTranslate(currentX-oldX, currentY-oldY);
 				} 
+				
 				if (state == 0 || state == 2) {
-					// if (currentX > oldX+3 && currentY > oldY+3){
 					model.addPoint(new Point(currentX, currentY));
-					
 				}
+				
 				else if (model.getState() == 1) {
 					model.eraseStuff(currentX, currentY);
-				} 
+				}
 				oldX = currentX;
 				oldY = currentY;
 				repaint();
@@ -178,17 +173,13 @@ public class CanvasView extends JComponent implements IView {
 		super();
 		this.model = aModel;
 		this.registerControllers();
-
-		// Add this view as a listener to the model
 		this.model.addView(this);
 
 		setDoubleBuffered(false);
 
-		// TODO: activate this
 		 ActionListener repainter = new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				if (model.getState() == 4)
 					model.pushFrame();
 			}
