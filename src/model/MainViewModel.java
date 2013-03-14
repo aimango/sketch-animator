@@ -15,14 +15,11 @@ public class MainViewModel extends Object {
 	// {0,1,2,3,4} = {draw, erase, selection}. Default is draw
 	private int state = 0; 
 	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>(); 
-	//private int selectedIndex = -1;
-	
 	
 	private int currframe = 0;
 	private int totalframes = 0;
 	Segment currPath = new Segment(currframe, totalframes);
 	Segment selectingPath = new Segment(currframe, totalframes);
-	
 	
 	private int duration = 100; 
 	private boolean playing = false;
@@ -41,14 +38,20 @@ public class MainViewModel extends Object {
 
 	public void increaseFrames(){
 		currframe++;
-		
 		if (currframe > totalframes){
-			//currframe--;
 			totalframes++;
 		}
 
 		this.updateAllViews();
 		System.out.println("Frame has been increased to "+ currframe);
+	}
+	
+	public void decreaseFrames(){
+		if (currframe >0){
+			currframe--;
+			this.updateAllViews();
+			System.out.println("Frame has been decreased to "+ currframe);
+		}
 	}
 	
 	public void pushFrame(){
@@ -58,9 +61,7 @@ public class MainViewModel extends Object {
 			}
 		}
 		currframe++;
-		
 		if (currframe > totalframes){
-			//currframe--;
 			totalframes++;
 		}
 
@@ -79,18 +80,7 @@ public class MainViewModel extends Object {
 			this.getPaths().get(index).addTranslate(x, y, currFrame);	
 		}
 	}
-	public void decreaseFrames(){
-		if (currframe >0){
-			currframe--;
-			this.updateAllViews();
-			System.out.println("Frame has been decreased to "+ currframe);
-		}
-	}
 	
-	public void increaseTotalFrames(){
-		totalframes++;
-		increaseFrames();
-	}
 	public void addPath() {
 		currPath = new Segment(currframe, totalframes);
 		paths.add(currPath);
@@ -100,13 +90,15 @@ public class MainViewModel extends Object {
 	public Segment getSelectingPath(){
 		return this.selectingPath;
 	}
+	
 	public ArrayList<Segment> getPaths(){
 		return paths;
 	}
+	
 	public void erase(int oldX, int oldY){
 		ArrayList<Segment> paths = this.getPaths();
 		for (int i = 0; i < paths.size(); i++) {
-			ArrayList<Point> points = paths.get(i).getTransformed(this.getFrame());
+			ArrayList<Point> points = paths.get(i).getTranslates(this.getFrame());
 			int size = points.size();
 			for (int j = 0; j < size; j++) {
 
@@ -114,12 +106,9 @@ public class MainViewModel extends Object {
 				int x = currPoint.x;
 				int y = currPoint.y;
 				//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
-				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
-						&& oldY < y + 10) {
+				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10 && oldY < y + 10) {
 					System.out.println("Erasing this obj");
 					this.removePath(i);
-					
-
 					break;
 				}
 			}
@@ -129,7 +118,7 @@ public class MainViewModel extends Object {
 	public void selectStuff(GeneralPath selectedPath){
 		ArrayList<Segment> paths = this.getPaths();
 		for (int i = 0; i < paths.size(); i++) {
-			ArrayList<Point> points = paths.get(i).getTransformed(this.getFrame());
+			ArrayList<Point> points = paths.get(i).getTranslates(this.getFrame());
 			int size = points.size();
 			for (int j = 0; j < size; j++) {
 				Point currPoint = points.get(j);
@@ -213,11 +202,14 @@ public class MainViewModel extends Object {
 	}
 	
 	public void setState(int state){
-		if (state == 0 || state == 1){ // if it's toggled to draw or erase, remove the selected items & lasso trace
+		// if it's toggled to draw or erase, remove the selected items & lasso trace
+		if (state == 0 || state == 1 || state == 3){ 
 			this.selectedIndices.clear();
 			this.removeLasso();
+			if (state == 3) // allow user to select again.
+				state = 2;
 			this.updateAllViews();
-		}
+		} 
 		this.state = state;
 	}
 	

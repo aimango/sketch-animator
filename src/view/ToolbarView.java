@@ -19,9 +19,7 @@ public class ToolbarView extends JPanel implements IView {
 	public ToolbarView(MainViewModel aModel) {
 		super();
 		this.model = aModel;
-		//this.layoutView();
-		//this.registerControllers();
-
+		
 		// Add a this view as a listener to the model
 		this.model.addView(this);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -55,7 +53,14 @@ public class ToolbarView extends JPanel implements IView {
 				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			}
 		});
-		JButton zeroToggle = new JButton("Goto 0");
+		JButton deselectToggle = new JButton("Deselect");
+		deselectToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setState(3);
+				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+			}
+		});
+		JButton zeroToggle = new JButton("Time 0");
 		zeroToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.gotoZero();
@@ -81,11 +86,11 @@ public class ToolbarView extends JPanel implements IView {
 		this.add(drawToggle);
 		this.add(eraseToggle);
 		this.add(selectToggle);
+		this.add(deselectToggle);
 		this.add(zeroToggle);
 		this.add(playToggle);
 		this.add(pauseToggle);
 	}
-
 
 	@Override
 	public void updateView() {

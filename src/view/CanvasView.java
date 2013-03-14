@@ -35,9 +35,7 @@ public class CanvasView extends JComponent implements IView {
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, 800, 600);
-		g2.setColor(Color.BLACK);
+		clearScreen(g2);
 		
 		int state = model.getState();
 		ArrayList<Integer> selected = model.getSelectedIndices();
@@ -50,13 +48,12 @@ public class CanvasView extends JComponent implements IView {
 				
 				int currFrame = model.getFrame();
 				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
-				int isAlive = currFrame - paths.get(i).getStartTime();
 				
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
 				//System.out.println(paths.get(i).getEndTime() + " " + currFrame);
 				  
-				ArrayList<Point> transformedPoints = paths.get(i).getTransformed(currFrame);
+				ArrayList<Point> transformedPoints = paths.get(i).getTranslates(currFrame);
 				if (transformedPoints.size() > 0){
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
@@ -99,12 +96,7 @@ public class CanvasView extends JComponent implements IView {
 			}
 		}
 	}
-	
-	
 
-	/**
-	 * What to do when the model changes.
-	 */
 	public void updateView() {
 		if (model.getState() == 0) {
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -116,17 +108,6 @@ public class CanvasView extends JComponent implements IView {
 		repaint();
 	}
 
-	private void layoutView() {
-		// this.setLayout(new FormLayout());
-		// this.add(new JLabel("Base:"));
-		// this.add(this.baseTF);
-		// this.add(new JLabel("Height:"));
-		// this.add(this.heightTF);
-		// this.add(new JLabel("Hypotenuse:"));
-		// this.add(this.hypoTF);
-
-	}
-
 	private void registerControllers() {
 
 		addMouseListener(new MouseAdapter() {
@@ -134,7 +115,6 @@ public class CanvasView extends JComponent implements IView {
 				model.setStillPainting(true);
 				oldX = e.getX();
 				oldY = e.getY();
-				
 				
 				if (model.getState() == 0) {
 					model.addPath();
@@ -150,11 +130,11 @@ public class CanvasView extends JComponent implements IView {
 			public void mouseReleased(MouseEvent e) {
 				model.setStillPainting(false);
 				model.addPoint(new Point(currentX, currentY));
+				
+				// in select mode and have no paths selected yet 
 				if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
 					model.selectStuff(selectedPath);
-
 				}
-
 			}
 		});
 
@@ -184,7 +164,6 @@ public class CanvasView extends JComponent implements IView {
 	public CanvasView(MainViewModel aModel) {
 		super();
 		this.model = aModel;
-		this.layoutView();
 		this.registerControllers();
 
 		// Add this view as a listener to the model

@@ -6,5 +6,4 @@ public interface IView {
 	 * has changed state.
 	 */
 	public void updateView();
-
 }
