@@ -11,54 +11,58 @@ public class MainViewModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views = new ArrayList<IView>();
 
+	private ArrayList<Segment> paths = new ArrayList<Segment>();
+	private boolean stillPainting = true;
 
 	
 	// {0,1,2,3,4} = {draw, erase, selection}. Default is draw
 	private int state = 0; 
 	private int selectedIndex = -1;
 	
-	int currentFrame = 0;
-	int totalFrames = 0;
+	private int duration = 100; 
 	private boolean playing = false;
-
-	
-	private ArrayList<Segment> paths = new ArrayList<Segment>();
-	private boolean stillPainting = true;
-	private boolean isSelected = false;
-	Segment currPath = new Segment(currentFrame);
-	Segment selectingPath = new Segment(currentFrame);
-	
+	private int FPS = 40;
+	private Timer t;
+	private int currframe = 0;
+	private int totalframes = 0;
+	Segment currPath = new Segment(currframe);
+	Segment selectingPath = new Segment(currframe);
 	
 	// Override the default constructor, making it private.
 	public MainViewModel() {
 	}
 	
+	public int getFrame(){
+		return this.currframe;
+	}
+	
+
 	public void increaseFrames(){
-		currentFrame++;
-//		if (currentFrame>totalFrames)
-//			totalFrames++;
+		currframe++;
+		
+		if (currframe > totalframes)
+			currframe--;
+		this.updateAllViews();
+		System.out.println("Frame has been increased to "+ currframe);
 	}
 	
 	public void decreaseFrames(){
-		currentFrame--;
+		if (currframe >0){
+			currframe--;
+			this.updateAllViews();
+			System.out.println("Frame has been decreased to "+ currframe);
+		}
 	}
 	
-	public void setSelected(boolean selected){
-		this.isSelected = selected;
+	public void increaseTotalFrames(){
+		totalframes++;
+		increaseFrames();
+		
 	}
-	
-	public boolean getSelected(){
-		return this.isSelected;
-	}
-	
-	public int getCurrentFrame(){
-		return this.currentFrame;
-	}
-	
 	public void addPath() {
-		currPath = new Segment(currentFrame);
+		currPath = new Segment(currframe);
 		paths.add(currPath);
-		System.out.println("Added another path for a total of "+ paths.size() + " paths");
+		System.out.println("Added another path for a total of "+ paths.size()+ " paths");
 	}
 	
 	public Segment getSelectingPath(){
@@ -73,12 +77,12 @@ public class MainViewModel extends Object {
 		this.updateAllViews();
 	}
 	public void removeLasso(){
-		this.selectingPath = new Segment(currentFrame);
+		this.selectingPath = new Segment(currframe);
 		this.updateAllViews();
 	}
 	public void clearPaths(){
 		this.paths.clear();
-		this.selectingPath = new Segment(currentFrame);
+		this.selectingPath = new Segment(currframe);
 		this.updateAllViews();
 	}
 
@@ -88,8 +92,12 @@ public class MainViewModel extends Object {
 			if (this.stillPainting){
 				if (this.paths.size() == 0)
 					this.paths.add(currPath);
+				this.paths.set(paths.size()-1, currPath);
+			} else {
+				System.out.println("New PATH!");
+				this.paths.set(paths.size()-1, currPath);
+				this.addPath();
 			}
-			this.paths.set(paths.size()-1, currPath);
 		} else if (state == 2){
 			selectingPath.addPoint(point);
 			if (!this.stillPainting){
@@ -101,10 +109,10 @@ public class MainViewModel extends Object {
 		this.updateAllViews();
 	}
 	
-	public void setStillPainting(boolean isPainting){ //or rather, dragging
+	public void setStillPainting(boolean isPainting){
 		this.stillPainting = isPainting;
 	}
-	public boolean isStillPainting(){
+	public boolean stillPainting(){
 		return this.stillPainting;
 	}
 	
@@ -148,4 +156,4 @@ public class MainViewModel extends Object {
 			view.updateView();
 		}
 	}
-}
+}	

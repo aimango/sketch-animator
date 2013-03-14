@@ -56,20 +56,22 @@ public class ToolbarView extends JPanel implements IView {
 				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			}
 		});
-		JButton playToggle = new JButton("Back");
+		JButton playToggle = new JButton("Fwd");
 		playToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//change the pointer to something else
 				model.increaseFrames();
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
+				//repaint();
 			}
 		});
-		JButton pauseToggle = new JButton("Fwd");
+		JButton pauseToggle = new JButton("Back");
 		pauseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//change the pointer to something else
 				model.decreaseFrames();
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
+				//repaint();
 			}
 		});
 		this.add(clearButton);

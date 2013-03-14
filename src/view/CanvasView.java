@@ -6,14 +6,11 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
-import javax.swing.Timer;
 
 import javax.swing.JComponent;
 
@@ -28,10 +25,9 @@ public class CanvasView extends JComponent implements IView {
 	ArrayList<Point> currPath = null;
 	private MainViewModel model;
 	private GeneralPath selectedPath;
-	private int FPS = 40;
-	private Timer t;
 	
 	public void paintComponent(Graphics g) {
+		System.out.println("repaint");
 		Graphics2D g2 = (Graphics2D) g;
 		int state = model.getState();
 		int selected = model.getSelectedIndex();
@@ -45,7 +41,7 @@ public class CanvasView extends JComponent implements IView {
 				for (int i = 1; i < size; i++){
 					selectedPath.lineTo(selectedPathPts.get(i).x, selectedPathPts.get(i).y);
 				}
-				if (!model.isStillPainting()){
+				if (!model.stillPainting()){
 					selectedPath.closePath();
 				}
 				final float dash1[] = { 5.0f };
@@ -66,7 +62,8 @@ public class CanvasView extends JComponent implements IView {
 				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
 				
 				if (size > 0) {
-					ArrayList<Point> transformedPoints = paths.get(i).getTransformed(model.getCurrentFrame());
+					//get the transformed points based on frame number.....
+					ArrayList<Point> transformedPoints = paths.get(i).getTransformed(model.getFrame());
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 					
@@ -86,6 +83,8 @@ public class CanvasView extends JComponent implements IView {
 			} 
 		}
 	}
+	
+	
 
 	/**
 	 * What to do when the model changes.
@@ -122,9 +121,7 @@ public class CanvasView extends JComponent implements IView {
 				oldY = e.getY();
 				if (model.getState() == 0) {
 					currPath = new ArrayList<Point>();
-					model.addPath();
 					model.addPoint(new Point(oldX, oldY));
-					
 				} else if (model.getState() == 1) { // erase
 					ArrayList<Segment> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
@@ -139,19 +136,21 @@ public class CanvasView extends JComponent implements IView {
 									&& oldY < y + 10) {
 								System.out.println("Erasing this obj");
 								model.removePath(i);
+
 								break;
-								//TODO: delete overlappin shit
 							}
 						}
 					}
 				} 
+//				else if (model.getState() == 2){ // select
+//					model.setSelected(true);
+//				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				model.setStillPainting(false);
 				model.addPoint(new Point(currentX, currentY));
 				if (model.getState() == 2) {
-					model.setSelected(false);
 					ArrayList<Segment> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
 						int size = paths.get(i).size();
@@ -159,7 +158,7 @@ public class CanvasView extends JComponent implements IView {
 							Point currPoint = paths.get(i).get(j);
 							if (!selectedPath.contains(currPoint)){
 								break;
-							} else if (j == size-1){ // all pts inside, so we can select this one
+							} else if ( j == size-1){ // all pts inside, so we can select this one
 								System.out.println("Selected!"); 
 								model.setSelectedIndex(i);
 							}
@@ -178,23 +177,33 @@ public class CanvasView extends JComponent implements IView {
 				currentX = e.getX();
 				currentY = e.getY();
 				if (state == 2 && model.getSelectedIndex()!= -1) {
-					model.setSelected(true);
-					ArrayList<Segment> paths = model.getPaths();
-					 if (paths.get(model.getSelectedIndex()).contains(oldX, oldY)){
-						 System.out.println("Dragging the obj");
-						 
-						 model.getPaths().get(model.getSelectedIndex()).addTranslate(currentX-oldX, currentY-oldY, model.getCurrentFrame());
-						 for (Segment s : paths){
-							 s.addTranslate(0, 0, model.getCurrentFrame());
-						 }
-					 }
+					System.out.println("Dragging the obj");
+					model.getPaths().get(model.getSelectedIndex()).addTranslate(
+							currentX-oldX, currentY-oldY, model.getFrame()+1);
+					
+					for (int i = 0; i < model.getPaths().size(); i++){
+						Segment s = model.getPaths().get(i);
+						if (i != model.getSelectedIndex())
+							s.addTranslate(0,0,model.getFrame()+1);
+					}
+					model.increaseTotalFrames();
+					// if
+					// (model.getPaths().get(model.getSelectedIndex()).contains(oldX,
+					// oldY)){
+					// AffineTransform at = new AffineTransform();
+					// at.translate(100,100);
+					// model.getPaths().get(model.getSelectedIndex()).transform(at);
+					// // doesnt workk.
+					// }
 				} else if (state == 0 || state == 2) {
 					// if (currentX > oldX+3 && currentY > oldY+3){
 					model.addPoint(new Point(currentX, currentY));
 					oldX = currentX;
 					oldY = currentY;
-				}					
+				}	
+				repaint();
 			}
+			
 		});
 	}
 
@@ -208,19 +217,15 @@ public class CanvasView extends JComponent implements IView {
 		this.model.addView(this);
 
 		setDoubleBuffered(false);
-		
-//		// TODO: activate this
-//		 ActionListener repainter = new ActionListener(){
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				if (model.getSelected() && model.getState() == 2){
-//					System.out.println("The frame number "+ model.getCurrentFrame());
-//					model.increaseFrames();
-//				}
-//			}
-//		 };
-//		 t = new Timer(1000/FPS, repainter);
-//		 t.start();
+
+		// TODO: activate this
+		// ActionListener repainter = new ActionListener(){
+		// public void actionPerformed(ActionEvent e){
+		// repaint();
+		// }
+		// };
+		// t = new Timer(1000/fps, repainter);
+		// t.start();
 	}
 
 	public void clearScreen(Graphics g){
