@@ -177,16 +177,17 @@ public class CanvasView extends JComponent implements IView {
 				currentX = e.getX();
 				currentY = e.getY();
 				if (state == 2 && model.getSelectedIndex()!= -1) {
+					model.increaseTotalFrames();
 					System.out.println("Dragging the obj");
 					model.getPaths().get(model.getSelectedIndex()).addTranslate(
-							currentX-oldX, currentY-oldY, model.getFrame()+1);
+							currentX-oldX, currentY-oldY, model.getFrame());
 					
 					for (int i = 0; i < model.getPaths().size(); i++){
 						Segment s = model.getPaths().get(i);
 						if (i != model.getSelectedIndex())
-							s.addTranslate(0,0,model.getFrame()+1);
+							s.addTranslate(0, 0, model.getFrame());
 					}
-					model.increaseTotalFrames();
+					
 					// if
 					// (model.getPaths().get(model.getSelectedIndex()).contains(oldX,
 					// oldY)){

@@ -80,9 +80,11 @@ public class MainViewModel extends Object {
 		this.selectingPath = new Segment(currframe);
 		this.updateAllViews();
 	}
+	
 	public void clearPaths(){
 		this.paths.clear();
 		this.selectingPath = new Segment(currframe);
+		this.setSelectedIndex(-1);
 		this.updateAllViews();
 	}
 
@@ -132,6 +134,11 @@ public class MainViewModel extends Object {
 	}
 	
 	public void setState(int state){
+		if (state == 0 || state == 1){
+			this.setSelectedIndex(-1);
+			this.removeLasso();
+			this.updateAllViews();
+		}
 		this.state = state;
 	}
 	

@@ -45,7 +45,6 @@ public class ToolbarView extends JPanel implements IView {
 		eraseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(1);
-				// need to deselect
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
@@ -56,22 +55,20 @@ public class ToolbarView extends JPanel implements IView {
 				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			}
 		});
-		JButton playToggle = new JButton("Fwd");
+		JButton playToggle = new JButton("<<");
 		playToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//change the pointer to something else
-				model.increaseFrames();
-				setCursor(new Cursor(Cursor.HAND_CURSOR));
-				//repaint();
-			}
-		});
-		JButton pauseToggle = new JButton("Back");
-		pauseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//change the pointer to something else
 				model.decreaseFrames();
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
-				//repaint();
+			}
+		});
+		JButton pauseToggle = new JButton(">>");
+		pauseToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//change the pointer to something else
+				model.increaseFrames();
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
 		});
 		this.add(clearButton);
