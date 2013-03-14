@@ -22,6 +22,7 @@ import model.Segment;
 //TODO: also should allow selection of multiple segments - not really working for some reason
 //TODO: replacing old frames when backtracked 
 //when i erase, i need to save end time instead of actually removing <- CURRENTLY DOING.. very confusing.
+//TODO: things drawn at frame > 0 need an endtime of total#frames
 
 public class CanvasView extends JComponent implements IView {
 
@@ -49,11 +50,10 @@ public class CanvasView extends JComponent implements IView {
 				;
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
-				// paths.get(i).getEndTime() < currFrame
 				 System.out.println(paths.get(i).getEndTime() + " " + currFrame);
 				 
 				 
-				if (size > 0 && isAlive >= 0 &&  paths.get(i).getEndTime() <= currFrame) { 
+				if (size > 0 && isAlive >= 0 ){ // X__X &&  paths.get(i).getEndTime() <= currFrame) { 
 					//get the transformed points based on frame number.....
 					ArrayList<Point> transformedPoints = paths.get(i).getTransformed(currFrame);
 					Point first = transformedPoints.get(0);
@@ -144,10 +144,11 @@ public class CanvasView extends JComponent implements IView {
 				else if (model.getState() == 1) { // ERASE!!!!
 					ArrayList<Segment> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
-						int size = paths.get(i).size();
+						ArrayList<Point> points = paths.get(i).getTransformed(model.getFrame());
+						int size = points.size();
 						for (int j = 0; j < size; j++) {
 
-							Point currPoint = paths.get(i).get(j);
+							Point currPoint = points.get(j);
 							int x = currPoint.x;
 							int y = currPoint.y;
 							//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
@@ -155,6 +156,7 @@ public class CanvasView extends JComponent implements IView {
 									&& oldY < y + 10) {
 								System.out.println("Erasing this obj");
 								model.removePath(i);
+								
 
 								break;
 							}
@@ -173,9 +175,10 @@ public class CanvasView extends JComponent implements IView {
 					
 					ArrayList<Segment> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
-						int size = paths.get(i).size();
+						ArrayList<Point> points = paths.get(i).getTransformed(model.getFrame());
+						int size = points.size();
 						for (int j = 0; j < size; j++) {
-							Point currPoint = paths.get(i).get(j);
+							Point currPoint = points.get(j);
 							if (!selectedPath.contains(currPoint)){
 								break;
 							} else if (j == size-1){ // all pts inside, so we can select this one
@@ -195,42 +198,41 @@ public class CanvasView extends JComponent implements IView {
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
 				int state = model.getState();
-				int currFrame = model.getFrame();
 				currentX = e.getX();
 				currentY = e.getY();
+				
 				ArrayList<Integer> selectedIndices = model.getSelectedIndices();
 				int numSelected = model.getSelectedIndices().size();
 				if (state == 2 && numSelected != 0) {
-					model.increaseTotalFrames();
+					model.pushFrame();
+					int currFrame = model.getFrame();
 					System.out.println("Dragging the objs");
+					for (int i = 0; i < model.getPaths().size(); i++){
+						Segment s = model.getPaths().get(i);
+						//if (i != index)
+							s.addTranslate(0, 0, currFrame); //////// should grab its transform from prev
+						//if (s.getEndTime() == currFrame)
+							//s.setEndTime(currFrame);
+						
+					}
 					for (int index : selectedIndices){
 						model.getPaths().get(index).addTranslate(
 								currentX-oldX, currentY-oldY, currFrame);
 						
-						for (int i = 0; i < model.getPaths().size(); i++){
-							Segment s = model.getPaths().get(i);
-							if (i != index)
-								s.addTranslate(0, 0, currFrame);
-							if (s.getEndTime() == currFrame)
-								s.setEndTime(currFrame);
-							
-						}
+						
 					}
-					// if
-					// (model.getPaths().get(model.getSelectedIndex()).contains(oldX,
-					// oldY)){
-					// AffineTransform at = new AffineTransform();
-					// at.translate(100,100);
-					// model.getPaths().get(model.getSelectedIndex()).transform(at);
-					// // doesnt workk.
-					// }
-				} else if (state == 0 || state == 2) {
+
+
+				} if (state == 0 || state == 2) {
 					// if (currentX > oldX+3 && currentY > oldY+3){
 					model.addPoint(new Point(currentX, currentY));
 					oldX = currentX;
 					oldY = currentY;
+
 				}	
+
 				repaint();
+				
 			}
 			
 		});

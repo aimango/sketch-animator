@@ -55,10 +55,17 @@ public class ToolbarView extends JPanel implements IView {
 				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			}
 		});
+		JButton zeroToggle = new JButton("Goto 0");
+		zeroToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.gotoZero();
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+			}
+		});
+		
 		JButton playToggle = new JButton("<<");
 		playToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//change the pointer to something else
 				model.decreaseFrames();
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
@@ -66,7 +73,6 @@ public class ToolbarView extends JPanel implements IView {
 		JButton pauseToggle = new JButton(">>");
 		pauseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//change the pointer to something else
 				model.increaseFrames();
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
@@ -75,6 +81,7 @@ public class ToolbarView extends JPanel implements IView {
 		this.add(drawToggle);
 		this.add(eraseToggle);
 		this.add(selectToggle);
+		this.add(zeroToggle);
 		this.add(playToggle);
 		this.add(pauseToggle);
 	}

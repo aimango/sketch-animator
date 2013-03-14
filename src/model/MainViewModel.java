@@ -19,8 +19,8 @@ public class MainViewModel extends Object {
 	
 	private int currframe = 0;
 	private int totalframes = 0;
-	Segment currPath = new Segment(currframe);
-	Segment selectingPath = new Segment(currframe);
+	Segment currPath = new Segment(currframe, totalframes);
+	Segment selectingPath = new Segment(currframe, totalframes);
 	
 	
 	private int duration = 100; 
@@ -41,8 +41,28 @@ public class MainViewModel extends Object {
 	public void increaseFrames(){
 		currframe++;
 		
-		if (currframe > totalframes)
-			currframe--;
+		if (currframe > totalframes){
+			//currframe--;
+			totalframes++;
+		}
+
+		this.updateAllViews();
+		System.out.println("Frame has been increased to "+ currframe);
+	}
+	
+	public void pushFrame(){
+		for (Segment s : paths){
+			if (!s.isErased(currframe)){
+				s.createFrame(currframe+1);
+			}
+		}
+		currframe++;
+		
+		if (currframe > totalframes){
+			//currframe--;
+			totalframes++;
+		}
+
 		this.updateAllViews();
 		System.out.println("Frame has been increased to "+ currframe);
 	}
@@ -58,10 +78,9 @@ public class MainViewModel extends Object {
 	public void increaseTotalFrames(){
 		totalframes++;
 		increaseFrames();
-		
 	}
 	public void addPath() {
-		currPath = new Segment(currframe);
+		currPath = new Segment(currframe, totalframes);
 		paths.add(currPath);
 		System.out.println("Added another path for a total of "+ paths.size()+ " paths");
 	}
@@ -79,13 +98,18 @@ public class MainViewModel extends Object {
 		this.updateAllViews();
 	}
 	public void removeLasso(){
-		this.selectingPath = new Segment(currframe);
+		this.selectingPath = new Segment(currframe, totalframes);
 		this.updateAllViews();
 	}
 	
+	public void gotoZero(){
+		currframe=0;
+		this.updateAllViews();
+	}
 	public void clear(){
+
 		this.paths.clear();
-		this.selectingPath = new Segment(currframe);
+		this.selectingPath = new Segment(currframe, totalframes);
 		this.selectedIndices.clear();
 		this.totalframes = 0;
 		this.currframe = 0;
