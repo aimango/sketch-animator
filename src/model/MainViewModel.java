@@ -7,19 +7,18 @@ import java.util.Timer;
 
 public class MainViewModel extends Object {
 	/* A list of the model's views. */
-	private ArrayList<IView> views = new ArrayList<IView>();
+	private ArrayList<IView> views;
 
-	private ArrayList<Segment> paths = new ArrayList<Segment>();
-	private boolean stillPainting = true;
-	
 	// {0,1,2,3,4} = {draw, erase, selection}. Default is draw
 	private int state = 0; 
-	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>(); 
+	private ArrayList<Segment> paths;
+	private boolean stillDragging = true;
+	private ArrayList<Integer> selectedIndices; 
 	
 	private int currframe = 0;
 	private int totalframes = 0;
-	Segment currPath = new Segment(currframe, totalframes);
-	Segment selectingPath = new Segment(currframe, totalframes);
+	Segment currPath;
+	Segment selectingPath;
 	
 	private int duration = 100; 
 	private boolean playing = false;
@@ -29,13 +28,17 @@ public class MainViewModel extends Object {
 	
 	// Override the default constructor, making it private.
 	public MainViewModel() {
+		views = new ArrayList<IView>();
+		paths = new ArrayList<Segment>();
+		currPath = new Segment(currframe, totalframes);
+		selectingPath = new Segment(currframe, totalframes);
+		selectedIndices = new ArrayList<Integer>();
 	}
 	
 	public int getFrame(){
 		return this.currframe;
 	}
 	
-
 	public void increaseFrames(){
 		currframe++;
 		if (currframe > totalframes){
@@ -64,7 +67,6 @@ public class MainViewModel extends Object {
 		if (currframe > totalframes){
 			totalframes++;
 		}
-
 		this.updateAllViews();
 		System.out.println("Frame has been increased to "+ currframe);
 	}
@@ -81,21 +83,19 @@ public class MainViewModel extends Object {
 		}
 	}
 	
-	public void addPath() {
+	public void addPath(){
 		currPath = new Segment(currframe, totalframes);
 		paths.add(currPath);
-		System.out.println("Added another path for a total of "+ paths.size()+ " paths");
+		System.out.println("Added another path for a total of " + paths.size() + " paths");
 	}
-	
+	public ArrayList<Segment> getPaths(){
+		return paths;
+	}
 	public Segment getSelectingPath(){
 		return this.selectingPath;
 	}
 	
-	public ArrayList<Segment> getPaths(){
-		return paths;
-	}
-	
-	public void erase(int oldX, int oldY){
+	public void eraseStuff(int oldX, int oldY){
 		ArrayList<Segment> paths = this.getPaths();
 		for (int i = 0; i < paths.size(); i++) {
 			ArrayList<Point> points = paths.get(i).getTranslates(this.getFrame());
@@ -105,10 +105,11 @@ public class MainViewModel extends Object {
 				Point currPoint = points.get(j);
 				int x = currPoint.x;
 				int y = currPoint.y;
+				
 				//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
 				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10 && oldY < y + 10) {
 					System.out.println("Erasing this obj");
-					this.removePath(i);
+					this.erasePath(i);
 					break;
 				}
 			}
@@ -134,8 +135,8 @@ public class MainViewModel extends Object {
 			this.removeLasso();
 		}
 	}
-	public void removePath(int i){
-		//this.paths.remove(i);
+	
+	public void erasePath(int i){
 		this.paths.get(i).setEndTime(currframe-1);
 		this.updateAllViews();
 	}
@@ -146,11 +147,11 @@ public class MainViewModel extends Object {
 	}
 	
 	public void gotoZero(){
-		currframe=0;
+		currframe = 0;
 		this.updateAllViews();
 	}
-	public void clear(){
 
+	public void restart(){
 		this.paths.clear();
 		this.selectingPath = new Segment(currframe, totalframes);
 		this.selectedIndices.clear();
@@ -162,28 +163,22 @@ public class MainViewModel extends Object {
 	public void addPoint(Point point){
 		if (state == 0){
 			currPath.addPoint(point);
-			if (this.stillPainting){
-				if (this.paths.size() == 0)
-					this.paths.add(currPath);
-				
+			if (this.stillDragging && this.paths.size() == 0){
+				this.paths.add(currPath);
 			} 
 			this.paths.set(paths.size()-1, currPath);
-		} else if (state == 2 && this.getSelectedIndices().size() == 0){
+		} 
+		else if (state == 2 && this.getSelectedIndices().size() == 0){
 			selectingPath.addPoint(point);
-			if (!this.stillPainting){
-				System.out.println("Done drawing the selector"); 
-				//this.paths.set(paths.size()-1, currPath);
-				//this.addSelectPath();
-			}
 		}
 		this.updateAllViews();
 	}
 	
-	public void setStillPainting(boolean isPainting){
-		this.stillPainting = isPainting;
+	public void setStillDragging(boolean stillDragging){
+		this.stillDragging = stillDragging;
 	}
-	public boolean stillPainting(){
-		return this.stillPainting;
+	public boolean getStillDragging(){
+		return this.stillDragging;
 	}
 	
 	public void setPlaying(boolean playing){
@@ -196,7 +191,6 @@ public class MainViewModel extends Object {
 	public void addSelectedIndex(int selected){
 		selectedIndices.add(selected);
 	}
-	
 	public ArrayList<Integer> getSelectedIndices(){
 		return this.selectedIndices;
 	}
@@ -212,23 +206,17 @@ public class MainViewModel extends Object {
 		} 
 		this.state = state;
 	}
-	
 	public int getState(){
 		return this.state;
 	}
 	
-	/** Add a new view. */
 	public void addView(IView view) {
 		this.views.add(view);
 		view.updateView();
 	}
-
-	/** Remove a view. */
 	public void removeView(IView view) {
 		this.views.remove(view);
 	}
-
-	/** Update all the views. */
 	private void updateAllViews() {
 		for (IView view : this.views) {
 			view.updateView();

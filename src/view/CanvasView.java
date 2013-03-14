@@ -50,7 +50,7 @@ public class CanvasView extends JComponent implements IView {
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
 				//System.out.println(paths.get(i).getEndTime() + " " + currFrame);
-				  
+
 				ArrayList<Point> transformedPoints = paths.get(i).getTranslates(currFrame);
 				if (transformedPoints.size() > 0){
 					Point first = transformedPoints.get(0);
@@ -82,7 +82,7 @@ public class CanvasView extends JComponent implements IView {
 				for (int i = 1; i < size; i++){
 					selectedPath.lineTo(selectedPathPts.get(i).x, selectedPathPts.get(i).y);
 				}
-				if (!model.stillPainting()){
+				if (!model.getStillDragging()){
 					selectedPath.closePath();
 				}
 				final float dash1[] = { 5.0f };
@@ -110,7 +110,7 @@ public class CanvasView extends JComponent implements IView {
 
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				model.setStillPainting(true);
+				model.setStillDragging(true);
 				oldX = e.getX();
 				oldY = e.getY();
 				
@@ -121,12 +121,12 @@ public class CanvasView extends JComponent implements IView {
 				} 
 				
 				else if (model.getState() == 1) {
-					model.erase(oldX, oldY);
+					model.eraseStuff(oldX, oldY);
 				} 
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				model.setStillPainting(false);
+				model.setStillDragging(false);
 				model.addPoint(new Point(currentX, currentY));
 				
 				// in select mode and have no paths selected yet 
@@ -142,7 +142,6 @@ public class CanvasView extends JComponent implements IView {
 				currentX = e.getX();
 				currentY = e.getY();
 				
-				//ArrayList<Integer> selectedIndices = model.getSelectedIndices();
 				int numSelected = model.getSelectedIndices().size();
 				if (state == 2 && numSelected != 0) {
 					model.pushFrame();
@@ -153,7 +152,10 @@ public class CanvasView extends JComponent implements IView {
 					model.addPoint(new Point(currentX, currentY));
 					oldX = currentX;
 					oldY = currentY;
-				}	
+				}
+				else if (model.getState() == 1) {
+					model.eraseStuff(currentX, currentY);
+				} 
 				repaint();
 			}
 		});

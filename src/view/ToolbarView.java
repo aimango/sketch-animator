@@ -27,7 +27,7 @@ public class ToolbarView extends JPanel implements IView {
 		JButton clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.clear(); 
+				model.restart(); 
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
 			}
 		});
