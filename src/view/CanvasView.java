@@ -18,21 +18,65 @@ import model.IView;
 import model.MainViewModel;
 import model.Segment;
 
+//TODO: erasing/selecting transformed segments - need to apply affinetransform X__X FML **
+//TODO: also should allow selection of multiple segments - not really working for some reason
+//TODO: replacing old frames when backtracked 
+//when i erase, i need to save end time instead of actually removing <- CURRENTLY DOING.. very confusing.
+
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
+	
 	int currentX, currentY, oldX, oldY;
 	ArrayList<Point> currPath = null;
 	private MainViewModel model;
 	private GeneralPath selectedPath;
 	
 	public void paintComponent(Graphics g) {
-		System.out.println("repaint");
 		Graphics2D g2 = (Graphics2D) g;
 		int state = model.getState();
-		int selected = model.getSelectedIndex();
+		ArrayList<Integer> selected = model.getSelectedIndices();
 		
-		if (state == 2 && selected == -1){
+		//THE SEGMENTS!!!!!!!!
+		ArrayList<Segment> paths = model.getPaths();
+		if (paths.size() > 0) {
+			for (int i = 0; i < paths.size(); i++) { // separate objects	
+				int size = paths.get(i).size();
+				//System.out.println("Has "+ size + " points");
+				int currFrame = model.getFrame();
+				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
+				int isAlive = currFrame - paths.get(i).getStartTime();
+				;
+				// make sure # points is greater than 0 and that the segment
+				// is spse to be visible in the current frame
+				// paths.get(i).getEndTime() < currFrame
+				 System.out.println(paths.get(i).getEndTime() + " " + currFrame);
+				 
+				 
+				if (size > 0 && isAlive >= 0 &&  paths.get(i).getEndTime() <= currFrame) { 
+					//get the transformed points based on frame number.....
+					ArrayList<Point> transformedPoints = paths.get(i).getTransformed(currFrame);
+					Point first = transformedPoints.get(0);
+					path.moveTo(first.getX(), first.getY());
+					
+					for (int j = 1; j < paths.get(i).size(); j++) {
+						Point to = transformedPoints.get(j);
+						path.lineTo(to.getX(), to.getY());
+					}
+				}
+				
+				g2.setStroke(new BasicStroke(5));
+				if (selected.contains(i)){
+					g2.setColor(Color.RED);
+				} else {
+					g2.setColor(Color.BLACK);
+				}
+				g2.draw(path);
+			} 
+		}
+		
+		//LASSO!!!!!!!!!!!!
+		if (state == 2 && selected.size() == 0){ // stage where we are still selecting something
 			Segment selectedPathPts = model.getSelectingPath();
 			int size = selectedPathPts.size();
 			if (size > 0){
@@ -51,36 +95,6 @@ public class CanvasView extends JComponent implements IView {
 				g2.setStroke(dashed);
 				g2.draw(selectedPath);
 			}
-		}
-		
-		ArrayList<Segment> paths = model.getPaths();
-		if (paths.size() > 0) {
-			for (int i = 0; i < paths.size(); i++) { // separate objects
-				
-				int size = paths.get(i).size();
-				System.out.println("Has "+ size + " points");
-				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
-				
-				if (size > 0) {
-					//get the transformed points based on frame number.....
-					ArrayList<Point> transformedPoints = paths.get(i).getTransformed(model.getFrame());
-					Point first = transformedPoints.get(0);
-					path.moveTo(first.getX(), first.getY());
-					
-					for (int j = 1; j < paths.get(i).size(); j++) {
-						Point to = transformedPoints.get(j);
-						path.lineTo(to.getX(), to.getY());
-					}
-				}
-				
-				g2.setStroke(new BasicStroke(5));
-				if (i == selected){
-					g2.setColor(Color.RED);
-				} else {
-					g2.setColor(Color.BLACK);
-				}
-				g2.draw(path);
-			} 
 		}
 	}
 	
@@ -113,16 +127,21 @@ public class CanvasView extends JComponent implements IView {
 
 	private void registerControllers() {
 
-		// need to listen for what state we are in. draw/erase/selection
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				model.setStillPainting(true);
 				oldX = e.getX();
 				oldY = e.getY();
+				
+				
 				if (model.getState() == 0) {
+					System.out.println("New PATH!");
+					model.addPath();
 					currPath = new ArrayList<Point>();
 					model.addPoint(new Point(oldX, oldY));
-				} else if (model.getState() == 1) { // erase
+				} 
+				
+				else if (model.getState() == 1) { // ERASE!!!!
 					ArrayList<Segment> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
 						int size = paths.get(i).size();
@@ -150,7 +169,8 @@ public class CanvasView extends JComponent implements IView {
 			public void mouseReleased(MouseEvent e) {
 				model.setStillPainting(false);
 				model.addPoint(new Point(currentX, currentY));
-				if (model.getState() == 2) {
+				if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
+					
 					ArrayList<Segment> paths = model.getPaths();
 					for (int i = 0; i < paths.size(); i++) {
 						int size = paths.get(i).size();
@@ -158,36 +178,44 @@ public class CanvasView extends JComponent implements IView {
 							Point currPoint = paths.get(i).get(j);
 							if (!selectedPath.contains(currPoint)){
 								break;
-							} else if ( j == size-1){ // all pts inside, so we can select this one
+							} else if (j == size-1){ // all pts inside, so we can select this one
 								System.out.println("Selected!"); 
-								model.setSelectedIndex(i);
+								model.addSelectedIndex(i);
 							}
 						}
 					}
-					if (model.getSelectedIndex() == -1){ // didnt select anything. so remove lasso
+					if (model.getSelectedIndices().size() == 0){ // didnt select anything. so remove lasso
 						model.removeLasso();
 					}
 				}
+
 			}
 		});
 
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
 				int state = model.getState();
+				int currFrame = model.getFrame();
 				currentX = e.getX();
 				currentY = e.getY();
-				if (state == 2 && model.getSelectedIndex()!= -1) {
+				ArrayList<Integer> selectedIndices = model.getSelectedIndices();
+				int numSelected = model.getSelectedIndices().size();
+				if (state == 2 && numSelected != 0) {
 					model.increaseTotalFrames();
-					System.out.println("Dragging the obj");
-					model.getPaths().get(model.getSelectedIndex()).addTranslate(
-							currentX-oldX, currentY-oldY, model.getFrame());
-					
-					for (int i = 0; i < model.getPaths().size(); i++){
-						Segment s = model.getPaths().get(i);
-						if (i != model.getSelectedIndex())
-							s.addTranslate(0, 0, model.getFrame());
+					System.out.println("Dragging the objs");
+					for (int index : selectedIndices){
+						model.getPaths().get(index).addTranslate(
+								currentX-oldX, currentY-oldY, currFrame);
+						
+						for (int i = 0; i < model.getPaths().size(); i++){
+							Segment s = model.getPaths().get(i);
+							if (i != index)
+								s.addTranslate(0, 0, currFrame);
+							if (s.getEndTime() == currFrame)
+								s.setEndTime(currFrame);
+							
+						}
 					}
-					
 					// if
 					// (model.getPaths().get(model.getSelectedIndex()).contains(oldX,
 					// oldY)){
