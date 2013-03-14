@@ -16,7 +16,6 @@ public class SliderView extends JSlider implements IView {
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
 	
-	
 	public SliderView(MainModel aModel) {
 		super();
 		this.model = aModel;

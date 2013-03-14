@@ -18,18 +18,6 @@ public class Segment extends Object {
 		at.add(new AffineTransform());
 	}
 	
-	public int getStartTime(){
-		return this.startTime;
-	}
-	
-	public void setEndTime(int endTime){
-		this.endTime = endTime;
-	}
-	
-	public int getEndTime(){
-		return this.endTime;
-	}
-	
 	public int size(){
 		return path.size();
 	}
@@ -50,6 +38,17 @@ public class Segment extends Object {
 	public void addPoint(Point point){
 		path.add(point);
 	}
+
+	public int getStartTime(){
+		return this.startTime;
+	}
+	
+	public void setEndTime(int endTime){
+		this.endTime = endTime;
+	}
+	public int getEndTime(){
+		return this.endTime;
+	}
 	
 	public boolean isErased(int frame){
 		int isAlive = frame - startTime;
@@ -59,21 +58,21 @@ public class Segment extends Object {
 		return true;
 	}
 	
-	//Affine transform shit
-	
 	public void createFrame(int frame){
-		if (frame>endTime){
+		if (frame-startTime == 0){ // first one
+			at.set(0, new AffineTransform());
+		}
+		else if (frame>endTime){ // last one
 			at.add(new AffineTransform(at.get(at.size()-1)));
 			endTime++;
-		} else if (frame-startTime == 0 ){
-				at.set(0, new AffineTransform());
-		} else {
+		}
+		else { // middle
 			at.set(frame-startTime, new AffineTransform(at.get(frame-startTime-1)));	
 		}
 	}
 
-	public void addTranslate(int x, int y, int i){
-		System.out.println("Added translate at " + x+" "+y);
+	public void addSegmentTranslate(int x, int y, int i){
+		//System.out.println("Added translate at " + x+" "+y);
 		AffineTransform a;
 		a = at.get(i-startTime);
 		a.translate(x, y);

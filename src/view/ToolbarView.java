@@ -87,7 +87,6 @@ public class ToolbarView extends JPanel implements IView {
 
 	@Override
 	public void updateView() {
-		// TODO Auto-generated method stub
-		
+		//can do some state disabling here
 	}
 }

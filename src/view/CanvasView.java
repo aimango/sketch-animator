@@ -39,7 +39,7 @@ public class CanvasView extends JComponent implements IView {
 		ArrayList<Integer> selected = model.getSelectedIndices();
 		
 		//THE SEGMENTS!!!!!!!!
-		ArrayList<Segment> paths = model.getPaths();
+		ArrayList<Segment> paths = model.getSegments();
 		if (paths.size() > 0) {
 			for (int i = 0; i < paths.size(); i++) { // separate objects	
 				int size = paths.get(i).size();
@@ -115,7 +115,7 @@ public class CanvasView extends JComponent implements IView {
 				oldY = e.getY();
 				
 				if (model.getState() == 0) {
-					model.addPath();
+					model.addSegment();
 					model.addPoint(new Point(oldX, oldY));
 				} 
 				

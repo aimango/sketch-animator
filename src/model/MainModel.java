@@ -3,7 +3,6 @@ package model;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class MainModel extends Object {
 	/* A list of the model's views. */
@@ -11,7 +10,7 @@ public class MainModel extends Object {
 
 	// {0,1,2,3,4} = {draw, erase, selection, deselection, dragged}. Default is draw
 	private int state = 0; 
-	private ArrayList<Segment> paths;
+	private ArrayList<Segment> segments;
 	private boolean stillDragging = true;
 	private ArrayList<Integer> selectedIndices; 
 	
@@ -25,7 +24,7 @@ public class MainModel extends Object {
 	// Override the default constructor, making it private.
 	public MainModel() {
 		views = new ArrayList<IView>();
-		paths = new ArrayList<Segment>();
+		segments = new ArrayList<Segment>();
 		currPath = new Segment(currframe, totalframes);
 		selectingPath = new Segment(currframe, totalframes);
 		selectedIndices = new ArrayList<Integer>();
@@ -62,7 +61,7 @@ public class MainModel extends Object {
 	}
 	
 	public void pushFrame(){
-		for (Segment s : paths){
+		for (Segment s : segments){
 			if (!s.isErased(currframe)){
 				s.createFrame(currframe+1);
 			}
@@ -78,39 +77,38 @@ public class MainModel extends Object {
 	public void addTranslate(int x, int y){
 		int currFrame = this.getFrame();
 		System.out.println("Dragging the objs");
-		for (int i = 0; i < this.getPaths().size(); i++){
-			Segment s = this.getPaths().get(i);
-			s.addTranslate(0, 0, currFrame);
+		for (int i = 0; i < segments.size(); i++){
+			Segment s = segments.get(i);
+			s.addSegmentTranslate(0, 0, currFrame);
 		}
 		for (int index : selectedIndices){
-			this.getPaths().get(index).addTranslate(x, y, currFrame);	
+			this.getSegments().get(index).addSegmentTranslate(x, y, currFrame);	
 		}
 	}
 	
-	public void addPath(){
+	public void addSegment(){
 		currPath = new Segment(currframe, totalframes);
-		paths.add(currPath);
-		System.out.println("Added another path for a total of " + paths.size() + " paths");
+		segments.add(currPath);
+		//System.out.println("Added another path for a total of " + paths.size() + " paths");
 	}
-	public ArrayList<Segment> getPaths(){
-		return paths;
+
+	public ArrayList<Segment> getSegments(){
+		return segments;
 	}
+
 	public Segment getSelectingPath(){
 		return this.selectingPath;
 	}
 	
 	public void eraseStuff(int oldX, int oldY){
-		ArrayList<Segment> paths = this.getPaths();
-		for (int i = 0; i < paths.size(); i++) {
-			ArrayList<Point> points = paths.get(i).getTranslates(this.getFrame());
-			int size = points.size();
-			for (int j = 0; j < size; j++) {
+		for (int i = 0; i < segments.size(); i++) {
+			ArrayList<Point> points = segments.get(i).getTranslates(this.getFrame());
 
+			for (int j = 0; j < points.size(); j++) {
 				Point currPoint = points.get(j);
 				int x = currPoint.x;
 				int y = currPoint.y;
 				
-				//System.out.println("x,y " + x + " " + y + " pressed at " + oldX + " " + oldY);
 				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10 && oldY < y + 10) {
 					System.out.println("Erasing this obj");
 					this.erasePath(i);
@@ -121,27 +119,29 @@ public class MainModel extends Object {
 	}
 	
 	public void selectStuff(GeneralPath selectedPath){
-		ArrayList<Segment> paths = this.getPaths();
-		for (int i = 0; i < paths.size(); i++) {
-			ArrayList<Point> points = paths.get(i).getTranslates(this.getFrame());
+		for (int i = 0; i < segments.size(); i++) {
+			ArrayList<Point> points = segments.get(i).getTranslates(this.getFrame());
 			int size = points.size();
 			for (int j = 0; j < size; j++) {
 				Point currPoint = points.get(j);
 				if (!selectedPath.contains(currPoint)){
 					break;
-				} else if (j == size-1){ // all pts inside, so we can select this one
+				} 
+				// all pts inside, so we can select this one
+				else if (j == size-1){
 					System.out.println("Selected!"); 
 					this.addSelectedIndex(i);
 				}
 			}
 		}
-		if (this.getSelectedIndices().size() == 0){ // didnt select anything. so remove lasso
+		// didnt select anything. so remove lasso
+		if (this.getSelectedIndices().size() == 0){ 
 			this.removeLasso();
 		}
 	}
 	
 	public void erasePath(int i){
-		this.paths.get(i).setEndTime(currframe-1);
+		this.segments.get(i).setEndTime(currframe-1);
 		this.updateAllViews();
 	}
 	
@@ -155,22 +155,13 @@ public class MainModel extends Object {
 		this.updateAllViews();
 	}
 
-	public void restart(){
-		this.paths.clear();
-		this.selectingPath = new Segment(currframe, totalframes);
-		this.selectedIndices.clear();
-		this.totalframes = 0;
-		this.currframe = 0;
-		this.updateAllViews();
-	}
-
 	public void addPoint(Point point){
 		if (state == 0){
 			currPath.addPoint(point);
-			if (this.stillDragging && this.paths.size() == 0){
-				this.paths.add(currPath);
+			if (this.stillDragging && this.segments.size() == 0){
+				this.segments.add(currPath);
 			} 
-			this.paths.set(paths.size()-1, currPath);
+			this.segments.set(segments.size()-1, currPath);
 		} 
 		else if (state == 2 && this.getSelectedIndices().size() == 0){
 			selectingPath.addPoint(point);
@@ -213,6 +204,16 @@ public class MainModel extends Object {
 	public int getState(){
 		return this.state;
 	}
+	
+	public void restart(){
+		this.segments.clear();
+		this.selectingPath = new Segment(currframe, totalframes);
+		this.selectedIndices.clear();
+		this.totalframes = 0;
+		this.currframe = 0;
+		this.updateAllViews();
+	}
+	
 	
 	public void addView(IView view) {
 		this.views.add(view);
