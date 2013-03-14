@@ -18,11 +18,9 @@ import model.IView;
 import model.MainViewModel;
 import model.Segment;
 
-//TODO: erasing/selecting transformed segments - need to apply affinetransform X__X FML **
-//TODO: also should allow selection of multiple segments - not really working for some reason
-//TODO: replacing old frames when backtracked 
+//buggy:
 //when i erase, i need to save end time instead of actually removing <- CURRENTLY DOING.. very confusing.
-//TODO: things drawn at frame > 0 need an endtime of total#frames
+
 
 public class CanvasView extends JComponent implements IView {
 
