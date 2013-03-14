@@ -4,7 +4,7 @@ import java.awt.Container;
 
 import javax.swing.JFrame;
 
-import model.MainViewModel;
+import model.MainModel;
 import view.SliderView;
 import view.ToolbarView;
 
@@ -13,7 +13,7 @@ import view.ToolbarView;
 public class Window {
 	public static void main(String[] args) {
 
-		MainViewModel model = new MainViewModel();
+		MainModel model = new MainModel();
 		final view.CanvasView view = new view.CanvasView(model);
 
 		JFrame frame = new JFrame("Assignment 3 - MVC");

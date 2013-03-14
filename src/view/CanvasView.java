@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import model.IView;
-import model.MainViewModel;
+import model.MainModel;
 import model.Segment;
 
 public class CanvasView extends JComponent implements IView {
@@ -27,7 +27,7 @@ public class CanvasView extends JComponent implements IView {
 	
 	private int currentX, currentY, oldX, oldY;
 	private ArrayList<Point> currPath = null;
-	private MainViewModel model;
+	private MainModel model;
 	private GeneralPath selectedPath;
 	private Timer t;
 	private int fps = 5;
@@ -169,7 +169,7 @@ public class CanvasView extends JComponent implements IView {
 		});
 	}
 
-	public CanvasView(MainViewModel aModel) {
+	public CanvasView(MainModel aModel) {
 		super();
 		this.model = aModel;
 		this.registerControllers();

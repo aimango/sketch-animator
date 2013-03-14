@@ -8,15 +8,15 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import model.IView;
-import model.MainViewModel;
+import model.MainModel;
 
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
 
-	private MainViewModel model;
+	private MainModel model;
 
-	public ToolbarView(MainViewModel aModel) {
+	public ToolbarView(MainModel aModel) {
 		super();
 		this.model = aModel;
 		

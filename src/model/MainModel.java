@@ -5,7 +5,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Timer;
 
-public class MainViewModel extends Object {
+public class MainModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views;
 
@@ -25,7 +25,7 @@ public class MainViewModel extends Object {
 	
 	
 	// Override the default constructor, making it private.
-	public MainViewModel() {
+	public MainModel() {
 		views = new ArrayList<IView>();
 		paths = new ArrayList<Segment>();
 		currPath = new Segment(currframe, totalframes);

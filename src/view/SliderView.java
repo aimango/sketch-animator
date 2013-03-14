@@ -4,7 +4,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JSlider;
 
 import model.IView;
-import model.MainViewModel;
+import model.MainModel;
 
 //Slider - Use ChangeListener since ActionListener only detects when you release the slider, not as you drag it.
 //Need to 
@@ -12,10 +12,10 @@ import model.MainViewModel;
 public class SliderView extends JSlider implements IView {
 
 	private static final long serialVersionUID = 1L;
-	private MainViewModel model;
+	private MainModel model;
 	
 	
-	public SliderView(MainViewModel aModel) {
+	public SliderView(MainModel aModel) {
 		super();
 		this.model = aModel;
 		//this.layoutView();
