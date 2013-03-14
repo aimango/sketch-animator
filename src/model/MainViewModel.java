@@ -9,7 +9,7 @@ public class MainViewModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views;
 
-	// {0,1,2,3,4} = {draw, erase, selection}. Default is draw
+	// {0,1,2,3,4} = {draw, erase, selection, deselection, dragged}. Default is draw
 	private int state = 0; 
 	private ArrayList<Segment> paths;
 	private boolean stillDragging = true;
@@ -20,9 +20,7 @@ public class MainViewModel extends Object {
 	Segment currPath;
 	Segment selectingPath;
 	
-	private int duration = 100; 
 	private boolean playing = false;
-	private int FPS = 40;
 	private Timer t;
 	
 	

@@ -6,6 +6,8 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -13,6 +15,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import model.IView;
 import model.MainViewModel;
@@ -26,10 +29,12 @@ public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
 	
-	int currentX, currentY, oldX, oldY;
-	ArrayList<Point> currPath = null;
+	private int currentX, currentY, oldX, oldY;
+	private ArrayList<Point> currPath = null;
 	private MainViewModel model;
 	private GeneralPath selectedPath;
+	private Timer t;
+	private int fps = 5;
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -100,7 +105,7 @@ public class CanvasView extends JComponent implements IView {
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} else if (model.getState() == 1) {
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		} else if (model.getState() == 2) {
+		} else if (model.getState() == 2 || model.getState() == 4) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		}
 		repaint();
@@ -123,6 +128,9 @@ public class CanvasView extends JComponent implements IView {
 				else if (model.getState() == 1) {
 					model.eraseStuff(oldX, oldY);
 				} 
+				if (model.getState() == 2 && model.getSelectedIndices().size() > 0){
+					model.setState(4);
+				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
@@ -130,9 +138,13 @@ public class CanvasView extends JComponent implements IView {
 				model.addPoint(new Point(currentX, currentY));
 				
 				// in select mode and have no paths selected yet 
-				if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
+				if (model.getState() == 4 && model.getSelectedIndices().size() > 0){
+					model.setState(2);
+				}
+				else if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
 					model.selectStuff(selectedPath);
 				}
+
 			}
 		});
 
@@ -143,19 +155,20 @@ public class CanvasView extends JComponent implements IView {
 				currentY = e.getY();
 				
 				int numSelected = model.getSelectedIndices().size();
-				if (state == 2 && numSelected != 0) {
-					model.pushFrame();
+				if (state == 4 && numSelected != 0) {
+					//model.pushFrame();
 					model.addTranslate(currentX-oldX, currentY-oldY);
 				} 
 				if (state == 0 || state == 2) {
 					// if (currentX > oldX+3 && currentY > oldY+3){
 					model.addPoint(new Point(currentX, currentY));
-					oldX = currentX;
-					oldY = currentY;
+					
 				}
 				else if (model.getState() == 1) {
 					model.eraseStuff(currentX, currentY);
 				} 
+				oldX = currentX;
+				oldY = currentY;
 				repaint();
 			}
 		});
@@ -172,13 +185,16 @@ public class CanvasView extends JComponent implements IView {
 		setDoubleBuffered(false);
 
 		// TODO: activate this
-		// ActionListener repainter = new ActionListener(){
-		// public void actionPerformed(ActionEvent e){
-		// repaint();
-		// }
-		// };
-		// t = new Timer(1000/fps, repainter);
-		// t.start();
+		 ActionListener repainter = new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (model.getState() == 4)
+					model.pushFrame();
+			}
+		 };
+		 t = new Timer(1000/fps, repainter);
+		 t.start();
 	}
 
 	public void clearScreen(Graphics g){
