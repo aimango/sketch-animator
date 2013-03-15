@@ -7,6 +7,8 @@ import model.MainModel;
 import view.SliderView;
 import view.ToolbarView;
 
+//TODO: use a main view
+
 public class Window {
 	public static void main(String[] args) {
 

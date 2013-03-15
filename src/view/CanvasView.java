@@ -20,9 +20,9 @@ import javax.swing.Timer;
 import model.IView;
 import model.MainModel;
 import model.Segment;
+
 //TODO: Rotation
-//TODO: allow variation in color.
-//TODO: generalpath selection be a highlight around segment rather than override segment color.
+//TODO: Color picker
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -90,13 +90,23 @@ public class CanvasView extends JComponent implements IView {
 					}
 				}
 
-				g2.setStroke(new BasicStroke(5));
-				if (selected.contains(i)) {
-					g2.setColor(Color.RED);
-				} else {
+				
+				if (selected.contains(i) && state != MainModel.State.playing) {
+					//highlight!
+					g2.setStroke(new BasicStroke(9));
+					g2.setColor(new Color(223, 128, 255));
+					g2.draw(path);
+					
+					//draw actual segment
+					g2.setStroke(new BasicStroke(5));
 					g2.setColor(Color.BLACK);
+					g2.draw(path);
+				} else {
+					g2.setStroke(new BasicStroke(5));
+					g2.setColor(Color.BLACK);
+					g2.draw(path);
 				}
-				g2.draw(path);
+				
 			}
 		}
 

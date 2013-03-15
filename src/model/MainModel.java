@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
-//TODO: use enums for states.
 //TODO: Not sure why after dragging it will have its selected obj still....
 public class MainModel extends Object {
 	public enum State {draw, erase, selection, dragged, playing}; 

@@ -10,7 +10,8 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
-//TODO; add ability to add blank frames via btn
+//TODO; add ability to add blank frames via btn - not working for frame > endtime
+//TODO: use images for buttons
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
