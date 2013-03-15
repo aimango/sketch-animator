@@ -83,9 +83,9 @@ public class MainModel extends Object {
 	public void insertFrame() {
 		increaseFrames();
 		for (Segment s : segments) {
-			if (!s.isErased(currframe)) {
+			//if (!s.isErased(currframe)) {
 				s.copyTransform(currframe);
-			}
+		//	}
 		}
 		System.out.println("Inserted frame");
 	}

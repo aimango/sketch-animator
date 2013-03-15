@@ -1,13 +1,8 @@
 package view;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -16,7 +11,7 @@ import model.IView;
 import model.MainModel;
 
 //TODO; add ability to add blank frames via btn - not working for frame > endtime
-//TODO: use images for buttons
+//TODO: have text under icons
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -24,15 +19,16 @@ public class ToolbarView extends JPanel implements IView {
 	private JButton drawToggle, eraseToggle, selectToggle, deselectToggle;
 	private JButton clearButton, insertFrame, playToggle;
 	private ImageIcon play;
+
 	public ToolbarView(MainModel aModel) {
 		super();
 		this.model = aModel;
 
-
 		play = new ImageIcon(getClass().getResource("/play.png"));
-		final ImageIcon pause = new ImageIcon(getClass().getResource("/pause.png"));
 		playToggle = new JButton(play);
-		playToggle.setFocusPainted(false);
+
+		final ImageIcon pause = new ImageIcon(getClass().getResource(
+				"/pause.png"));
 		playToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playToggle.getIcon() == play) {
@@ -69,14 +65,16 @@ public class ToolbarView extends JPanel implements IView {
 				model.setState(MainModel.State.erase);
 			}
 		});
-		ImageIcon select = new ImageIcon(getClass().getResource("/dotssquare.png"));
+		ImageIcon select = new ImageIcon(getClass().getResource(
+				"/dotssquare.png"));
 		selectToggle = new JButton(select);
 		selectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.selection);
 			}
 		});
-		ImageIcon deselect = new ImageIcon(getClass().getResource("/deselect.png"));
+		ImageIcon deselect = new ImageIcon(getClass().getResource(
+				"/deselect.png"));
 		deselectToggle = new JButton(deselect);
 		deselectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -111,13 +109,14 @@ public class ToolbarView extends JPanel implements IView {
 			if (model.getFrame() == 0)
 				playToggle.setIcon(play);
 		}
-		
-		else if (totalFrames == 0){
+
+		else if (totalFrames == 0) {
 			playToggle.setEnabled(false);
 		}
-		
+
 		MainModel.State state = model.getState();
-		if (state == MainModel.State.playing) { // disable everything during playback
+		if (state == MainModel.State.playing) { // disable everything during
+												// playback
 			eraseToggle.setEnabled(false);
 			drawToggle.setEnabled(false);
 			insertFrame.setEnabled(false);
@@ -140,12 +139,12 @@ public class ToolbarView extends JPanel implements IView {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(true);
 			// allow play if there is animation to play
-			if (totalFrames > 0){ 
+			if (totalFrames > 0) {
 				playToggle.setEnabled(true);
 			}
-		} 
+		}
 		// dont allow play if currently animating
-		else if (state == MainModel.State.dragged){
+		else if (state == MainModel.State.dragged) {
 			playToggle.setEnabled(false);
 		}
 

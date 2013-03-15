@@ -73,11 +73,12 @@ public class Segment extends Object {
 
 	public void copyTransform(int frame) {
 		// wierd here..
+		System.out.println("frame is "+frame+" end time is "+endTime);
 		if (frame > endTime) {
-			// at.add(frame, new AffineTransform(at.get(frame-1)));
-			System.out.println("Idunno");
+			this.createFrame(frame);
+			
 		} else {
-			at.add(frame, new AffineTransform(at.get(frame - 1)));
+			at.add(frame, new AffineTransform(at.get(frame-1)));
 		}
 	}
 

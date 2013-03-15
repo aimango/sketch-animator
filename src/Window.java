@@ -1,9 +1,12 @@
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 
 import javax.swing.JFrame;
 
 import model.MainModel;
+import view.CustomizeView;
 import view.SliderView;
 import view.ToolbarView;
 
@@ -26,11 +29,14 @@ public class Window {
 		SliderView slider = new view.SliderView(model);
 		content.add(slider, BorderLayout.SOUTH);
 
+		//Component customizer = new view.CustomizeView(model);
+		//content.add(customizer, BorderLayout.EAST);
 		frame.pack();
 		frame.setSize(800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocation(100, 100);
 		frame.setVisible(true);
+		frame.setMinimumSize(new Dimension(800, 600));
 
 	}
 }
