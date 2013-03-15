@@ -3,7 +3,12 @@ package view;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -18,62 +23,68 @@ public class ToolbarView extends JPanel implements IView {
 	private MainModel model;
 	private JButton drawToggle, eraseToggle, selectToggle, deselectToggle;
 	private JButton clearButton, insertFrame, playToggle;
-
+	private ImageIcon play;
 	public ToolbarView(MainModel aModel) {
 		super();
 		this.model = aModel;
 
-		setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-		playToggle = new JButton("Play");
+		play = new ImageIcon(getClass().getResource("/play.png"));
+		final ImageIcon pause = new ImageIcon(getClass().getResource("/pause.png"));
+		playToggle = new JButton(play);
+		playToggle.setFocusPainted(false);
 		playToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (playToggle.getText() == "Play") {
+				if (playToggle.getIcon() == play) {
 
 					// play from 0 in this case
 					if (model.getFrame() == model.getTotalFrames())
 						model.gotoZero();
 					model.setState(MainModel.State.playing);
-					playToggle.setText("Pause");
-				} else if (playToggle.getText() == "Pause") {
+					playToggle.setIcon(pause);
+				} else if (playToggle.getIcon() == pause) {
 					model.setState(MainModel.State.draw);
-					playToggle.setText("Play");
+					playToggle.setIcon(play);
 				}
 			}
 		});
-
-		clearButton = new JButton("Clear");
+		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
+		clearButton = new JButton(trash);
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.restart();
 			}
 		});
-
-		drawToggle = new JButton("Draw");
+		ImageIcon draw = new ImageIcon(getClass().getResource("/draw2.png"));
+		drawToggle = new JButton(draw);
 		drawToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.draw);
 			}
 		});
-		eraseToggle = new JButton("Erase");
+		ImageIcon erase = new ImageIcon(getClass().getResource("/eraser.png"));
+		eraseToggle = new JButton(erase);
 		eraseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.erase);
 			}
 		});
-		selectToggle = new JButton("Select");
+		ImageIcon select = new ImageIcon(getClass().getResource("/dotssquare.png"));
+		selectToggle = new JButton(select);
 		selectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.selection);
 			}
 		});
-		deselectToggle = new JButton("Deselect");
+		ImageIcon deselect = new ImageIcon(getClass().getResource("/deselect.png"));
+		deselectToggle = new JButton(deselect);
 		deselectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.deselect();
 			}
 		});
-		insertFrame = new JButton("Insert");
+		ImageIcon copy = new ImageIcon(getClass().getResource("/copy.png"));
+		insertFrame = new JButton(copy);
 		insertFrame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.insertFrame();
@@ -94,6 +105,17 @@ public class ToolbarView extends JPanel implements IView {
 
 	@Override
 	public void updateView() {
+		int totalFrames = model.getTotalFrames();
+		if (totalFrames > 0) {
+			playToggle.setEnabled(true);
+			if (model.getFrame() == 0)
+				playToggle.setIcon(play);
+		}
+		
+		else if (totalFrames == 0){
+			playToggle.setEnabled(false);
+		}
+		
 		MainModel.State state = model.getState();
 		if (state == MainModel.State.playing) { // disable everything during playback
 			eraseToggle.setEnabled(false);
@@ -117,9 +139,15 @@ public class ToolbarView extends JPanel implements IView {
 		} else if (state == MainModel.State.selection) {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(true);
+			// allow play if there is animation to play
+			if (totalFrames > 0){ 
+				playToggle.setEnabled(true);
+			}
+		} 
+		// dont allow play if currently animating
+		else if (state == MainModel.State.dragged){
+			playToggle.setEnabled(false);
 		}
-		if (model.getFrame() == 0 && model.getTotalFrames() > 0) {
-			playToggle.setText("Play");
-		}
+
 	}
 }
