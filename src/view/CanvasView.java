@@ -31,6 +31,36 @@ public class CanvasView extends JComponent implements IView {
 	private Timer t;
 	private int fps = 40;
 	
+
+	public CanvasView(MainModel aModel) {
+		super();
+		this.model = aModel;
+		this.registerControllers();
+		this.model.addView(this);
+
+		setDoubleBuffered(false);
+
+		 ActionListener tick = new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (model.getState() == 4)
+					model.pushFrame();
+				else if (model.getState() == 5){
+					model.increaseFrames();
+					if (model.getFrame() >= model.getTotalFrames()){
+						model.setState(0);
+						System.out.println("yes");
+					} else {
+						System.out.println("No");
+					}
+					
+				}
+			}
+		 };
+		 t = new Timer(1000/fps, tick);
+		 t.start();
+	}
+	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		clearScreen(g2);
@@ -38,10 +68,10 @@ public class CanvasView extends JComponent implements IView {
 		int state = model.getState();
 		ArrayList<Integer> selected = model.getSelectedIndices();
 		
-		//THE SEGMENTS
+		//ZEE SEGMENTS
 		ArrayList<Segment> paths = model.getSegments();
 		if (paths.size() > 0) {
-			for (int i = 0; i < paths.size(); i++) { // separate objects	
+			for (int i = 0; i < paths.size(); i++) { 	
 				int size = paths.get(i).size();
 				
 				int currFrame = model.getFrame();
@@ -49,8 +79,6 @@ public class CanvasView extends JComponent implements IView {
 				
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
-				//System.out.println(paths.get(i).getEndTime() + " " + currFrame);
-
 				ArrayList<Point> transformedPoints = paths.get(i).getTranslates(currFrame);
 				if (transformedPoints.size() > 0){
 					Point first = transformedPoints.get(0);
@@ -72,8 +100,8 @@ public class CanvasView extends JComponent implements IView {
 			} 
 		}
 		
-		//LASSO
-		if (state == 2 && selected.size() == 0){ // stage where we are still selecting something
+		//LASSO - stage where we are still selecting something
+		if (state == 2 && selected.size() == 0){
 			Segment selectedPathPts = model.getSelectingPath();
 			int size = selectedPathPts.size();
 			if (size > 0){
@@ -94,18 +122,7 @@ public class CanvasView extends JComponent implements IView {
 			}
 		}
 	}
-
-	public void updateView() {
-		if (model.getState() == 0) {
-			setCursor(new Cursor(Cursor.HAND_CURSOR));
-		} else if (model.getState() == 1) {
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		} else if (model.getState() == 2 || model.getState() == 4) {
-			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-		}
-		repaint();
-	}
-
+	
 	private void registerControllers() {
 
 		addMouseListener(new MouseAdapter() {
@@ -130,10 +147,11 @@ public class CanvasView extends JComponent implements IView {
 				model.setStillDragging(false);
 				model.addPoint(new Point(currentX, currentY));
 				
-				// in select mode and have no paths selected yet 
+				// go back to select mode if we were in dragged mode 
 				if (model.getState() == 4 && model.getSelectedIndices().size() > 0){
 					model.setState(2);
 				}
+				// in select mode and have no paths selected yet
 				else if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
 					model.selectStuff(selectedPath);
 				}
@@ -148,10 +166,14 @@ public class CanvasView extends JComponent implements IView {
 				currentY = e.getY();
 				
 				int numSelected = model.getSelectedIndices().size();
+				
+				// if dragging, add some translations!
 				if (state == 4 && numSelected != 0) {
 					model.addTranslate(currentX-oldX, currentY-oldY);
 				} 
 				
+				// if in selection, add points for either segment or lasso drawing.
+				// (let model handle logic
 				if (state == 0 || state == 2) {
 					model.addPoint(new Point(currentX, currentY));
 				}
@@ -166,38 +188,21 @@ public class CanvasView extends JComponent implements IView {
 		});
 	}
 
-	public CanvasView(MainModel aModel) {
-		super();
-		this.model = aModel;
-		this.registerControllers();
-		this.model.addView(this);
-
-		setDoubleBuffered(false);
-
-		 ActionListener repainter = new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == 4)
-					model.pushFrame();
-				else if (model.getState() == 5){
-					model.increaseFrames();
-					if (model.getFrame() >= model.getTotalFrames()){
-						model.setState(0);
-						System.out.println("yes");
-					} else {
-						System.out.println("No");
-					}
-					
-				}
-			}
-		 };
-		 t = new Timer(1000/fps, repainter);
-		 t.start();
-	}
-
 	public void clearScreen(Graphics g){
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getSize().width, getSize().height);
 		g.setColor(Color.black);
 	}
+	
+	public void updateView() {
+		if (model.getState() == 0) {
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
+		} else if (model.getState() == 1) {
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		} else if (model.getState() == 2 || model.getState() == 4) {
+			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+		}
+		repaint();
+	}
+
 }

@@ -18,7 +18,7 @@ public class ToolbarView extends JPanel implements IView {
 	private MainModel model;
 
 	public ToolbarView(MainModel aModel) {
-		//super();
+		super();
 		this.model = aModel;
 		
 		// Add a this view as a listener to the model
