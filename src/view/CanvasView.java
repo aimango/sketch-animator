@@ -30,7 +30,6 @@ public class CanvasView extends JComponent implements IView {
 	private GeneralPath selectedPath;
 	private Timer t;
 	private int fps = 40;
-	
 
 	public CanvasView(MainModel aModel) {
 		super();
@@ -49,11 +48,8 @@ public class CanvasView extends JComponent implements IView {
 					model.increaseFrames();
 					if (model.getFrame() >= model.getTotalFrames()){
 						model.setState(0);
-						System.out.println("yes");
-					} else {
-						System.out.println("No");
-					}
-					
+						model.gotoZero();
+					} 
 				}
 			}
 		 };

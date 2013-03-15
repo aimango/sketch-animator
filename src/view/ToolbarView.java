@@ -10,13 +10,11 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
-//TODO: at last frame or pause, go back to draw mode and go to 0:00 or stay at last frame?
-
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
-
+	private JButton playToggle;
 	public ToolbarView(MainModel aModel) {
 		super();
 		this.model = aModel;
@@ -25,11 +23,28 @@ public class ToolbarView extends JPanel implements IView {
 		this.model.addView(this);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		
+		playToggle = new JButton("Play");
+		playToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (playToggle.getText() == "Play"){
+					
+					// play from 0 in this case
+					if (model.getFrame() == model.getTotalFrames())
+						model.gotoZero();
+					model.setState(5);
+					playToggle.setText("Pause");
+				} 
+				else if (playToggle.getText() == "Pause"){
+					model.setState(0);
+					playToggle.setText("Play");
+				}
+			}
+		});
+		
 		JButton clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.restart(); 
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
 			}
 		});
 		
@@ -76,22 +91,7 @@ public class ToolbarView extends JPanel implements IView {
 				model.increaseFrames();
 			}
 		});
-		final JButton playToggle = new JButton("Play");
-		playToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (playToggle.getText() == "Play"){
-					if (model.getFrame() == model.getTotalFrames())
-						model.setFrame(0);
-					model.setState(5);
-					playToggle.setText("Pause");
-				} 
-				else if (playToggle.getText() == "Pause"){
-					//model.setFrame(0);
-					model.setState(0);
-					playToggle.setText("Play");
-				}
-			}
-		});
+
 		this.add(clearButton);
 		this.add(drawToggle);
 		this.add(eraseToggle);
@@ -105,6 +105,10 @@ public class ToolbarView extends JPanel implements IView {
 
 	@Override
 	public void updateView() {
-		//can do some state disabling here
+		//TODO: can do some state disabling here
+		
+		if (model.getFrame() == 0 && model.getTotalFrames() > 0){
+			playToggle.setText("Play");
+		}
 	}
 }

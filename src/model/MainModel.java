@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
+//TODO: use enums for states.
+//Not sure why after dragging it will have its selected obj still....
 public class MainModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views;
@@ -24,8 +26,8 @@ public class MainModel extends Object {
 	public MainModel() {
 		views = new ArrayList<IView>();
 		segments = new ArrayList<Segment>();
-		currPath = new Segment(currframe, totalframes);
-		selectingPath = new Segment(currframe, totalframes);
+		currPath = new Segment(currframe, currframe);
+		selectingPath = new Segment(currframe, currframe);
 		selectedIndices = new ArrayList<Integer>();
 	}
 	
@@ -58,14 +60,15 @@ public class MainModel extends Object {
 		if (currframe >0){
 			currframe--;
 			this.updateAllViews();
-			System.out.println("Frame has been decreased to "+ currframe);
+			//System.out.println("Frame has been decreased to "+ currframe);
 		}
 	}
 	
 	public void pushFrame(){
-		for (Segment s : segments){
-			if (!s.isErased(currframe)){
-				s.createFrame(currframe+1);
+		for (int i = 0; i < segments.size(); i++){
+			if (!segments.get(i).isErased(currframe)){
+				System.out.println("For segment "+i);
+				segments.get(i).createFrame(currframe+1);
 			}
 		}
 		currframe++;
@@ -85,13 +88,14 @@ public class MainModel extends Object {
 			this.segments.set(segments.size()-1, currPath);
 		} 
 		else if (state == 2 && this.getSelectedIndices().size() == 0){
+			//System.out.println("Add point");
 			selectingPath.addPoint(point);
 		}
 		this.updateAllViews();
 	}
 	
 	public void addSegment(){
-		currPath = new Segment(currframe, totalframes);
+		currPath = new Segment(currframe, currframe);
 		segments.add(currPath);
 		//System.out.println("Added another path for a total of " + segments.size() + " paths at time "+currframe);
 	}
@@ -123,7 +127,7 @@ public class MainModel extends Object {
 		return this.selectingPath;
 	}
 	public void removeLasso(){
-		this.selectingPath = new Segment(currframe, totalframes);
+		this.selectingPath = new Segment(currframe, currframe);
 		this.updateAllViews();
 	}
 	
@@ -182,18 +186,17 @@ public class MainModel extends Object {
 	}
 	
 	public void setState(int state){
-		// if it's toggled to draw or erase, remove the selected items & lasso trace
-		if (state == 0 || state == 1 || state == 3){ 
+		// remove the selected items & lasso trace
+		if (state == 0 || state == 1 || state == 3 || state == 5){ 
+			System.out.println("Set state to "+state);
 			this.selectedIndices.clear();
 			this.removeLasso();
 			if (state == 3) // allow user to select again.
-				state = 2;
-			this.updateAllViews();
+				state = 2;			
 		}
-		if (state == 0){
-			//set the playToggle text to "play" X__X
-		}
+
 		this.state = state;
+		this.updateAllViews();
 	}
 	public int getState(){
 		return this.state;
@@ -201,7 +204,7 @@ public class MainModel extends Object {
 	
 	public void restart(){
 		this.segments.clear();
-		this.selectingPath = new Segment(currframe, totalframes);
+		this.selectingPath = new Segment(currframe, currframe);
 		this.selectedIndices.clear();
 		this.totalframes = 0;
 		this.currframe = 0;

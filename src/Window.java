@@ -8,8 +8,6 @@ import model.MainModel;
 import view.SliderView;
 import view.ToolbarView;
 
-
-
 public class Window {
 	public static void main(String[] args) {
 
@@ -30,6 +28,7 @@ public class Window {
 		frame.pack();
 		frame.setSize(800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocation(100, 100);
 		frame.setVisible(true);
 
 	}

@@ -68,7 +68,7 @@ public class Segment extends Object {
 			endTime++;
 		}
 		else { // middle
-			at.set(frame-startTime, new AffineTransform(at.get(frame-startTime-1)));	
+			at.set(frame-startTime, new AffineTransform(at.get(frame-startTime-1)));
 		}
 	}
 

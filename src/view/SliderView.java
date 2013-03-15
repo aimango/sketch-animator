@@ -8,7 +8,7 @@ import javax.swing.event.ChangeListener;
 import model.IView;
 import model.MainModel;
 
-// add ability to add blank frames via ctrl + drag right
+// add ability to add blank frames via btn
 public class SliderView extends JSlider implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -41,6 +41,9 @@ public class SliderView extends JSlider implements IView {
 	public void updateView() {
 		this.setMaximum(model.getTotalFrames());
 		this.setValue(model.getFrame());
-		this.setMinorTickSpacing(1);
+		if (this.getMaximum() > 200){
+			this.setMajorTickSpacing(25);
+		} else 
+			this.setMajorTickSpacing(10);
 	}
 }
