@@ -11,7 +11,6 @@ public class Segment extends Object {
 	private int startTime;
 	private int endTime;
 
-	// Override the default constructor, making it private.
 	public Segment(int start, int end) {
 		startTime = start;
 		endTime = end;

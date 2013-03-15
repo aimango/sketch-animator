@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
+//TODO; add ability to add blank frames via btn
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -74,7 +75,7 @@ public class ToolbarView extends JPanel implements IView {
 		insertFrame = new JButton("Insert");
 		insertFrame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//increment totalframes, insert a copy of current frame.
+				model.insertFrame();
 			}
 		});
 
@@ -94,7 +95,6 @@ public class ToolbarView extends JPanel implements IView {
 
 	@Override
 	public void updateView() {
-		//TODO: can do some state disabling here
 		int state = model.getState();
 		if (state == 5){ // disable everything during playback
 			eraseToggle.setEnabled(false);

@@ -21,6 +21,7 @@ import model.IView;
 import model.MainModel;
 import model.Segment;
 
+//TODO: Rotation?
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;

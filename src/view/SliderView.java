@@ -8,7 +8,7 @@ import javax.swing.event.ChangeListener;
 import model.IView;
 import model.MainModel;
 
-// add ability to add blank frames via btn
+
 public class SliderView extends JSlider implements IView {
 
 	private static final long serialVersionUID = 1L;

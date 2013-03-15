@@ -5,7 +5,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
 //TODO: use enums for states.
-//Not sure why after dragging it will have its selected obj still....
+//TODO: Not sure why after dragging it will have its selected obj still....
 public class MainModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views;
@@ -65,10 +65,9 @@ public class MainModel extends Object {
 	}
 	
 	public void pushFrame(){
-		for (int i = 0; i < segments.size(); i++){
-			if (!segments.get(i).isErased(currframe)){
-				System.out.println("For segment "+i);
-				segments.get(i).createFrame(currframe+1);
+		for (Segment s : segments){
+			if (!s.isErased(currframe)){
+				s.createFrame(currframe+1);
 			}
 		}
 		currframe++;
@@ -77,6 +76,11 @@ public class MainModel extends Object {
 		}
 		this.updateAllViews();
 		System.out.println("Frame has been increased to "+ currframe);
+	}
+	//increment totalframes, insert a copy of current frame.
+	public void insertFrame(){
+		increaseFrames();
+		
 	}
 	
 	public void addPoint(Point point){
@@ -107,10 +111,9 @@ public class MainModel extends Object {
 	public void addTranslate(int x, int y){
 		int currFrame = this.getFrame();
 		System.out.println("Dragging the objs");
-		for (int i = 0; i < segments.size(); i++){
-			Segment s = segments.get(i);
+		for (Segment s : segments){
 			if (!s.isErased(currFrame)){
-			s.addSegmentTranslate(0, 0, currFrame);
+				s.addSegmentTranslate(0, 0, currFrame);
 			}
 		}
 		for (int index : selectedIndices){
@@ -118,10 +121,7 @@ public class MainModel extends Object {
 		}
 	}
 	
-	public void erasePath(int i){
-		this.segments.get(i).setEndTime(currframe-1);
-		this.updateAllViews();
-	}
+
 
 	public Segment getSelectingPath(){
 		return this.selectingPath;
@@ -168,8 +168,8 @@ public class MainModel extends Object {
 	}
 	
 	public void eraseStuff(int oldX, int oldY){
-		for (int i = 0; i < segments.size(); i++) {
-			ArrayList<Point> points = segments.get(i).getTranslates(this.getFrame());
+		for (Segment s : segments) {
+			ArrayList<Point> points = s.getTranslates(this.getFrame());
 
 			for (int j = 0; j < points.size(); j++) {
 				Point currPoint = points.get(j);
@@ -178,11 +178,12 @@ public class MainModel extends Object {
 				
 				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10 && oldY < y + 10) {
 					//System.out.println("Erasing the " + i + "th obj");
-					this.erasePath(i);
+					s.setEndTime(currframe-1);
 					break;
 				}
 			}
 		}
+		this.updateAllViews();
 	}
 	
 	public void setState(int state){
