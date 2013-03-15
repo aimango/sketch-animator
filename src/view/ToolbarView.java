@@ -15,61 +15,61 @@ public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
-	private JButton clearButton, drawToggle, eraseToggle, selectToggle, deselectToggle;
-	private JButton insertFrame, playToggle;
+	private JButton drawToggle, eraseToggle, selectToggle, deselectToggle;
+	private JButton clearButton, insertFrame, playToggle;
+
 	public ToolbarView(MainModel aModel) {
 		super();
 		this.model = aModel;
 
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
-		
+
 		playToggle = new JButton("Play");
 		playToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (playToggle.getText() == "Play"){
-					
+				if (playToggle.getText() == "Play") {
+
 					// play from 0 in this case
 					if (model.getFrame() == model.getTotalFrames())
 						model.gotoZero();
-					model.setState(5);
+					model.setState(MainModel.State.playing);
 					playToggle.setText("Pause");
-				} 
-				else if (playToggle.getText() == "Pause"){
-					model.setState(0);
+				} else if (playToggle.getText() == "Pause") {
+					model.setState(MainModel.State.draw);
 					playToggle.setText("Play");
 				}
 			}
 		});
-		
+
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.restart(); 
+				model.restart();
 			}
 		});
-		
+
 		drawToggle = new JButton("Draw");
 		drawToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setState(0);
+				model.setState(MainModel.State.draw);
 			}
 		});
 		eraseToggle = new JButton("Erase");
 		eraseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setState(1);
+				model.setState(MainModel.State.erase);
 			}
 		});
 		selectToggle = new JButton("Select");
 		selectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setState(2);
+				model.setState(MainModel.State.selection);
 			}
 		});
 		deselectToggle = new JButton("Deselect");
 		deselectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setState(3);
+				model.deselect();
 			}
 		});
 		insertFrame = new JButton("Insert");
@@ -79,7 +79,6 @@ public class ToolbarView extends JPanel implements IView {
 			}
 		});
 
-
 		this.add(clearButton);
 		this.add(drawToggle);
 		this.add(eraseToggle);
@@ -87,16 +86,15 @@ public class ToolbarView extends JPanel implements IView {
 		this.add(deselectToggle);
 		this.add(insertFrame);
 		this.add(playToggle);
-		
-		
+
 		// Add a this view as a listener to the model
 		this.model.addView(this);
 	}
 
 	@Override
 	public void updateView() {
-		int state = model.getState();
-		if (state == 5){ // disable everything during playback
+		MainModel.State state = model.getState();
+		if (state == MainModel.State.playing) { // disable everything during playback
 			eraseToggle.setEnabled(false);
 			drawToggle.setEnabled(false);
 			insertFrame.setEnabled(false);
@@ -111,15 +109,15 @@ public class ToolbarView extends JPanel implements IView {
 			selectToggle.setEnabled(true);
 			deselectToggle.setEnabled(false);
 		}
-		if (state == 0){
+		if (state == MainModel.State.draw) {
 			drawToggle.setEnabled(false);
-		} else if (state == 1){
+		} else if (state == MainModel.State.erase) {
 			eraseToggle.setEnabled(false);
-		} else if (state == 2){
+		} else if (state == MainModel.State.selection) {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(true);
-		} 
-		if (model.getFrame() == 0 && model.getTotalFrames() > 0){
+		}
+		if (model.getFrame() == 0 && model.getTotalFrames() > 0) {
 			playToggle.setText("Play");
 		}
 	}

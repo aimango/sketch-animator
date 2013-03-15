@@ -1,4 +1,3 @@
-
 import java.awt.BorderLayout;
 import java.awt.Container;
 
@@ -24,7 +23,7 @@ public class Window {
 
 		SliderView slider = new view.SliderView(model);
 		content.add(slider, BorderLayout.SOUTH);
-	    
+
 		frame.pack();
 		frame.setSize(800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

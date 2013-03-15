@@ -20,12 +20,13 @@ import javax.swing.Timer;
 import model.IView;
 import model.MainModel;
 import model.Segment;
-
-//TODO: Rotation?
+//TODO: Rotation
+//TODO: allow variation in color.
+//TODO: generalpath selection be a highlight around segment rather than override segment color.
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private int currentX, currentY, oldX, oldY;
 	private MainModel model;
 	private GeneralPath selectedPath;
@@ -40,86 +41,91 @@ public class CanvasView extends JComponent implements IView {
 
 		setDoubleBuffered(false);
 
-		 ActionListener tick = new ActionListener(){
+		ActionListener tick = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == 4)
+				if (model.getState() == MainModel.State.dragged)
 					model.pushFrame();
-				else if (model.getState() == 5){
+				else if (model.getState() == MainModel.State.playing) {
 					model.increaseFrames();
-					if (model.getFrame() >= model.getTotalFrames()){
-						model.setState(0);
+					if (model.getFrame() >= model.getTotalFrames()) {
+						model.setState(MainModel.State.draw);
 						model.gotoZero();
-					} 
+					}
 				}
 			}
-		 };
-		 t = new Timer(1000/fps, tick);
-		 t.start();
+		};
+		t = new Timer(1000 / fps, tick);
+		t.start();
 	}
-	
+
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		clearScreen(g2);
-		
-		int state = model.getState();
+
+		MainModel.State state = model.getState();
 		ArrayList<Integer> selected = model.getSelectedIndices();
-		
-		//ZEE SEGMENTS
+
+		// ZEE SEGMENTS
 		ArrayList<Segment> paths = model.getSegments();
 		if (paths.size() > 0) {
-			for (int i = 0; i < paths.size(); i++) { 	
+			for (int i = 0; i < paths.size(); i++) {
 				int size = paths.get(i).size();
-				
+
 				int currFrame = model.getFrame();
-				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
-				
+				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD,
+						size);
+
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
-				ArrayList<Point> transformedPoints = paths.get(i).getTranslates(currFrame);
-				if (transformedPoints.size() > 0){
+				ArrayList<Point> transformedPoints = paths.get(i)
+						.getTranslates(currFrame);
+				if (transformedPoints.size() > 0) {
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
-					
+
 					for (int j = 1; j < paths.get(i).size(); j++) {
 						Point to = transformedPoints.get(j);
 						path.lineTo(to.getX(), to.getY());
 					}
 				}
-				
+
 				g2.setStroke(new BasicStroke(5));
-				if (selected.contains(i)){
+				if (selected.contains(i)) {
 					g2.setColor(Color.RED);
 				} else {
 					g2.setColor(Color.BLACK);
 				}
 				g2.draw(path);
-			} 
+			}
 		}
-		
-		//LASSO - stage where we are still selecting something
-		if (state == 2 && selected.size() == 0){
+
+		// LASSO - stage where we are still selecting something
+		if (state == MainModel.State.selection && selected.size() == 0) {
 			Segment selectedPathPts = model.getSelectingPath();
 			int size = selectedPathPts.size();
-			if (size > 0){
+			if (size > 0) {
 				selectedPath = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
-				selectedPath.moveTo(selectedPathPts.get(0).x, selectedPathPts.get(0).y);
-				for (int i = 1; i < size; i++){
-					selectedPath.lineTo(selectedPathPts.get(i).x, selectedPathPts.get(i).y);
+				selectedPath.moveTo(selectedPathPts.get(0).x,
+						selectedPathPts.get(0).y);
+				for (int i = 1; i < size; i++) {
+					selectedPath.lineTo(selectedPathPts.get(i).x,
+							selectedPathPts.get(i).y);
 				}
-				if (!model.getStillDragging()){
+				if (!model.getStillDragging()) {
 					selectedPath.closePath();
 				}
 				final float dash1[] = { 5.0f };
-				final BasicStroke dashed = new BasicStroke(5.0f, BasicStroke.CAP_BUTT,
-						BasicStroke.JOIN_MITER, 50.0f, dash1, 0.0f);
+				final BasicStroke dashed = new BasicStroke(5.0f,
+						BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 50.0f,
+						dash1, 0.0f);
 				g2.setColor(Color.BLUE);
 				g2.setStroke(dashed);
 				g2.draw(selectedPath);
 			}
 		}
 	}
-	
+
 	private void registerControllers() {
 
 		addMouseListener(new MouseAdapter() {
@@ -127,29 +133,30 @@ public class CanvasView extends JComponent implements IView {
 				model.setStillDragging(true);
 				oldX = e.getX();
 				oldY = e.getY();
-				
-				if (model.getState() == 0) {
+
+				if (model.getState() == MainModel.State.draw) {
 					model.addSegment();
 					model.addPoint(new Point(oldX, oldY));
-				} 
-				else if (model.getState() == 1) {
+				} else if (model.getState() == MainModel.State.erase) {
 					model.eraseStuff(oldX, oldY);
-				} 
-				else if (model.getState() == 2 && model.getSelectedIndices().size() > 0){
-					model.setState(4);
+				} else if (model.getState() == MainModel.State.selection
+						&& model.getSelectedIndices().size() > 0) {
+					model.setState(MainModel.State.dragged);
 				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				model.setStillDragging(false);
 				model.addPoint(new Point(currentX, currentY));
-				
-				// go back to select mode if we were in dragged mode 
-				if (model.getState() == 4 && model.getSelectedIndices().size() > 0){
-					model.setState(2);
+
+				// go back to select mode if we were in dragged mode
+				if (model.getState() == MainModel.State.dragged
+						&& model.getSelectedIndices().size() > 0) {
+					model.setState(MainModel.State.selection);
 				}
 				// in select mode and have no paths selected yet
-				else if (model.getState() == 2 && model.getSelectedIndices().size() == 0) {
+				else if (model.getState() == MainModel.State.selection
+						&& model.getSelectedIndices().size() == 0) {
 					model.selectStuff(selectedPath);
 				}
 
@@ -158,24 +165,24 @@ public class CanvasView extends JComponent implements IView {
 
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
-				int state = model.getState();
+				MainModel.State state = model.getState();
 				currentX = e.getX();
 				currentY = e.getY();
-				
+
 				int numSelected = model.getSelectedIndices().size();
-				
+
 				// if dragging, add some translations!
-				if (state == 4 && numSelected != 0) {
-					model.addTranslate(currentX-oldX, currentY-oldY);
-				} 
-				
-				// if in selection, add points for either segment or lasso drawing.
-				// (let model handle logic
-				if (state == 0 || state == 2) {
+				if (state == MainModel.State.dragged && numSelected != 0) {
+					model.addTranslate(currentX - oldX, currentY - oldY);
+				}
+
+				// if in selection, add points for either segment or lasso
+				// drawing. (let model handle logic)
+				if (state == MainModel.State.draw || state == MainModel.State.selection) {
 					model.addPoint(new Point(currentX, currentY));
 				}
-				
-				else if (model.getState() == 1) {
+
+				else if (model.getState() == MainModel.State.erase) {
 					model.eraseStuff(currentX, currentY);
 				}
 				oldX = currentX;
@@ -185,18 +192,18 @@ public class CanvasView extends JComponent implements IView {
 		});
 	}
 
-	public void clearScreen(Graphics g){
+	public void clearScreen(Graphics g) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getSize().width, getSize().height);
 		g.setColor(Color.black);
 	}
-	
+
 	public void updateView() {
-		if (model.getState() == 0) {
+		if (model.getState() == MainModel.State.draw) {
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
-		} else if (model.getState() == 1) {
+		} else if (model.getState() == MainModel.State.erase) {
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		} else if (model.getState() == 2 || model.getState() == 4) {
+		} else if (model.getState() == MainModel.State.selection || model.getState() == MainModel.State.dragged) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		}
 		repaint();
