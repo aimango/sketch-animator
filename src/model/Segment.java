@@ -51,10 +51,11 @@ public class Segment extends Object {
 	}
 	
 	public boolean isErased(int frame){
-		int isAlive = frame - startTime;
-		int isAlive2 = endTime - frame;
-		if (isAlive >= 0 && isAlive2>= 0)
+		int isAliveStart = frame - startTime;
+		int isAliveEnd = endTime - frame;
+		if (isAliveStart >= 0 && isAliveEnd >= 0){
 			return false;
+		}
 		return true;
 	}
 	
@@ -62,7 +63,7 @@ public class Segment extends Object {
 		if (frame-startTime == 0){ // first one
 			at.set(0, new AffineTransform());
 		}
-		else if (frame>endTime){ // last one
+		else if (frame > endTime){ // last one
 			at.add(new AffineTransform(at.get(at.size()-1)));
 			endTime++;
 		}

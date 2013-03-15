@@ -10,14 +10,15 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
+//TODO: at last frame or pause, go back to draw mode and go to 0:00 or stay at last frame?
+
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
-
 	private MainModel model;
 
 	public ToolbarView(MainModel aModel) {
-		super();
+		//super();
 		this.model = aModel;
 		
 		// Add a this view as a listener to the model
@@ -63,16 +64,32 @@ public class ToolbarView extends JPanel implements IView {
 			}
 		});
 		
-		JButton playToggle = new JButton("<<");
-		playToggle.addActionListener(new ActionListener() {
+		JButton back = new JButton("<<");
+		back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.decreaseFrames();
 			}
 		});
-		JButton pauseToggle = new JButton(">>");
-		pauseToggle.addActionListener(new ActionListener() {
+		JButton fwd = new JButton(">>");
+		fwd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.increaseFrames();
+			}
+		});
+		final JButton playToggle = new JButton("Play");
+		playToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (playToggle.getText() == "Play"){
+					if (model.getFrame() == model.getTotalFrames())
+						model.setFrame(0);
+					model.setState(5);
+					playToggle.setText("Pause");
+				} 
+				else if (playToggle.getText() == "Pause"){
+					//model.setFrame(0);
+					model.setState(0);
+					playToggle.setText("Play");
+				}
 			}
 		});
 		this.add(clearButton);
@@ -81,8 +98,9 @@ public class ToolbarView extends JPanel implements IView {
 		this.add(selectToggle);
 		this.add(deselectToggle);
 		this.add(zeroToggle);
+		this.add(back);
+		this.add(fwd);
 		this.add(playToggle);
-		this.add(pauseToggle);
 	}
 
 	@Override

@@ -4,6 +4,9 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
+//TODO: Fix bug
+//when i drag 1 obj, draw a new 1, erase the old 1, select the new 1 and drag - doesnt work... OutofBoundsException.
+
 public class MainModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views;
@@ -79,6 +82,7 @@ public class MainModel extends Object {
 		System.out.println("Dragging the objs");
 		for (int i = 0; i < segments.size(); i++){
 			Segment s = segments.get(i);
+			System.out.println("Segment #"+i);
 			s.addSegmentTranslate(0, 0, currFrame);
 		}
 		for (int index : selectedIndices){
@@ -110,7 +114,7 @@ public class MainModel extends Object {
 				int y = currPoint.y;
 				
 				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10 && oldY < y + 10) {
-					System.out.println("Erasing this obj");
+					System.out.println("Erasing the " + i + "th obj");
 					this.erasePath(i);
 					break;
 				}
@@ -198,7 +202,10 @@ public class MainModel extends Object {
 			if (state == 3) // allow user to select again.
 				state = 2;
 			this.updateAllViews();
-		} 
+		}
+		if (state == 0){
+			//set the playToggle text to "play" X__X
+		}
 		this.state = state;
 	}
 	public int getState(){

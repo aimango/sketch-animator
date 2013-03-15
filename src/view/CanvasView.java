@@ -29,7 +29,7 @@ public class CanvasView extends JComponent implements IView {
 	private MainModel model;
 	private GeneralPath selectedPath;
 	private Timer t;
-	private int fps = 5;
+	private int fps = 40;
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -38,7 +38,7 @@ public class CanvasView extends JComponent implements IView {
 		int state = model.getState();
 		ArrayList<Integer> selected = model.getSelectedIndices();
 		
-		//THE SEGMENTS!!!!!!!!
+		//THE SEGMENTS
 		ArrayList<Segment> paths = model.getSegments();
 		if (paths.size() > 0) {
 			for (int i = 0; i < paths.size(); i++) { // separate objects	
@@ -72,7 +72,7 @@ public class CanvasView extends JComponent implements IView {
 			} 
 		}
 		
-		//LASSO!!!!!!!!!!!!
+		//LASSO
 		if (state == 2 && selected.size() == 0){ // stage where we are still selecting something
 			Segment selectedPathPts = model.getSelectingPath();
 			int size = selectedPathPts.size();
@@ -118,11 +118,10 @@ public class CanvasView extends JComponent implements IView {
 					model.addSegment();
 					model.addPoint(new Point(oldX, oldY));
 				} 
-				
 				else if (model.getState() == 1) {
 					model.eraseStuff(oldX, oldY);
 				} 
-				if (model.getState() == 2 && model.getSelectedIndices().size() > 0){
+				else if (model.getState() == 2 && model.getSelectedIndices().size() > 0){
 					model.setState(4);
 				}
 			}
@@ -180,6 +179,16 @@ public class CanvasView extends JComponent implements IView {
 			public void actionPerformed(ActionEvent e) {
 				if (model.getState() == 4)
 					model.pushFrame();
+				else if (model.getState() == 5){
+					model.increaseFrames();
+					if (model.getFrame() >= model.getTotalFrames()){
+						model.setState(0);
+						System.out.println("yes");
+					} else {
+						System.out.println("No");
+					}
+					
+				}
 			}
 		 };
 		 t = new Timer(1000/fps, repainter);

@@ -8,9 +8,6 @@ import javax.swing.event.ChangeListener;
 import model.IView;
 import model.MainModel;
 
-//Slider - Use ChangeListener since ActionListener only detects when you release the slider, not as you drag it.
-//Need to 
-
 public class SliderView extends JSlider implements IView {
 
 	private static final long serialVersionUID = 1L;
