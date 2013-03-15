@@ -82,8 +82,9 @@ public class MainModel extends Object {
 		System.out.println("Dragging the objs");
 		for (int i = 0; i < segments.size(); i++){
 			Segment s = segments.get(i);
-			System.out.println("Segment #"+i);
+			if (!s.isErased(currFrame)){
 			s.addSegmentTranslate(0, 0, currFrame);
+			}
 		}
 		for (int index : selectedIndices){
 			this.getSegments().get(index).addSegmentTranslate(x, y, currFrame);	
@@ -93,7 +94,7 @@ public class MainModel extends Object {
 	public void addSegment(){
 		currPath = new Segment(currframe, totalframes);
 		segments.add(currPath);
-		//System.out.println("Added another path for a total of " + paths.size() + " paths");
+		System.out.println("Added another path for a total of " + segments.size() + " paths at time "+currframe);
 	}
 
 	public ArrayList<Segment> getSegments(){

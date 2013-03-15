@@ -72,10 +72,9 @@ public class Segment extends Object {
 		}
 	}
 
-	public void addSegmentTranslate(int x, int y, int i){
-		//System.out.println("Added translate at " + x+" "+y);
+	public void addSegmentTranslate(int x, int y, int frame){
 		AffineTransform a;
-		a = at.get(i-startTime);
+		a = at.get(frame-startTime);
 		a.translate(x, y);
 	}
 	
