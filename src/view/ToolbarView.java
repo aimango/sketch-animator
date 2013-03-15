@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
-//TODO; add ability to add blank frames via btn - not working for frame > endtime
 //TODO: have text under icons
 public class ToolbarView extends JPanel implements IView {
 
@@ -26,6 +25,7 @@ public class ToolbarView extends JPanel implements IView {
 
 		play = new ImageIcon(getClass().getResource("/play.png"));
 		playToggle = new JButton(play);
+		playToggle.setFocusable(false);
 
 		final ImageIcon pause = new ImageIcon(getClass().getResource(
 				"/pause.png"));
@@ -46,6 +46,7 @@ public class ToolbarView extends JPanel implements IView {
 		});
 		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
 		clearButton = new JButton(trash);
+		clearButton.setFocusable(false);
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.restart();
@@ -53,6 +54,7 @@ public class ToolbarView extends JPanel implements IView {
 		});
 		ImageIcon draw = new ImageIcon(getClass().getResource("/draw2.png"));
 		drawToggle = new JButton(draw);
+		drawToggle.setFocusable(false);
 		drawToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.draw);
@@ -60,6 +62,7 @@ public class ToolbarView extends JPanel implements IView {
 		});
 		ImageIcon erase = new ImageIcon(getClass().getResource("/eraser.png"));
 		eraseToggle = new JButton(erase);
+		eraseToggle.setFocusable(false);
 		eraseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.erase);
@@ -68,6 +71,7 @@ public class ToolbarView extends JPanel implements IView {
 		ImageIcon select = new ImageIcon(getClass().getResource(
 				"/dotssquare.png"));
 		selectToggle = new JButton(select);
+		selectToggle.setFocusable(false);
 		selectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setState(MainModel.State.selection);
@@ -76,6 +80,7 @@ public class ToolbarView extends JPanel implements IView {
 		ImageIcon deselect = new ImageIcon(getClass().getResource(
 				"/deselect.png"));
 		deselectToggle = new JButton(deselect);
+		deselectToggle.setFocusable(false);
 		deselectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.deselect();
@@ -83,6 +88,7 @@ public class ToolbarView extends JPanel implements IView {
 		});
 		ImageIcon copy = new ImageIcon(getClass().getResource("/copy.png"));
 		insertFrame = new JButton(copy);
+		insertFrame.setFocusable(false);
 		insertFrame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.insertFrame();

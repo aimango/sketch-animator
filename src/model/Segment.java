@@ -71,28 +71,17 @@ public class Segment extends Object {
 		}
 	}
 
-	public void copyTransform(int frame) {
-		// wierd here..
-		System.out.println("frame is "+frame+" end time is "+endTime);
-		if (frame > endTime) {
-			this.createFrame(frame);
-			
-		} else {
-			at.add(frame, new AffineTransform(at.get(frame-1)));
-		}
-	}
-
 	public void addSegmentTranslate(int x, int y, int frame) {
 		AffineTransform a = at.get(frame - startTime);
 		a.translate(x, y);
 	}
 
-	public ArrayList<Point> getTranslates(int frame) { // get all the transforms
-														// at a particular frame
+	// get all the transforms at a particular frame
+	public ArrayList<Point> getTranslates(int frame) {
 		ArrayList<Point> destination = new ArrayList<Point>();
 
-		if (frame > endTime || frame < startTime) // dont draw if doesnt exist
-													// at that frame.
+		// dont draw if doesnt exist at that frame.
+		if (frame > endTime || frame < startTime)
 			return destination;
 
 		for (Point p : path) {

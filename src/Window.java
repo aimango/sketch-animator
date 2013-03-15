@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 
@@ -11,7 +10,7 @@ import view.SliderView;
 import view.ToolbarView;
 
 //TODO: use a main view
-
+//TODO: test minimum dimensions on VM
 public class Window {
 	public static void main(String[] args) {
 
@@ -29,8 +28,8 @@ public class Window {
 		SliderView slider = new view.SliderView(model);
 		content.add(slider, BorderLayout.SOUTH);
 
-		//Component customizer = new view.CustomizeView(model);
-		//content.add(customizer, BorderLayout.EAST);
+		 CustomizeView customizer = new view.CustomizeView(model);
+		 content.add(customizer, BorderLayout.EAST);
 		frame.pack();
 		frame.setSize(800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

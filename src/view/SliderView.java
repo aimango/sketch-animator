@@ -42,7 +42,7 @@ public class SliderView extends JSlider implements IView {
 		this.setValue(model.getFrame());
 		if (this.getMaximum() > 200) {
 			this.setMajorTickSpacing(50);
-			//TODO: figure out how to rid of previous unneeded labels
+			// TODO: figure out how to rid of previous unneeded labels
 		} else
 			this.setMajorTickSpacing(10);
 	}

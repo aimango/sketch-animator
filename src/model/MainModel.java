@@ -6,11 +6,13 @@ import java.util.ArrayList;
 
 //TODO: Not sure why after dragging it will have its selected obj still....
 public class MainModel extends Object {
-	public enum State {draw, erase, selection, dragged, playing}; 
-	
+	public enum State {
+		draw, erase, selection, dragged, playing
+	};
+
 	/* A list of the model's views. */
 	private ArrayList<IView> views;
-	
+
 	private ArrayList<Segment> segments;
 	private ArrayList<Integer> selectedIndices;
 
@@ -83,9 +85,7 @@ public class MainModel extends Object {
 	public void insertFrame() {
 		increaseFrames();
 		for (Segment s : segments) {
-			//if (!s.isErased(currframe)) {
-				s.copyTransform(currframe);
-		//	}
+			s.createFrame(currframe);
 		}
 		System.out.println("Inserted frame");
 	}
@@ -97,8 +97,8 @@ public class MainModel extends Object {
 				this.segments.add(currPath);
 			}
 			this.segments.set(segments.size() - 1, currPath);
-		} else if (state == State.selection && this.getSelectedIndices().size() == 0) {
-			// System.out.println("Add point");
+		} else if (state == State.selection
+				&& this.getSelectedIndices().size() == 0) {
 			selectingPath.addPoint(point);
 		}
 		this.updateAllViews();
@@ -198,7 +198,8 @@ public class MainModel extends Object {
 
 	public void setState(State passedState) {
 		// remove the selected items & lasso trace
-		if (state == State.draw || state == State.erase || state == State.playing) {
+		if (state == State.draw || state == State.erase
+				|| state == State.playing) {
 			this.selectedIndices.clear();
 			this.removeLasso();
 		}

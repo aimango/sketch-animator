@@ -90,14 +90,13 @@ public class CanvasView extends JComponent implements IView {
 					}
 				}
 
-				
 				if (selected.contains(i) && state != MainModel.State.playing) {
-					//highlight!
+					// highlight!
 					g2.setStroke(new BasicStroke(9));
 					g2.setColor(new Color(223, 128, 255));
 					g2.draw(path);
-					
-					//draw actual segment
+
+					// draw actual segment
 					g2.setStroke(new BasicStroke(5));
 					g2.setColor(Color.BLACK);
 					g2.draw(path);
@@ -106,7 +105,7 @@ public class CanvasView extends JComponent implements IView {
 					g2.setColor(Color.BLACK);
 					g2.draw(path);
 				}
-				
+
 			}
 		}
 
@@ -188,7 +187,8 @@ public class CanvasView extends JComponent implements IView {
 
 				// if in selection, add points for either segment or lasso
 				// drawing. (let model handle logic)
-				if (state == MainModel.State.draw || state == MainModel.State.selection) {
+				if (state == MainModel.State.draw
+						|| state == MainModel.State.selection) {
 					model.addPoint(new Point(currentX, currentY));
 				}
 
@@ -213,7 +213,8 @@ public class CanvasView extends JComponent implements IView {
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		} else if (model.getState() == MainModel.State.erase) {
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		} else if (model.getState() == MainModel.State.selection || model.getState() == MainModel.State.dragged) {
+		} else if (model.getState() == MainModel.State.selection
+				|| model.getState() == MainModel.State.dragged) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		}
 		repaint();
