@@ -19,10 +19,10 @@ public class SliderView extends JSlider implements IView {
 		this.registerControllers();
 		this.model.addView(this);
 		this.setValue(0);
-		this.setBorder(BorderFactory.createTitledBorder("Yippee"));
+		this.setBorder(BorderFactory.createTitledBorder(""));
 		this.setMaximum(1);
+		this.setMajorTickSpacing(20);
 		this.setPaintTicks(true);
-		this.setPaintLabels(true);
 	}
 
 	private void registerControllers() {
@@ -40,10 +40,5 @@ public class SliderView extends JSlider implements IView {
 	public void updateView() {
 		this.setMaximum(model.getTotalFrames());
 		this.setValue(model.getFrame());
-		if (this.getMaximum() > 200) {
-			this.setMajorTickSpacing(50);
-			// TODO: figure out how to rid of previous unneeded labels
-		} else
-			this.setMajorTickSpacing(10);
 	}
 }

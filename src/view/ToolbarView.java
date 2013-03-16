@@ -110,19 +110,18 @@ public class ToolbarView extends JPanel implements IView {
 	@Override
 	public void updateView() {
 		int totalFrames = model.getTotalFrames();
+
+		// allow play if there is animation to play
 		if (totalFrames > 0) {
 			playToggle.setEnabled(true);
-			if (model.getFrame() == 0)
-				playToggle.setIcon(play);
 		}
-
 		else if (totalFrames == 0) {
 			playToggle.setEnabled(false);
 		}
 
 		MainModel.State state = model.getState();
-		if (state == MainModel.State.playing) { // disable everything during
-												// playback
+		// disable everything during playback
+		if (state == MainModel.State.playing) { 
 			eraseToggle.setEnabled(false);
 			drawToggle.setEnabled(false);
 			insertFrame.setEnabled(false);
@@ -130,6 +129,7 @@ public class ToolbarView extends JPanel implements IView {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(false);
 		} else {
+			playToggle.setIcon(play);
 			eraseToggle.setEnabled(true);
 			drawToggle.setEnabled(true);
 			insertFrame.setEnabled(true);
@@ -144,12 +144,8 @@ public class ToolbarView extends JPanel implements IView {
 		} else if (state == MainModel.State.selection) {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(true);
-			// allow play if there is animation to play
-			if (totalFrames > 0) {
-				playToggle.setEnabled(true);
-			}
 		}
-		// dont allow play if currently animating
+		// disable play if currently animating
 		else if (state == MainModel.State.dragged) {
 			playToggle.setEnabled(false);
 		}

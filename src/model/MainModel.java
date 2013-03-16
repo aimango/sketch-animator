@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
-//TODO: Not sure why after dragging it will have its selected obj still....
+//TODO: Not sure why after dragging then playing it will have its selected obj still....
 public class MainModel extends Object {
 	public enum State {
 		draw, erase, selection, dragged, playing
@@ -177,6 +177,7 @@ public class MainModel extends Object {
 	}
 
 	public void eraseStuff(int oldX, int oldY) {
+		int largestEndTime = 0, currEndTime = 0; 
 		for (Segment s : segments) {
 			ArrayList<Point> points = s.getTranslates(this.getFrame());
 
@@ -192,6 +193,13 @@ public class MainModel extends Object {
 					break;
 				}
 			}
+			currEndTime = s.getEndTime();
+			if (currEndTime > largestEndTime){
+				largestEndTime = currEndTime;
+			}
+		}
+		if (largestEndTime < this.totalframes){
+			this.totalframes = currEndTime;
 		}
 		this.updateAllViews();
 	}

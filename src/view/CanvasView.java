@@ -23,6 +23,7 @@ import model.Segment;
 
 //TODO: Rotation
 //TODO: Color picker
+//TODO: drawing points..
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -50,7 +51,6 @@ public class CanvasView extends JComponent implements IView {
 					model.increaseFrames();
 					if (model.getFrame() >= model.getTotalFrames()) {
 						model.setState(MainModel.State.draw);
-						model.gotoZero();
 					}
 				}
 			}
@@ -81,12 +81,16 @@ public class CanvasView extends JComponent implements IView {
 				ArrayList<Point> transformedPoints = paths.get(i)
 						.getTranslates(currFrame);
 				if (transformedPoints.size() > 0) {
+					//System.out.println("num points is "+transformedPoints.size());
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 
 					for (int j = 1; j < paths.get(i).size(); j++) {
 						Point to = transformedPoints.get(j);
 						path.lineTo(to.getX(), to.getY());
+					}
+					if (transformedPoints.size() == 1){
+						path.lineTo(first.getX(), first.getY());
 					}
 				}
 
