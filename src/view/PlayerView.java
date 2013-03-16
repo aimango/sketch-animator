@@ -87,7 +87,7 @@ public class PlayerView extends JPanel implements IView {
 		this.add(fastFwd);
 		
 		// Add a this view as a listener to the model
-		this.model.addView(this);
+		model.addView(this);
 	}
 
 	@Override

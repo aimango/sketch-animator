@@ -70,10 +70,10 @@ public class CanvasView extends JComponent implements IView {
 		ArrayList<Integer> selected = model.getSelectedIndices();
 
 		// ZEE SEGMENTS
-		ArrayList<Segment> paths = model.getSegments();
-		if (paths.size() > 0) {
-			for (int i = 0; i < paths.size(); i++) {
-				int size = paths.get(i).size();
+		ArrayList<Segment> segments = model.getSegments();
+		if (segments.size() > 0) {
+			for (int i = 0; i < segments.size(); i++) {
+				int size = segments.get(i).size();
 
 				int currFrame = model.getFrame();
 				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD,
@@ -81,14 +81,14 @@ public class CanvasView extends JComponent implements IView {
 
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
-				ArrayList<Point> transformedPoints = paths.get(i)
+				ArrayList<Point> transformedPoints = segments.get(i)
 						.getTranslates(currFrame);
 				if (transformedPoints.size() > 0) {
 					//System.out.println("num points is "+transformedPoints.size());
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 
-					for (int j = 1; j < paths.get(i).size(); j++) {
+					for (int j = 1; j < segments.get(i).size(); j++) {
 						Point to = transformedPoints.get(j);
 						path.lineTo(to.getX(), to.getY());
 					}
@@ -118,7 +118,6 @@ public class CanvasView extends JComponent implements IView {
 
 		// LASSO - stage where we are still selecting something
 		if (state == MainModel.State.selection && selected.size() == 0) {
-			System.out.println("Wut");
 			Segment selectedPathPts = model.getSelectingSegment();
 			int size = selectedPathPts.size();
 			if (size > 0) {
@@ -150,15 +149,22 @@ public class CanvasView extends JComponent implements IView {
 				model.setStillDragging(true);
 				oldX = e.getX();
 				oldY = e.getY();
-
-				if (model.getState() == MainModel.State.draw) {
+				MainModel.State state = model.getState();
+				if (state == MainModel.State.draw) {
 					model.addSegment();
 					model.addPointToSegment(new Point(oldX, oldY));
-				} else if (model.getState() == MainModel.State.erase) {
+				} else if (state == MainModel.State.erase) {
 					model.eraseStuff(oldX, oldY);
-				} else if (model.getState() == MainModel.State.selection
+				}
+				//only allow dragging if we press down on 1 of the selected segments
+				else if (state == MainModel.State.selection
 						&& model.getSelectedIndices().size() > 0) {
-					model.setState(MainModel.State.dragged);
+					for (Segment s : model.getSegments()){
+						if (s.contains(oldX, oldY, model.getFrame())){
+							model.setState(MainModel.State.dragged);
+							break;
+						}
+					}
 				}
 			}
 
@@ -169,7 +175,7 @@ public class CanvasView extends JComponent implements IView {
 						&& model.getSelectedIndices().size() > 0) {
 					model.setState(MainModel.State.selection);
 				}
-				// in select mode and have no paths selected yet
+				// in select mode and have no segments selected yet
 				else if (model.getState() == MainModel.State.selection
 						&& model.getSelectedIndices().size() == 0) {
 					model.selectStuff(selectedPath);

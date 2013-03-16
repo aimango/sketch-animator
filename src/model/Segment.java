@@ -6,27 +6,28 @@ import java.util.ArrayList;
 
 public class Segment extends Object {
 
-	private ArrayList<Point> path = new ArrayList<Point>();
-	private ArrayList<AffineTransform> at = new ArrayList<AffineTransform>();
+	private ArrayList<Point> points = new ArrayList<Point>();
+	private ArrayList<AffineTransform> atList = new ArrayList<AffineTransform>();
 	private int startTime;
 	private int endTime;
 
 	public Segment(int start, int end) {
 		startTime = start;
 		endTime = end;
-		at.add(new AffineTransform());
+		atList.add(new AffineTransform());
 	}
 
 	public int size() {
-		return path.size();
+		return points.size();
 	}
 
 	public Point get(int i) {
-		return path.get(i);
+		return points.get(i);
 	}
 
-	public boolean contains(int x, int y) {
-		for (Point p : path) {
+	public boolean contains(int x, int y, int frame) {
+		ArrayList<Point> transformedPath = getTranslates(frame);
+		for (Point p : transformedPath) {
 			if (x > p.x - 10 && x < p.x + 10 && y > p.y - 10 && y < p.y + 10) {
 				return true;
 			}
@@ -35,7 +36,7 @@ public class Segment extends Object {
 	}
 
 	public void addPoint(Point point) {
-		path.add(point);
+		points.add(point);
 	}
 
 	public int getStartTime() {
@@ -61,18 +62,18 @@ public class Segment extends Object {
 
 	public void createFrame(int frame) {
 		if (frame - startTime == 0) { // first one
-			at.set(0, new AffineTransform());
+			atList.set(0, new AffineTransform());
 		} else if (frame > endTime) { // last one
-			at.add(new AffineTransform(at.get(at.size() - 1)));
+			atList.add(new AffineTransform(atList.get(atList.size() - 1)));
 			endTime++;
 		} else { // middle
-			at.set(frame - startTime,
-					new AffineTransform(at.get(frame - startTime - 1)));
+			atList.set(frame - startTime,
+					new AffineTransform(atList.get(frame - startTime - 1)));
 		}
 	}
 
 	public void addSegmentTranslate(int x, int y, int frame) {
-		AffineTransform a = at.get(frame - startTime);
+		AffineTransform a = atList.get(frame - startTime);
 		a.translate(x, y);
 	}
 
@@ -84,10 +85,10 @@ public class Segment extends Object {
 		if (frame > endTime || frame < startTime)
 			return destination;
 
-		for (Point p : path) {
+		for (Point p : points) {
 			Point dest = null;
 			dest = new Point();
-			at.get(frame - startTime).transform(p, dest);
+			atList.get(frame - startTime).transform(p, dest);
 			destination.add(dest);
 		}
 		return destination;

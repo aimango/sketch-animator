@@ -22,7 +22,7 @@ public class ToolbarView extends JPanel implements IView {
 
 	public ToolbarView(MainModel aModel) {
 		super();
-		this.model = aModel;
+		
 		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
 		clearButton = new JButton(trash);
 		clearButton.setFocusable(false);
@@ -75,13 +75,14 @@ public class ToolbarView extends JPanel implements IView {
 		this.add(selectToggle);
 		this.add(insertFrame);
 		//this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+	
+		model = aModel;
 		// Add a this view as a listener to the model
-		this.model.addView(this);
+		model.addView(this);
 	}
 
 	@Override
 	public void updateView() {
-		int totalFrames = model.getTotalFrames();
 
 		MainModel.State state = model.getState();
 		// disable everything during playback

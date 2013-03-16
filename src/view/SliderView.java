@@ -15,9 +15,9 @@ public class SliderView extends JSlider implements IView {
 
 	public SliderView(MainModel aModel) {
 		super();
-		this.model = aModel;
+		model = aModel;
 		this.registerControllers();
-		this.model.addView(this);
+		model.addView(this);
 		this.setValue(0);
 		this.setMaximum(1);
 		this.setMajorTickSpacing(20);

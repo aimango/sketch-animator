@@ -56,10 +56,10 @@ public class MainModel extends Object {
 	public void addPointToSegment(Point point) {
 		if (state == State.draw) {
 			currSegment.addPoint(point);
-			if (this.stillDragging && this.segments.size() == 0) {
-				this.segments.add(currSegment);
+			if (stillDragging && segments.size() == 0) {
+				segments.add(currSegment);
 			}
-			this.segments.set(segments.size() - 1, currSegment);
+			segments.set(segments.size() - 1, currSegment);
 		} else if (state == State.selection
 				&& this.getSelectedIndices().size() == 0) {
 			selectingSegment.addPoint(point);
@@ -131,15 +131,15 @@ public class MainModel extends Object {
 				largestEndTime = currEndTime;
 			}
 		}
-		if (largestEndTime < this.totalframes) {
-			this.totalframes = currEndTime;
+		if (largestEndTime < totalframes) {
+			totalframes = currEndTime;
 		}
 		this.updateAllViews();
 	}
 
 
 	public void deselect() {
-		this.selectedIndices.clear();
+		selectedIndices.clear();
 		this.removeLasso();
 		state = State.selection; // allow user to select again.
 		this.updateAllViews();
@@ -154,12 +154,12 @@ public class MainModel extends Object {
 			this.removeLasso();
 		}
 
-		this.state = passedState;
+		state = passedState;
 		this.updateAllViews();
 	}
 
 	public void removeLasso() {
-		this.selectingSegment = new Segment(currframe, currframe);
+		selectingSegment = new Segment(currframe, currframe);
 		this.updateAllViews();
 	}
 
@@ -228,21 +228,21 @@ public class MainModel extends Object {
 	}
 	
 	public void restart() {
-		this.segments.clear();
-		this.selectingSegment = new Segment(currframe, currframe);
-		this.selectedIndices.clear();
-		this.totalframes = 0;
-		this.currframe = 0;
+		segments.clear();
+		selectingSegment = new Segment(currframe, currframe);
+		selectedIndices.clear();
+		totalframes = 0;
+		currframe = 0;
 		this.updateAllViews();
 	}
 
 	public void addView(IView view) {
-		this.views.add(view);
+		views.add(view);
 		view.updateView();
 	}
 
 	public void removeView(IView view) {
-		this.views.remove(view);
+		views.remove(view);
 	}
 
 	private void updateAllViews() {
