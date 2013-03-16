@@ -2,15 +2,13 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
 
 import model.MainModel;
 import view.CanvasView;
-import view.CustomizeView;
+import view.PaletteView;
 import view.PlayerView;
 import view.SliderView;
 import view.ToolbarView;
@@ -22,7 +20,7 @@ public class Window {
 
 		MainModel model = new MainModel();
 		JFrame frame = new JFrame("Assignment 3 - MVC");
-		    
+
 		Container content = frame.getContentPane();
 		content.setLayout(new BorderLayout());
 		CanvasView view = new view.CanvasView(model);
@@ -31,17 +29,16 @@ public class Window {
 		ToolbarView toolbar = new view.ToolbarView(model);
 		content.add(toolbar, BorderLayout.NORTH);
 
-		
 		JPanel subPanel = new JPanel();
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
-		//subPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		// subPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		SliderView slider = new view.SliderView(model);
 		PlayerView player = new view.PlayerView(model);
 		subPanel.add(slider);
 		subPanel.add(player);
 		content.add(subPanel, BorderLayout.SOUTH);
 
-		CustomizeView customizer = new view.CustomizeView(model);
+		PaletteView customizer = new view.PaletteView(model);
 		content.add(customizer, BorderLayout.EAST);
 
 		frame.pack();

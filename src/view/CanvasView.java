@@ -14,10 +14,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.Timer;
-import javax.swing.border.BevelBorder;
 
 import model.IView;
 import model.MainModel;
@@ -39,7 +37,7 @@ public class CanvasView extends JComponent implements IView {
 		super();
 		model = aModel;
 		this.registerControllers();
-		//this.setBorder(BorderFactory.createLineBorder(Color.black));
+		// this.setBorder(BorderFactory.createLineBorder(Color.black));
 		model.addView(this);
 
 		setDoubleBuffered(false);
@@ -47,10 +45,9 @@ public class CanvasView extends JComponent implements IView {
 		ActionListener tick = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == MainModel.State.dragged){
+				if (model.getState() == MainModel.State.dragged) {
 					model.pushFrame();
-				}
-				else if (model.getState() == MainModel.State.playing) {
+				} else if (model.getState() == MainModel.State.playing) {
 					model.increaseFrames();
 					if (model.getFrame() >= model.getTotalFrames()) {
 						model.setState(MainModel.State.draw);
@@ -58,7 +55,7 @@ public class CanvasView extends JComponent implements IView {
 				}
 			}
 		};
-		t = new Timer(1000/fps, tick);
+		t = new Timer(1000 / fps, tick);
 		t.start();
 	}
 
@@ -72,8 +69,9 @@ public class CanvasView extends JComponent implements IView {
 		// ZEE SEGMENTS
 		ArrayList<Segment> segments = model.getSegments();
 		if (segments.size() > 0) {
-			for (int i = 0; i < segments.size(); i++) {
-				int size = segments.get(i).size();
+			int i = 0;
+			for (Segment s : segments) {
+				int size = s.size();
 
 				int currFrame = model.getFrame();
 				GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD,
@@ -81,18 +79,16 @@ public class CanvasView extends JComponent implements IView {
 
 				// make sure # points is greater than 0 and that the segment
 				// is spse to be visible in the current frame
-				ArrayList<Point> transformedPoints = segments.get(i)
-						.getTranslates(currFrame);
+				ArrayList<Point> transformedPoints = s.getTranslates(currFrame);
 				if (transformedPoints.size() > 0) {
-					//System.out.println("num points is "+transformedPoints.size());
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 
-					for (int j = 1; j < segments.get(i).size(); j++) {
+					for (int j = 1; j < s.size(); j++) {
 						Point to = transformedPoints.get(j);
 						path.lineTo(to.getX(), to.getY());
 					}
-					if (transformedPoints.size() == 1){
+					if (transformedPoints.size() == 1) {
 						path.lineTo(first.getX(), first.getY());
 					}
 				}
@@ -100,19 +96,19 @@ public class CanvasView extends JComponent implements IView {
 				if (selected.contains(i) && state != MainModel.State.playing) {
 					// highlight!
 					g2.setStroke(new BasicStroke(9));
-					g2.setColor(new Color(223, 128, 255));
+					g2.setColor(new Color(255, 204, 242));
 					g2.draw(path);
 
 					// draw actual segment
 					g2.setStroke(new BasicStroke(5));
-					g2.setColor(Color.BLACK);
+					g2.setColor(s.getColor());
 					g2.draw(path);
 				} else {
 					g2.setStroke(new BasicStroke(5));
-					g2.setColor(Color.BLACK);
+					g2.setColor(s.getColor());
 					g2.draw(path);
 				}
-
+				i++;
 			}
 		}
 
@@ -156,11 +152,12 @@ public class CanvasView extends JComponent implements IView {
 				} else if (state == MainModel.State.erase) {
 					model.eraseStuff(oldX, oldY);
 				}
-				//only allow dragging if we press down on 1 of the selected segments
+				// only allow dragging if we press down on 1 of the selected
+				// segments
 				else if (state == MainModel.State.selection
 						&& model.getSelectedIndices().size() > 0) {
-					for (Segment s : model.getSegments()){
-						if (s.contains(oldX, oldY, model.getFrame())){
+					for (Segment s : model.getSegments()) {
+						if (s.contains(oldX, oldY, model.getFrame())) {
 							model.setState(MainModel.State.dragged);
 							break;
 						}

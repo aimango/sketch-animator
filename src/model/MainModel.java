@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class MainModel extends Object {
 	private boolean stillDragging = true;
 	private int currframe = 0;
 	private int totalframes = 0;
+	private Color paletteColor = Color.BLACK;
 	Segment currSegment;
 	Segment selectingSegment;
 
@@ -26,8 +28,8 @@ public class MainModel extends Object {
 	public MainModel() {
 		views = new ArrayList<IView>();
 		segments = new ArrayList<Segment>();
-		currSegment = new Segment(currframe, currframe);
-		selectingSegment = new Segment(currframe, currframe);
+		currSegment = new Segment(currframe, currframe, paletteColor);
+		selectingSegment = new Segment(currframe, currframe, paletteColor);
 		selectedIndices = new ArrayList<Integer>();
 	}
 
@@ -53,6 +55,14 @@ public class MainModel extends Object {
 		System.out.println("Inserted frame");
 	}
 
+	public void setPaletteColor(Color c) {
+		paletteColor = c;
+	}
+
+	public Color getPaletteColor() {
+		return paletteColor;
+	}
+
 	public void addPointToSegment(Point point) {
 		if (state == State.draw) {
 			currSegment.addPoint(point);
@@ -68,12 +78,11 @@ public class MainModel extends Object {
 	}
 
 	public void addSegment() {
-		currSegment = new Segment(currframe, currframe);
+		currSegment = new Segment(currframe, currframe, this.getPaletteColor());
 		segments.add(currSegment);
 		// System.out.println("Added another segment for a total of " +
 		// segments.size() + " segments at time "+currframe);
 	}
-
 
 	public void addTranslate(int x, int y) {
 		int currFrame = this.getFrame();
@@ -87,7 +96,6 @@ public class MainModel extends Object {
 			segments.get(index).addSegmentTranslate(x, y, currFrame);
 		}
 	}
-
 
 	public void selectStuff(GeneralPath lassoPath) {
 		for (int i = 0; i < segments.size(); i++) {
@@ -137,7 +145,6 @@ public class MainModel extends Object {
 		this.updateAllViews();
 	}
 
-
 	public void deselect() {
 		selectedIndices.clear();
 		this.removeLasso();
@@ -145,7 +152,6 @@ public class MainModel extends Object {
 		this.updateAllViews();
 	}
 
-	
 	public void setState(State passedState) {
 		// remove the selected items & lasso trace
 		if (passedState == State.draw || passedState == State.erase
@@ -159,18 +165,18 @@ public class MainModel extends Object {
 	}
 
 	public void removeLasso() {
-		selectingSegment = new Segment(currframe, currframe);
+		selectingSegment = new Segment(currframe, currframe, paletteColor);
 		this.updateAllViews();
 	}
 
 	public ArrayList<Segment> getSegments() {
 		return segments;
 	}
-	
+
 	public Segment getSelectingSegment() {
 		return this.selectingSegment;
 	}
-	
+
 	public void setStillDragging(boolean stillDragging) {
 		this.stillDragging = stillDragging;
 	}
@@ -187,7 +193,6 @@ public class MainModel extends Object {
 		return this.selectedIndices;
 	}
 
-	
 	public State getState() {
 		return this.state;
 	}
@@ -226,10 +231,10 @@ public class MainModel extends Object {
 			this.updateAllViews();
 		}
 	}
-	
+
 	public void restart() {
 		segments.clear();
-		selectingSegment = new Segment(currframe, currframe);
+		selectingSegment = new Segment(currframe, currframe, paletteColor);
 		selectedIndices.clear();
 		totalframes = 0;
 		currframe = 0;

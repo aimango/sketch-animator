@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -10,11 +11,17 @@ public class Segment extends Object {
 	private ArrayList<AffineTransform> atList = new ArrayList<AffineTransform>();
 	private int startTime;
 	private int endTime;
+	private Color color;
 
-	public Segment(int start, int end) {
+	public Segment(int start, int end, Color c) {
 		startTime = start;
 		endTime = end;
 		atList.add(new AffineTransform());
+		color = c;
+	}
+
+	public Color getColor() {
+		return color;
 	}
 
 	public int size() {

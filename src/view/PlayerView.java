@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
+// icon source: http://www.veryicon.com/icons/system/crystal-clear-actions/
 public class PlayerView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
