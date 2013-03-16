@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
-//TODO: Not sure why after dragging then playing it will have its selected obj still....
 public class MainModel extends Object {
 	public enum State {
 		draw, erase, selection, dragged, playing
@@ -149,8 +148,8 @@ public class MainModel extends Object {
 	
 	public void setState(State passedState) {
 		// remove the selected items & lasso trace
-		if (state == State.draw || state == State.erase
-				|| state == State.playing) {
+		if (passedState == State.draw || passedState == State.erase
+				|| passedState == State.playing) {
 			this.selectedIndices.clear();
 			this.removeLasso();
 		}

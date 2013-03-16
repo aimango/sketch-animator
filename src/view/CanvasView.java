@@ -47,8 +47,9 @@ public class CanvasView extends JComponent implements IView {
 		ActionListener tick = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == MainModel.State.dragged)
+				if (model.getState() == MainModel.State.dragged){
 					model.pushFrame();
+				}
 				else if (model.getState() == MainModel.State.playing) {
 					model.increaseFrames();
 					if (model.getFrame() >= model.getTotalFrames()) {
@@ -117,6 +118,7 @@ public class CanvasView extends JComponent implements IView {
 
 		// LASSO - stage where we are still selecting something
 		if (state == MainModel.State.selection && selected.size() == 0) {
+			System.out.println("Wut");
 			Segment selectedPathPts = model.getSelectingSegment();
 			int size = selectedPathPts.size();
 			if (size > 0) {

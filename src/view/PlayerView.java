@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
-//TODO: have text under icons
 public class PlayerView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
