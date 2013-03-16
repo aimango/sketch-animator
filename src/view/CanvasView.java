@@ -55,7 +55,7 @@ public class CanvasView extends JComponent implements IView {
 				}
 			}
 		};
-		t = new Timer(1000 / fps, tick);
+		t = new Timer(1000/fps, tick);
 		t.start();
 	}
 
@@ -81,7 +81,7 @@ public class CanvasView extends JComponent implements IView {
 				ArrayList<Point> transformedPoints = paths.get(i)
 						.getTranslates(currFrame);
 				if (transformedPoints.size() > 0) {
-					//System.out.println("num points is "+transformedPoints.size());
+					System.out.println("num points is "+transformedPoints.size());
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 
@@ -115,7 +115,7 @@ public class CanvasView extends JComponent implements IView {
 
 		// LASSO - stage where we are still selecting something
 		if (state == MainModel.State.selection && selected.size() == 0) {
-			Segment selectedPathPts = model.getSelectingPath();
+			Segment selectedPathPts = model.getSelectingSegment();
 			int size = selectedPathPts.size();
 			if (size > 0) {
 				selectedPath = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
@@ -149,7 +149,7 @@ public class CanvasView extends JComponent implements IView {
 
 				if (model.getState() == MainModel.State.draw) {
 					model.addSegment();
-					model.addPoint(new Point(oldX, oldY));
+					model.addPointToSegment(new Point(oldX, oldY));
 				} else if (model.getState() == MainModel.State.erase) {
 					model.eraseStuff(oldX, oldY);
 				} else if (model.getState() == MainModel.State.selection
@@ -160,8 +160,6 @@ public class CanvasView extends JComponent implements IView {
 
 			public void mouseReleased(MouseEvent e) {
 				model.setStillDragging(false);
-				model.addPoint(new Point(currentX, currentY));
-
 				// go back to select mode if we were in dragged mode
 				if (model.getState() == MainModel.State.dragged
 						&& model.getSelectedIndices().size() > 0) {
@@ -193,7 +191,7 @@ public class CanvasView extends JComponent implements IView {
 				// drawing. (let model handle logic)
 				if (state == MainModel.State.draw
 						|| state == MainModel.State.selection) {
-					model.addPoint(new Point(currentX, currentY));
+					model.addPointToSegment(new Point(currentX, currentY));
 				}
 
 				else if (model.getState() == MainModel.State.erase) {
