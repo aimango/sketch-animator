@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,6 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 import model.IView;
 import model.MainModel;
@@ -17,9 +19,9 @@ public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
-	private JButton drawToggle, eraseToggle, selectToggle;
+	private JButton drawToggle, eraseToggle, selectToggle, rotateToggle;
 	private JButton clearButton, insertFrame;
-
+	ImageIcon select, deselect;
 	public ToolbarView(MainModel aModel) {
 		super();
 		
@@ -47,8 +49,10 @@ public class ToolbarView extends JPanel implements IView {
 				model.setState(MainModel.State.erase);
 			}
 		});
-		ImageIcon select = new ImageIcon(getClass().getResource(
+		select = new ImageIcon(getClass().getResource(
 				"/dotssquare.png"));
+		deselect = new ImageIcon(getClass().getResource(
+				"/dotssquare_deselect.png"));
 		selectToggle = new JButton(select);
 		selectToggle.setFocusable(false);
 		selectToggle.addActionListener(new ActionListener() {
@@ -103,6 +107,11 @@ public class ToolbarView extends JPanel implements IView {
 			drawToggle.setEnabled(false);
 		} else if (state == MainModel.State.erase) {
 			eraseToggle.setEnabled(false);
-		} 
+		}
+		if (state == MainModel.State.selection && model.getSelectedIndices().size() > 0){
+			selectToggle.setIcon(deselect);
+		} else {
+			selectToggle.setIcon(select);
+		}
 	}
 }

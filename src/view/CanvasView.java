@@ -37,10 +37,10 @@ public class CanvasView extends JComponent implements IView {
 
 	public CanvasView(MainModel aModel) {
 		super();
-		this.model = aModel;
+		model = aModel;
 		this.registerControllers();
 		//this.setBorder(BorderFactory.createLineBorder(Color.black));
-		this.model.addView(this);
+		model.addView(this);
 
 		setDoubleBuffered(false);
 
