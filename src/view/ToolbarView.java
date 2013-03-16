@@ -3,9 +3,11 @@ package view;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import model.IView;
 import model.MainModel;
@@ -16,34 +18,11 @@ public class ToolbarView extends JPanel implements IView {
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
 	private JButton drawToggle, eraseToggle, selectToggle, deselectToggle;
-	private JButton clearButton, insertFrame, playToggle;
-	private ImageIcon play;
+	private JButton clearButton, insertFrame;
 
 	public ToolbarView(MainModel aModel) {
 		super();
 		this.model = aModel;
-
-		play = new ImageIcon(getClass().getResource("/play.png"));
-		playToggle = new JButton(play);
-		playToggle.setFocusable(false);
-
-		final ImageIcon pause = new ImageIcon(getClass().getResource(
-				"/pause.png"));
-		playToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (playToggle.getIcon() == play) {
-
-					// play from 0 in this case
-					if (model.getFrame() == model.getTotalFrames())
-						model.gotoZero();
-					model.setState(MainModel.State.playing);
-					playToggle.setIcon(pause);
-				} else if (playToggle.getIcon() == pause) {
-					model.setState(MainModel.State.draw);
-					playToggle.setIcon(play);
-				}
-			}
-		});
 		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
 		clearButton = new JButton(trash);
 		clearButton.setFocusable(false);
@@ -101,8 +80,7 @@ public class ToolbarView extends JPanel implements IView {
 		this.add(selectToggle);
 		this.add(deselectToggle);
 		this.add(insertFrame);
-		this.add(playToggle);
-
+		//this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		// Add a this view as a listener to the model
 		this.model.addView(this);
 	}
@@ -110,14 +88,6 @@ public class ToolbarView extends JPanel implements IView {
 	@Override
 	public void updateView() {
 		int totalFrames = model.getTotalFrames();
-
-		// allow play if there is animation to play
-		if (totalFrames > 0) {
-			playToggle.setEnabled(true);
-		}
-		else if (totalFrames == 0) {
-			playToggle.setEnabled(false);
-		}
 
 		MainModel.State state = model.getState();
 		// disable everything during playback
@@ -129,7 +99,6 @@ public class ToolbarView extends JPanel implements IView {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(false);
 		} else {
-			playToggle.setIcon(play);
 			eraseToggle.setEnabled(true);
 			drawToggle.setEnabled(true);
 			insertFrame.setEnabled(true);
@@ -145,10 +114,5 @@ public class ToolbarView extends JPanel implements IView {
 			selectToggle.setEnabled(false);
 			deselectToggle.setEnabled(true);
 		}
-		// disable play if currently animating
-		else if (state == MainModel.State.dragged) {
-			playToggle.setEnabled(false);
-		}
-
 	}
 }

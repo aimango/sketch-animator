@@ -14,16 +14,17 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.Timer;
+import javax.swing.border.BevelBorder;
 
 import model.IView;
 import model.MainModel;
 import model.Segment;
 
 //TODO: Rotation
-//TODO: Color picker
-//TODO: drawing points..
+//TODO: Color picker.
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -38,6 +39,7 @@ public class CanvasView extends JComponent implements IView {
 		super();
 		this.model = aModel;
 		this.registerControllers();
+		//this.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.model.addView(this);
 
 		setDoubleBuffered(false);
@@ -81,7 +83,7 @@ public class CanvasView extends JComponent implements IView {
 				ArrayList<Point> transformedPoints = paths.get(i)
 						.getTranslates(currFrame);
 				if (transformedPoints.size() > 0) {
-					System.out.println("num points is "+transformedPoints.size());
+					//System.out.println("num points is "+transformedPoints.size());
 					Point first = transformedPoints.get(0);
 					path.moveTo(first.getX(), first.getY());
 

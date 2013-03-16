@@ -19,7 +19,6 @@ public class SliderView extends JSlider implements IView {
 		this.registerControllers();
 		this.model.addView(this);
 		this.setValue(0);
-		this.setBorder(BorderFactory.createTitledBorder(""));
 		this.setMaximum(1);
 		this.setMajorTickSpacing(20);
 		this.setPaintTicks(true);
