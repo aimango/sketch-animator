@@ -1,13 +1,21 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import model.IView;
 import model.MainModel;
@@ -18,45 +26,41 @@ public class PaletteView extends JPanel implements IView {
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
 
+	JColorChooser tcc;
+
 	public PaletteView(MainModel aModel) {
 		super();
+		this.setLayout(new GridLayout(7, 1));
+		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		tcc = new JColorChooser();
+		tcc.setBorder(BorderFactory.createTitledBorder("Choose Draw Color"));
 
-		this.setLayout(new GridLayout(0, 1));
-
-		ImageIcon orange = new ImageIcon(getClass().getResource("/orange.png"));
-		ImageIcon blue = new ImageIcon(getClass().getResource("/blue.png"));
-		ImageIcon lime = new ImageIcon(getClass().getResource("/green.png"));
-		ImageIcon purple = new ImageIcon(getClass().getResource("/purple.png"));
-		ImageIcon blk = new ImageIcon(getClass().getResource("/black.png"));
-		JButton oj = new JButton(orange);
-		oj.setFocusable(false);
-		oj.addActionListener(new ActionListener() {
+		final JButton choose = new JButton("Picker");
+		choose.setBorderPainted(false);
+		choose.setOpaque(true);
+		choose.setFocusable(false);
+		choose.setBackground(Color.GRAY);
+		choose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setPaletteColor(new Color(255, 102, 51));
+				JDialog d = new JDialog();
+				d.add(tcc);
+				d.pack();
+				d.setVisible(true);
 			}
 		});
-		JButton blu = new JButton(blue);
-		blu.setFocusable(false);
-		blu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.setPaletteColor(new Color(51, 204, 255));
+		tcc.getSelectionModel().addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				Color newColor = tcc.getColor();
+				model.setPaletteColor(newColor);
+				choose.setBackground(newColor);
+				choose.setBorderPainted(false);
+				choose.setOpaque(true);
 			}
 		});
-		JButton green = new JButton(lime);
-		green.setFocusable(false);
-		green.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.setPaletteColor(new Color(51, 255, 102));
-			}
-		});
-		JButton violet = new JButton(purple);
-		violet.setFocusable(false);
-		violet.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.setPaletteColor(new Color(204, 51, 255));
-			}
-		});
-		JButton black = new JButton(blk);
+		JButton black = new JButton();
+		black.setBackground(Color.BLACK);
+		black.setBorderPainted(false);
+		black.setOpaque(true);
 		black.setFocusable(false);
 		black.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -64,11 +68,65 @@ public class PaletteView extends JPanel implements IView {
 			}
 		});
 
-		this.add(oj);
+		JButton blu = new JButton();
+		blu.setBackground(new Color(51, 204, 255));
+		blu.setBorderPainted(false);
+		blu.setOpaque(true);
+		blu.setFocusable(false);
+		blu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setPaletteColor(new Color(51, 204, 255));
+			}
+		});
+		JButton green = new JButton();
+		green.setBackground(new Color(51, 255, 102));
+		green.setBorderPainted(false);
+		green.setOpaque(true);
+		green.setFocusable(false);
+		green.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setPaletteColor(new Color(51, 255, 102));
+			}
+		});
+		JButton violet = new JButton();
+		violet.setBackground(new Color(204, 51, 255));
+		violet.setBorderPainted(false);
+		violet.setOpaque(true);
+		violet.setFocusable(false);
+		violet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setPaletteColor(new Color(204, 51, 255));
+			}
+		});
+		JButton oj = new JButton();
+		oj.setBackground(new Color(255, 102, 51));
+		oj.setBorderPainted(false);
+		oj.setOpaque(true);
+		oj.setFocusable(false);
+		oj.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setPaletteColor(new Color(255, 102, 51));
+			}
+		});
+		
+		JButton pink = new JButton();
+		pink.setBackground(new Color(249, 119, 214));
+		pink.setBorderPainted(false);
+		pink.setOpaque(true);
+		pink.setFocusable(false);
+		pink.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setPaletteColor(new Color(249, 119, 214));
+			}
+		});
+
+		this.add(black);
 		this.add(blu);
 		this.add(green);
 		this.add(violet);
-		this.add(black);
+		this.add(oj);
+		this.add(pink);
+		this.add(choose);
 
 		model = aModel;
 		// Add a this view as a listener to the model
