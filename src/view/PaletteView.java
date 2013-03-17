@@ -17,17 +17,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import model.IView;
-import model.MainModel;
+import model.AnimatorModel;
 
 public class PaletteView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
-	private MainModel model;
+	private AnimatorModel model;
 	private JColorChooser tcc;
 	private JButton choose, black, blu, green, violet, pink;
 	private JRadioButton small, medium, large;
 
-	public PaletteView(MainModel aModel) {
+	public PaletteView(AnimatorModel aModel) {
 		super();
 		
 		this.setLayout(new GridBagLayout());

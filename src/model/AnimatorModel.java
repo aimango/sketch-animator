@@ -6,7 +6,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
 //TODO: fix bug when insert in middle...... cut off at the end for some reason.
-public class MainModel extends Object {
+public class AnimatorModel extends Object {
 	public enum State {
 		draw, erase, selection, dragged, playing
 	};
@@ -28,7 +28,7 @@ public class MainModel extends Object {
 	Segment selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
 
 	// Override the default constructor, making it private.
-	public MainModel() {
+	public AnimatorModel() {
 	}
 
 	public void setPaletteColor(Color c) {

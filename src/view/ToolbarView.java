@@ -9,17 +9,17 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import model.IView;
-import model.MainModel;
+import model.AnimatorModel;
 
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
-	private MainModel model;
+	private AnimatorModel model;
 	private JButton drawToggle, eraseToggle, selectToggle;
 	private JButton clearButton, insertFrame;
 	ImageIcon select, deselect;
 
-	public ToolbarView(MainModel aModel) {
+	public ToolbarView(AnimatorModel aModel) {
 		super();
 
 		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
@@ -72,22 +72,22 @@ public class ToolbarView extends JPanel implements IView {
 	private void registerListeners() {
 		drawToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setState(MainModel.State.draw);
+				model.setState(AnimatorModel.State.draw);
 			}
 		});
 
 		eraseToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.setState(MainModel.State.erase);
+				model.setState(AnimatorModel.State.erase);
 			}
 		});
 
 		selectToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == MainModel.State.selection) {
+				if (model.getState() == AnimatorModel.State.selection) {
 					model.deselect();
 				} else {
-					model.setState(MainModel.State.selection);
+					model.setState(AnimatorModel.State.selection);
 				}
 			}
 		});
@@ -108,9 +108,9 @@ public class ToolbarView extends JPanel implements IView {
 	@Override
 	public void updateView() {
 
-		MainModel.State state = model.getState();
+		AnimatorModel.State state = model.getState();
 		// disable everything during playback
-		if (state == MainModel.State.playing) {
+		if (state == AnimatorModel.State.playing) {
 			eraseToggle.setEnabled(false);
 			drawToggle.setEnabled(false);
 			insertFrame.setEnabled(false);
@@ -123,12 +123,12 @@ public class ToolbarView extends JPanel implements IView {
 			clearButton.setEnabled(true);
 			selectToggle.setEnabled(true);
 		}
-		if (state == MainModel.State.draw) {
+		if (state == AnimatorModel.State.draw) {
 			drawToggle.setEnabled(false);
-		} else if (state == MainModel.State.erase) {
+		} else if (state == AnimatorModel.State.erase) {
 			eraseToggle.setEnabled(false);
 		}
-		if (state == MainModel.State.selection
+		if (state == AnimatorModel.State.selection
 				&& model.getSelectedIndices().size() > 0) {
 			selectToggle.setIcon(deselect);
 			selectToggle.setText("Deselect");

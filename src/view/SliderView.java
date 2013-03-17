@@ -5,14 +5,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import model.IView;
-import model.MainModel;
+import model.AnimatorModel;
 
 public class SliderView extends JSlider implements IView {
 
 	private static final long serialVersionUID = 1L;
-	private MainModel model;
+	private AnimatorModel model;
 
-	public SliderView(MainModel aModel) {
+	public SliderView(AnimatorModel aModel) {
 		super();
 		model = aModel;
 		model.addView(this);

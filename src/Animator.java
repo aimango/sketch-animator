@@ -6,7 +6,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import model.MainModel;
+import model.AnimatorModel;
 import view.CanvasView;
 import view.PaletteView;
 import view.PlayerView;
@@ -14,10 +14,10 @@ import view.SliderView;
 import view.ToolbarView;
 
 //TODO: test minimum dimensions on VM
-public class Window {
+public class Animator {
 	public static void main(String[] args) {
 
-		MainModel model = new MainModel();
+		AnimatorModel model = new AnimatorModel();
 		JFrame frame = new JFrame("Assignment 3 - MVC");
 
 		Container content = frame.getContentPane();

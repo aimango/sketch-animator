@@ -8,17 +8,17 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import model.IView;
-import model.MainModel;
+import model.AnimatorModel;
 
 // icon source: http://www.veryicon.com/icons/system/crystal-clear-actions/
 public class PlayerView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
-	private MainModel model;
+	private AnimatorModel model;
 	private JButton playBtn, fwdBtn, rewindBtn, fastFwd, fastRewind;
 	private ImageIcon play;
 
-	public PlayerView(MainModel aModel) {
+	public PlayerView(AnimatorModel aModel) {
 		super();
 		this.model = aModel;
 
@@ -83,10 +83,10 @@ public class PlayerView extends JPanel implements IView {
 					// play from 0 in this case
 					if (model.getFrame() == model.getTotalFrames())
 						model.gotoZero();
-					model.setState(MainModel.State.playing);
+					model.setState(AnimatorModel.State.playing);
 					playBtn.setIcon(pause);
 				} else if (playBtn.getIcon() == pause) {
-					model.setState(MainModel.State.draw);
+					model.setState(AnimatorModel.State.draw);
 					playBtn.setIcon(play);
 				}
 			}
@@ -111,14 +111,14 @@ public class PlayerView extends JPanel implements IView {
 			fastFwd.setEnabled(false);
 		}
 
-		MainModel.State state = model.getState();
+		AnimatorModel.State state = model.getState();
 		// disable everything during playback
-		if (state != MainModel.State.playing) {
+		if (state != AnimatorModel.State.playing) {
 			playBtn.setIcon(play);
 		}
 
 		// disable play if currently animating
-		if (state == MainModel.State.dragged) {
+		if (state == AnimatorModel.State.dragged) {
 			rewindBtn.setEnabled(false);
 			fwdBtn.setEnabled(false);
 			playBtn.setEnabled(false);

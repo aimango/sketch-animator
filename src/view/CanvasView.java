@@ -20,7 +20,7 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import model.IView;
-import model.MainModel;
+import model.AnimatorModel;
 import model.Segment;
 
 public class CanvasView extends JComponent implements IView {
@@ -28,13 +28,13 @@ public class CanvasView extends JComponent implements IView {
 	private static final long serialVersionUID = 1L;
 
 	private int currentX, currentY, oldX, oldY;
-	private MainModel model;
+	private AnimatorModel model;
 	private GeneralPath selectedPath;
 	private Timer t;
 	private int fps = 40;
 	private Cursor small, med, large, erase;
 
-	public CanvasView(MainModel aModel) {
+	public CanvasView(AnimatorModel aModel) {
 		super();
 		model = aModel;
 		model.addView(this);
@@ -44,12 +44,12 @@ public class CanvasView extends JComponent implements IView {
 		ActionListener tick = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == MainModel.State.dragged) {
+				if (model.getState() == AnimatorModel.State.dragged) {
 					model.pushFrame();
-				} else if (model.getState() == MainModel.State.playing) {
+				} else if (model.getState() == AnimatorModel.State.playing) {
 					model.increaseFrames(false);
 					if (model.getFrame() >= model.getTotalFrames()) {
-						model.setState(MainModel.State.draw);
+						model.setState(AnimatorModel.State.draw);
 					}
 				}
 			}
@@ -83,7 +83,7 @@ public class CanvasView extends JComponent implements IView {
 		Graphics2D g2 = (Graphics2D) g;
 		clearScreen(g2);
 
-		MainModel.State state = model.getState();
+		AnimatorModel.State state = model.getState();
 		ArrayList<Integer> selected = model.getSelectedIndices();
 
 		// ZEE SEGMENTS
@@ -114,7 +114,7 @@ public class CanvasView extends JComponent implements IView {
 				}
 
 				int stroke = s.getStroke();
-				if (selected.contains(i) && state != MainModel.State.playing) {
+				if (selected.contains(i) && state != AnimatorModel.State.playing) {
 					// highlight!
 					g2.setStroke(new BasicStroke(stroke + 6));
 					g2.setColor(new Color(255, 204, 242));
@@ -134,7 +134,7 @@ public class CanvasView extends JComponent implements IView {
 		}
 
 		// LASSO - stage where we are still selecting something
-		if (state == MainModel.State.selection && selected.size() == 0) {
+		if (state == AnimatorModel.State.selection && selected.size() == 0) {
 			Segment selectedPathPts = model.getSelectingSegment();
 			int size = selectedPathPts.size();
 			if (size > 0) {
@@ -166,20 +166,20 @@ public class CanvasView extends JComponent implements IView {
 				model.setStillDragging(true);
 				oldX = e.getX();
 				oldY = e.getY();
-				MainModel.State state = model.getState();
-				if (state == MainModel.State.draw) {
+				AnimatorModel.State state = model.getState();
+				if (state == AnimatorModel.State.draw) {
 					model.addSegment();
 					model.addPointToSegment(new Point(oldX, oldY));
-				} else if (state == MainModel.State.erase) {
+				} else if (state == AnimatorModel.State.erase) {
 					model.eraseStuff(oldX, oldY);
 				}
 
 				// only allow drag if press down on 1 of the selected segments
-				else if (state == MainModel.State.selection
+				else if (state == AnimatorModel.State.selection
 						&& model.getSelectedIndices().size() > 0) {
 					for (Segment s : model.getSegments()) {
 						if (s.contains(oldX, oldY, model.getFrame())) {
-							model.setState(MainModel.State.dragged);
+							model.setState(AnimatorModel.State.dragged);
 							break;
 						}
 					}
@@ -189,12 +189,12 @@ public class CanvasView extends JComponent implements IView {
 			public void mouseReleased(MouseEvent e) {
 				model.setStillDragging(false);
 				// go back to select mode if we were in dragged mode
-				if (model.getState() == MainModel.State.dragged
+				if (model.getState() == AnimatorModel.State.dragged
 						&& model.getSelectedIndices().size() > 0) {
-					model.setState(MainModel.State.selection);
+					model.setState(AnimatorModel.State.selection);
 				}
 				// in select mode and have no segments selected yet
-				else if (model.getState() == MainModel.State.selection
+				else if (model.getState() == AnimatorModel.State.selection
 						&& model.getSelectedIndices().size() == 0) {
 					model.selectStuff(selectedPath);
 				}
@@ -204,25 +204,25 @@ public class CanvasView extends JComponent implements IView {
 
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent e) {
-				MainModel.State state = model.getState();
+				AnimatorModel.State state = model.getState();
 				currentX = e.getX();
 				currentY = e.getY();
 
 				int numSelected = model.getSelectedIndices().size();
 
 				// if dragging, add some translations!
-				if (state == MainModel.State.dragged && numSelected != 0) {
+				if (state == AnimatorModel.State.dragged && numSelected != 0) {
 					model.addTranslate(currentX - oldX, currentY - oldY);
 				}
 
 				// if in selection, add points for either segment or lasso
 				// drawing. (let model handle logic)
-				if (state == MainModel.State.draw
-						|| state == MainModel.State.selection) {
+				if (state == AnimatorModel.State.draw
+						|| state == AnimatorModel.State.selection) {
 					model.addPointToSegment(new Point(currentX, currentY));
 				}
 
-				else if (model.getState() == MainModel.State.erase) {
+				else if (model.getState() == AnimatorModel.State.erase) {
 					model.eraseStuff(currentX, currentY);
 				}
 				oldX = currentX;
@@ -239,7 +239,7 @@ public class CanvasView extends JComponent implements IView {
 	}
 
 	public void updateView() {
-		if (model.getState() == MainModel.State.draw) {
+		if (model.getState() == AnimatorModel.State.draw) {
 			int stroke = model.getStrokeSize();
 			switch (stroke) {
 			case 2:
@@ -252,10 +252,10 @@ public class CanvasView extends JComponent implements IView {
 				setCursor(large);
 				break;
 			}
-		} else if (model.getState() == MainModel.State.erase) {
+		} else if (model.getState() == AnimatorModel.State.erase) {
 			setCursor(erase);
-		} else if (model.getState() == MainModel.State.selection
-				|| model.getState() == MainModel.State.dragged) {
+		} else if (model.getState() == AnimatorModel.State.selection
+				|| model.getState() == AnimatorModel.State.dragged) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		}
 		repaint();
