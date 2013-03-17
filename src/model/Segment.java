@@ -80,6 +80,10 @@ public class Segment extends Object {
 		}
 	}
 
+	public void copyFrame(int frame) {
+		atList.add(frame, new AffineTransform(atList.get(frame - 1)));
+	}
+
 	public void addSegmentTranslate(int x, int y, int frame) {
 		AffineTransform a = atList.get(frame - startTime);
 		a.translate(x, y);

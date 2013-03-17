@@ -56,7 +56,7 @@ public class PlayerView extends JPanel implements IView {
 	private void registerListeners() {
 		fwdBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.increaseFrames();
+				model.increaseFrames(false);
 			}
 		});
 		rewindBtn.addActionListener(new ActionListener() {

@@ -21,13 +21,11 @@ public class PaletteView extends JPanel implements IView {
 	private static final long serialVersionUID = 1L;
 	private MainModel model;
 
-	JColorChooser tcc;
-
 	public PaletteView(MainModel aModel) {
 		super();
 		this.setLayout(new GridLayout(7, -1));
 		this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-		tcc = new JColorChooser();
+		final JColorChooser tcc = new JColorChooser();
 		tcc.setBorder(BorderFactory.createTitledBorder("Choose Draw Color"));
 
 		final JButton choose = new JButton("Picker");

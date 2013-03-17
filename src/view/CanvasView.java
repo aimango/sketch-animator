@@ -44,7 +44,7 @@ public class CanvasView extends JComponent implements IView {
 				if (model.getState() == MainModel.State.dragged) {
 					model.pushFrame();
 				} else if (model.getState() == MainModel.State.playing) {
-					model.increaseFrames();
+					model.increaseFrames(false);
 					if (model.getFrame() >= model.getTotalFrames()) {
 						model.setState(MainModel.State.draw);
 					}

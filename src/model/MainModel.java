@@ -67,11 +67,16 @@ public class MainModel extends Object {
 
 	// increment totalframes, insert a copy of current frame for each segment.
 	public void insertFrame() {
-		increaseFrames();
+		increaseFrames(true);
 		for (Segment s : segments) {
-			s.createFrame(currframe);
+			if (currframe > totalframes - currframe) {
+				s.createFrame(currframe);
+			} else {
+				s.copyFrame(currframe);
+			}
 		}
 		System.out.println("Inserted frame");
+		this.updateAllViews();
 	}
 
 	public void addPointToSegment(Point point) {
@@ -210,9 +215,9 @@ public class MainModel extends Object {
 		this.updateAllViews();
 	}
 
-	public void increaseFrames() {
+	public void increaseFrames(boolean copyframe) {
 		currframe++;
-		if (currframe > totalframes) {
+		if (currframe > totalframes || copyframe) {
 			totalframes++;
 		}
 		this.updateAllViews();
