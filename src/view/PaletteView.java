@@ -29,8 +29,9 @@ public class PaletteView extends JPanel implements IView {
 
 	public PaletteView(MainModel aModel) {
 		super();
-
+		
 		this.setLayout(new GridBagLayout());
+		this.setSize(4000,100);
 		this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		tcc = new JColorChooser();
 		tcc.setBorder(BorderFactory.createTitledBorder("Choose Draw Color"));
@@ -44,6 +45,7 @@ public class PaletteView extends JPanel implements IView {
 		small = new JRadioButton("sm");
 		small.setFocusable(false);
 		medium = new JRadioButton("med");
+		medium.setSelected(true);
 		small.setFocusable(false);
 		large = new JRadioButton("big");
 		small.setFocusable(false);
@@ -141,7 +143,6 @@ public class PaletteView extends JPanel implements IView {
 		medium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setStrokeSize(5);
-				model.setStrokeSize(2);
 				small.setSelected(false);
 				large.setSelected(false);
 			}
@@ -149,7 +150,6 @@ public class PaletteView extends JPanel implements IView {
 		large.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setStrokeSize(10);
-				model.setStrokeSize(2);
 				medium.setSelected(false);
 				small.setSelected(false);
 			}

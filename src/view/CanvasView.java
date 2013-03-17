@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,6 +15,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
@@ -30,6 +32,7 @@ public class CanvasView extends JComponent implements IView {
 	private GeneralPath selectedPath;
 	private Timer t;
 	private int fps = 40;
+	private Cursor small, med, large, erase;
 
 	public CanvasView(MainModel aModel) {
 		super();
@@ -53,6 +56,26 @@ public class CanvasView extends JComponent implements IView {
 		};
 		t = new Timer(1000 / fps, tick);
 		t.start();
+
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		try {
+			small = tk.createCustomCursor(
+					ImageIO.read(this.getClass().getResourceAsStream(
+							"/circlesmall.png")), new Point(0, 0), "small");
+			med = tk.createCustomCursor(
+					ImageIO.read(this.getClass().getResourceAsStream(
+							"/circlemed.png")), new Point(2, 2), "med");
+			large = tk.createCustomCursor(
+					ImageIO.read(this.getClass().getResourceAsStream(
+							"/circle.png")), new Point(5, 5), "large");
+			erase = tk.createCustomCursor(
+					ImageIO.read(this.getClass().getResourceAsStream(
+							"/erasecursor.png")), new Point(5, 5), "erase");
+			setCursor(med);
+		} catch (Exception e) {
+			e.printStackTrace();
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
 
 	}
 
@@ -91,12 +114,12 @@ public class CanvasView extends JComponent implements IView {
 				}
 
 				int stroke = s.getStroke();
-				if (selected.contains(i) && state != MainModel.State.playing) {		
+				if (selected.contains(i) && state != MainModel.State.playing) {
 					// highlight!
-					g2.setStroke(new BasicStroke(stroke+6));
+					g2.setStroke(new BasicStroke(stroke + 6));
 					g2.setColor(new Color(255, 204, 242));
 					g2.draw(path);
-					
+
 					// draw actual segment
 					g2.setStroke(new BasicStroke(stroke));
 					g2.setColor(s.getColor());
@@ -217,9 +240,20 @@ public class CanvasView extends JComponent implements IView {
 
 	public void updateView() {
 		if (model.getState() == MainModel.State.draw) {
-			setCursor(new Cursor(Cursor.HAND_CURSOR));
+			int stroke = model.getStrokeSize();
+			switch (stroke) {
+			case 2:
+				setCursor(small);
+				break;
+			case 5:
+				setCursor(med);
+				break;
+			case 10:
+				setCursor(large);
+				break;
+			}
 		} else if (model.getState() == MainModel.State.erase) {
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			setCursor(erase);
 		} else if (model.getState() == MainModel.State.selection
 				|| model.getState() == MainModel.State.dragged) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));

@@ -41,6 +41,7 @@ public class MainModel extends Object {
 
 	public void setStrokeSize(int sz) {
 		strokeSize = sz;
+		this.updateAllViews();
 	}
 
 	public int getStrokeSize() {
