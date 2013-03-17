@@ -12,17 +12,24 @@ public class Segment extends Object {
 	private ArrayList<AffineTransform> atList = new ArrayList<AffineTransform>();
 	private int startTime;
 	private int endTime;
-	private Color color;
 
-	public Segment(int start, int end, Color c) {
+	private Color color;
+	private int stroke;
+
+	public Segment(int start, int end, Color c, int s) {
 		startTime = start;
 		endTime = end;
 		atList.add(new AffineTransform());
 		color = c;
+		stroke = s;
 	}
 
 	public Color getColor() {
 		return color;
+	}
+
+	public int getStroke() {
+		return stroke;
 	}
 
 	public int size() {

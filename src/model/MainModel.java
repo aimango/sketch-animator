@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
+//TODO: fix bug when insert in middle...... cut off at the end for some reason.
 public class MainModel extends Object {
 	public enum State {
 		draw, erase, selection, dragged, playing
@@ -20,9 +21,11 @@ public class MainModel extends Object {
 	private boolean stillDragging = true;
 	private int currframe = 0;
 	private int totalframes = 0;
+
 	private Color paletteColor = Color.BLACK;
-	Segment currSegment = new Segment(currframe, currframe, paletteColor);;
-	Segment selectingSegment = new Segment(currframe, currframe, paletteColor);;
+	private int strokeSize = 5;
+	Segment currSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
+	Segment selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
 
 	// Override the default constructor, making it private.
 	public MainModel() {
@@ -36,11 +39,19 @@ public class MainModel extends Object {
 		return paletteColor;
 	}
 
+	public void setStrokeSize(int sz) {
+		strokeSize = sz;
+	}
+
+	public int getStrokeSize() {
+		return strokeSize;
+	}
+
 	public void setState(State passedState) {
 		// remove the selected items & lasso trace
 		if (passedState == State.draw || passedState == State.erase
 				|| passedState == State.playing) {
-			this.selectedIndices.clear();
+			selectedIndices.clear();
 			this.removeLasso();
 		}
 
@@ -49,7 +60,7 @@ public class MainModel extends Object {
 	}
 
 	public State getState() {
-		return this.state;
+		return state;
 	}
 
 	public void pushFrame() {
@@ -94,7 +105,7 @@ public class MainModel extends Object {
 	}
 
 	public void addSegment() {
-		currSegment = new Segment(currframe, currframe, this.getPaletteColor());
+		currSegment = new Segment(currframe, currframe, this.getPaletteColor(), strokeSize);
 		segments.add(currSegment);
 	}
 
@@ -103,7 +114,7 @@ public class MainModel extends Object {
 	}
 
 	public Segment getSelectingSegment() {
-		return this.selectingSegment;
+		return selectingSegment;
 	}
 
 	public void addTranslate(int x, int y) {
@@ -147,7 +158,7 @@ public class MainModel extends Object {
 	}
 
 	public void removeLasso() {
-		selectingSegment = new Segment(currframe, currframe, paletteColor);
+		selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
 		this.updateAllViews();
 	}
 
@@ -232,7 +243,7 @@ public class MainModel extends Object {
 
 	public void restart() {
 		segments.clear();
-		selectingSegment = new Segment(currframe, currframe, paletteColor);
+		selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
 		selectedIndices.clear();
 		totalframes = 0;
 		currframe = 0;

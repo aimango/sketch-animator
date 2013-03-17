@@ -90,18 +90,19 @@ public class CanvasView extends JComponent implements IView {
 					}
 				}
 
-				if (selected.contains(i) && state != MainModel.State.playing) {
+				int stroke = s.getStroke();
+				if (selected.contains(i) && state != MainModel.State.playing) {		
 					// highlight!
-					g2.setStroke(new BasicStroke(9));
+					g2.setStroke(new BasicStroke(stroke+6));
 					g2.setColor(new Color(255, 204, 242));
 					g2.draw(path);
-
+					
 					// draw actual segment
-					g2.setStroke(new BasicStroke(5));
+					g2.setStroke(new BasicStroke(stroke));
 					g2.setColor(s.getColor());
 					g2.draw(path);
 				} else {
-					g2.setStroke(new BasicStroke(5));
+					g2.setStroke(new BasicStroke(stroke));
 					g2.setColor(s.getColor());
 					g2.draw(path);
 				}
