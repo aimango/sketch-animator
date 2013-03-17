@@ -21,8 +21,6 @@ import model.IView;
 import model.MainModel;
 import model.Segment;
 
-//TODO: Rotation
-//TODO: Color picker.
 public class CanvasView extends JComponent implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -55,7 +53,7 @@ public class CanvasView extends JComponent implements IView {
 		};
 		t = new Timer(1000 / fps, tick);
 		t.start();
-		
+
 	}
 
 	public void paintComponent(Graphics g) {
@@ -151,8 +149,8 @@ public class CanvasView extends JComponent implements IView {
 				} else if (state == MainModel.State.erase) {
 					model.eraseStuff(oldX, oldY);
 				}
-				// only allow dragging if we press down on 1 of the selected
-				// segments
+
+				// only allow drag if press down on 1 of the selected segments
 				else if (state == MainModel.State.selection
 						&& model.getSelectedIndices().size() > 0) {
 					for (Segment s : model.getSegments()) {

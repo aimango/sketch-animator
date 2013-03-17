@@ -16,7 +16,6 @@ import javax.swing.event.ChangeListener;
 import model.IView;
 import model.MainModel;
 
-//TODO; use this for color picker. need to use gridbag or some vertical layout
 public class PaletteView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -26,8 +25,8 @@ public class PaletteView extends JPanel implements IView {
 
 	public PaletteView(MainModel aModel) {
 		super();
-		this.setLayout(new GridLayout(7,-1));
-		this.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+		this.setLayout(new GridLayout(7, -1));
+		this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		tcc = new JColorChooser();
 		tcc.setBorder(BorderFactory.createTitledBorder("Choose Draw Color"));
 
@@ -104,7 +103,7 @@ public class PaletteView extends JPanel implements IView {
 				model.setPaletteColor(new Color(255, 102, 51));
 			}
 		});
-		
+
 		JButton pink = new JButton();
 		pink.setBackground(new Color(249, 119, 214));
 		pink.setBorderPainted(false);

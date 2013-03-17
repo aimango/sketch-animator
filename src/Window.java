@@ -13,7 +13,6 @@ import view.PlayerView;
 import view.SliderView;
 import view.ToolbarView;
 
-//TODO: use a main view
 //TODO: test minimum dimensions on VM
 public class Window {
 	public static void main(String[] args) {

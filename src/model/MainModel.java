@@ -11,26 +11,45 @@ public class MainModel extends Object {
 	};
 
 	/* A list of the model's views. */
-	private ArrayList<IView> views;
+	private ArrayList<IView> views = new ArrayList<IView>();;
 
-	private ArrayList<Segment> segments;
-	private ArrayList<Integer> selectedIndices;
+	private ArrayList<Segment> segments = new ArrayList<Segment>();;
+	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>();;
 
 	private State state = State.draw;
 	private boolean stillDragging = true;
 	private int currframe = 0;
 	private int totalframes = 0;
 	private Color paletteColor = Color.BLACK;
-	Segment currSegment;
-	Segment selectingSegment;
+	Segment currSegment = new Segment(currframe, currframe, paletteColor);;
+	Segment selectingSegment = new Segment(currframe, currframe, paletteColor);;
 
 	// Override the default constructor, making it private.
 	public MainModel() {
-		views = new ArrayList<IView>();
-		segments = new ArrayList<Segment>();
-		currSegment = new Segment(currframe, currframe, paletteColor);
-		selectingSegment = new Segment(currframe, currframe, paletteColor);
-		selectedIndices = new ArrayList<Integer>();
+	}
+
+	public void setPaletteColor(Color c) {
+		paletteColor = c;
+	}
+
+	public Color getPaletteColor() {
+		return paletteColor;
+	}
+
+	public void setState(State passedState) {
+		// remove the selected items & lasso trace
+		if (passedState == State.draw || passedState == State.erase
+				|| passedState == State.playing) {
+			this.selectedIndices.clear();
+			this.removeLasso();
+		}
+
+		state = passedState;
+		this.updateAllViews();
+	}
+
+	public State getState() {
+		return this.state;
 	}
 
 	public void pushFrame() {
@@ -55,14 +74,6 @@ public class MainModel extends Object {
 		System.out.println("Inserted frame");
 	}
 
-	public void setPaletteColor(Color c) {
-		paletteColor = c;
-	}
-
-	public Color getPaletteColor() {
-		return paletteColor;
-	}
-
 	public void addPointToSegment(Point point) {
 		if (state == State.draw) {
 			currSegment.addPoint(point);
@@ -80,8 +91,14 @@ public class MainModel extends Object {
 	public void addSegment() {
 		currSegment = new Segment(currframe, currframe, this.getPaletteColor());
 		segments.add(currSegment);
-		// System.out.println("Added another segment for a total of " +
-		// segments.size() + " segments at time "+currframe);
+	}
+
+	public ArrayList<Segment> getSegments() {
+		return segments;
+	}
+
+	public Segment getSelectingSegment() {
+		return this.selectingSegment;
 	}
 
 	public void addTranslate(int x, int y) {
@@ -117,6 +134,18 @@ public class MainModel extends Object {
 		this.removeLasso();
 	}
 
+	public void deselect() {
+		selectedIndices.clear();
+		this.removeLasso();
+		state = State.selection; // allow user to select again.
+		this.updateAllViews();
+	}
+
+	public void removeLasso() {
+		selectingSegment = new Segment(currframe, currframe, paletteColor);
+		this.updateAllViews();
+	}
+
 	public void eraseStuff(int oldX, int oldY) {
 		int largestEndTime = 0, currEndTime = 0;
 		for (Segment s : segments) {
@@ -145,38 +174,6 @@ public class MainModel extends Object {
 		this.updateAllViews();
 	}
 
-	public void deselect() {
-		selectedIndices.clear();
-		this.removeLasso();
-		state = State.selection; // allow user to select again.
-		this.updateAllViews();
-	}
-
-	public void setState(State passedState) {
-		// remove the selected items & lasso trace
-		if (passedState == State.draw || passedState == State.erase
-				|| passedState == State.playing) {
-			this.selectedIndices.clear();
-			this.removeLasso();
-		}
-
-		state = passedState;
-		this.updateAllViews();
-	}
-
-	public void removeLasso() {
-		selectingSegment = new Segment(currframe, currframe, paletteColor);
-		this.updateAllViews();
-	}
-
-	public ArrayList<Segment> getSegments() {
-		return segments;
-	}
-
-	public Segment getSelectingSegment() {
-		return this.selectingSegment;
-	}
-
 	public void setStillDragging(boolean stillDragging) {
 		this.stillDragging = stillDragging;
 	}
@@ -191,10 +188,6 @@ public class MainModel extends Object {
 
 	public ArrayList<Integer> getSelectedIndices() {
 		return this.selectedIndices;
-	}
-
-	public State getState() {
-		return this.state;
 	}
 
 	public int getFrame() {

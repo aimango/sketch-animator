@@ -25,47 +25,57 @@ public class PlayerView extends JPanel implements IView {
 		ImageIcon fwd = new ImageIcon(getClass().getResource("/fwd.png"));
 		fwdBtn = new JButton(fwd);
 		fwdBtn.setFocusable(false);
+
+		ImageIcon rewind = new ImageIcon(getClass().getResource("/rewind.png"));
+		rewindBtn = new JButton(rewind);
+		rewindBtn.setFocusable(false);
+
+		ImageIcon fastfw = new ImageIcon(getClass().getResource("/end.png"));
+		fastFwd = new JButton(fastfw);
+		fastFwd.setFocusable(false);
+
+		ImageIcon fastrw = new ImageIcon(getClass().getResource("/begin.png"));
+		fastRewind = new JButton(fastrw);
+		fastRewind.setFocusable(false);
+
+		play = new ImageIcon(getClass().getResource("/play.png"));
+		playBtn = new JButton(play);
+		playBtn.setFocusable(false);
+
+		this.add(fastRewind);
+		this.add(rewindBtn);
+		this.add(playBtn);
+		this.add(fwdBtn);
+		this.add(fastFwd);
+		this.registerListeners();
+
+		// Add a this view as a listener to the model
+		model.addView(this);
+	}
+
+	private void registerListeners() {
 		fwdBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.increaseFrames();
 			}
 		});
-		
-		ImageIcon rewind = new ImageIcon(getClass().getResource("/rewind.png"));
-		rewindBtn = new JButton(rewind);
-		rewindBtn.setFocusable(false);
 		rewindBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.decreaseFrames();
 			}
 		});
-		
-
-		ImageIcon fastfw = new ImageIcon(getClass().getResource("/end.png"));
-		fastFwd = new JButton(fastfw);
-		fastFwd.setFocusable(false);
 		fastFwd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setFrame(model.getTotalFrames());
 			}
 		});
-		
-		ImageIcon fastrw = new ImageIcon(getClass().getResource("/begin.png"));
-		fastRewind = new JButton(fastrw);
-		fastRewind.setFocusable(false);
 		fastRewind.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.gotoZero();
 			}
 		});
-		
-		play = new ImageIcon(getClass().getResource("/play.png"));
-		playBtn = new JButton(play);
-		playBtn.setFocusable(false);
-
 		final ImageIcon pause = new ImageIcon(getClass().getResource(
 				"/pause.png"));
-		
 		playBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playBtn.getIcon() == play) {
@@ -81,14 +91,6 @@ public class PlayerView extends JPanel implements IView {
 				}
 			}
 		});
-		this.add(fastRewind);
-		this.add(rewindBtn);
-		this.add(playBtn);
-		this.add(fwdBtn);
-		this.add(fastFwd);
-		
-		// Add a this view as a listener to the model
-		model.addView(this);
 	}
 
 	@Override
@@ -101,8 +103,7 @@ public class PlayerView extends JPanel implements IView {
 			playBtn.setEnabled(true);
 			fastRewind.setEnabled(true);
 			fastFwd.setEnabled(true);
-		}
-		else if (totalFrames == 0) {
+		} else if (totalFrames == 0) {
 			rewindBtn.setEnabled(false);
 			fwdBtn.setEnabled(false);
 			playBtn.setEnabled(false);
@@ -112,7 +113,7 @@ public class PlayerView extends JPanel implements IView {
 
 		MainModel.State state = model.getState();
 		// disable everything during playback
-		if (state != MainModel.State.playing) { 
+		if (state != MainModel.State.playing) {
 			playBtn.setIcon(play);
 		}
 

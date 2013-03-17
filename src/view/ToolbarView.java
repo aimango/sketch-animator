@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 import model.IView;
 import model.MainModel;
 
-//TODO: have text under icons
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
@@ -25,58 +24,69 @@ public class ToolbarView extends JPanel implements IView {
 		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
 		clearButton = new JButton(trash);
 		clearButton.setFocusable(false);
-		clearButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.restart();
-			}
-		});
+
 		ImageIcon draw = new ImageIcon(getClass().getResource("/draw2.png"));
 		drawToggle = new JButton(draw);
 		drawToggle.setFocusable(false);
-		drawToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.setState(MainModel.State.draw);
-			}
-		});
+
 		ImageIcon erase = new ImageIcon(getClass().getResource("/eraser.png"));
 		eraseToggle = new JButton(erase);
 		eraseToggle.setFocusable(false);
-		eraseToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.setState(MainModel.State.erase);
-			}
-		});
+
 		select = new ImageIcon(getClass().getResource("/dotssquare.png"));
 		deselect = new ImageIcon(getClass().getResource(
 				"/dotssquare_deselect.png"));
 		selectToggle = new JButton(select);
 		selectToggle.setFocusable(false);
-		selectToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (model.getState() == MainModel.State.selection)
-					model.deselect();
-				else
-					model.setState(MainModel.State.selection);
-			}
-		});
 
 		ImageIcon copy = new ImageIcon(getClass().getResource("/copy.png"));
 		insertFrame = new JButton(copy);
 		insertFrame.setFocusable(false);
-		insertFrame.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model.insertFrame();
-			}
-		});
-		
+
 		this.add(drawToggle);
 		this.add(eraseToggle);
 		this.add(selectToggle);
 		this.add(insertFrame);
 		this.add(clearButton);
-
+		this.registerListeners();
 		model = aModel;
 		model.addView(this);
+	}
+
+	private void registerListeners() {
+		drawToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setState(MainModel.State.draw);
+			}
+		});
+
+		eraseToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setState(MainModel.State.erase);
+			}
+		});
+
+		selectToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (model.getState() == MainModel.State.selection) {
+					model.deselect();
+				} else {
+					model.setState(MainModel.State.selection);
+				}
+			}
+		});
+
+		insertFrame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.insertFrame();
+			}
+		});
+
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.restart();
+			}
+		});
 	}
 
 	@Override

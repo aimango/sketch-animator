@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
+//object that holds all the information for 1 drawn line segment.
 public class Segment extends Object {
 
 	private ArrayList<Point> points = new ArrayList<Point>();
@@ -28,6 +29,10 @@ public class Segment extends Object {
 		return points.size();
 	}
 
+	public void addPoint(Point point) {
+		points.add(point);
+	}
+
 	public Point get(int i) {
 		return points.get(i);
 	}
@@ -40,10 +45,6 @@ public class Segment extends Object {
 			}
 		}
 		return false;
-	}
-
-	public void addPoint(Point point) {
-		points.add(point);
 	}
 
 	public int getStartTime() {
@@ -100,5 +101,4 @@ public class Segment extends Object {
 		}
 		return destination;
 	}
-
 }
