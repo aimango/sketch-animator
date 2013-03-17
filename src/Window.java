@@ -31,7 +31,6 @@ public class Window {
 
 		JPanel subPanel = new JPanel();
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
-		// subPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		SliderView slider = new view.SliderView(model);
 		PlayerView player = new view.PlayerView(model);
 		subPanel.add(slider);

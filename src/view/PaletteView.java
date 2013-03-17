@@ -1,19 +1,15 @@
 package view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -30,8 +26,8 @@ public class PaletteView extends JPanel implements IView {
 
 	public PaletteView(MainModel aModel) {
 		super();
-		this.setLayout(new GridLayout(7, 1));
-		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		this.setLayout(new GridLayout(7,-1));
+		this.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
 		tcc = new JColorChooser();
 		tcc.setBorder(BorderFactory.createTitledBorder("Choose Draw Color"));
 
@@ -129,7 +125,6 @@ public class PaletteView extends JPanel implements IView {
 		this.add(choose);
 
 		model = aModel;
-		// Add a this view as a listener to the model
 		this.model.addView(this);
 	}
 

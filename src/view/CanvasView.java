@@ -36,10 +36,8 @@ public class CanvasView extends JComponent implements IView {
 	public CanvasView(MainModel aModel) {
 		super();
 		model = aModel;
-		this.registerControllers();
-		// this.setBorder(BorderFactory.createLineBorder(Color.black));
 		model.addView(this);
-
+		this.registerControllers();
 		setDoubleBuffered(false);
 
 		ActionListener tick = new ActionListener() {
@@ -57,6 +55,7 @@ public class CanvasView extends JComponent implements IView {
 		};
 		t = new Timer(1000 / fps, tick);
 		t.start();
+		
 	}
 
 	public void paintComponent(Graphics g) {

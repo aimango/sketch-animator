@@ -68,16 +68,14 @@ public class ToolbarView extends JPanel implements IView {
 				model.insertFrame();
 			}
 		});
-
-		this.add(clearButton);
+		
 		this.add(drawToggle);
 		this.add(eraseToggle);
 		this.add(selectToggle);
 		this.add(insertFrame);
-		// this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		this.add(clearButton);
 
 		model = aModel;
-		// Add a this view as a listener to the model
 		model.addView(this);
 	}
 
