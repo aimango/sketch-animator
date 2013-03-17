@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import model.IView;
 import model.MainModel;
@@ -24,24 +25,39 @@ public class ToolbarView extends JPanel implements IView {
 		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
 		clearButton = new JButton(trash);
 		clearButton.setFocusable(false);
+		clearButton.setText("Clear");
+		clearButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+		clearButton.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		ImageIcon draw = new ImageIcon(getClass().getResource("/draw2.png"));
 		drawToggle = new JButton(draw);
 		drawToggle.setFocusable(false);
+		drawToggle.setText("Draw");
+		drawToggle.setVerticalTextPosition(SwingConstants.BOTTOM);
+		drawToggle.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		ImageIcon erase = new ImageIcon(getClass().getResource("/eraser.png"));
 		eraseToggle = new JButton(erase);
 		eraseToggle.setFocusable(false);
+		eraseToggle.setText("Erase");
+		eraseToggle.setVerticalTextPosition(SwingConstants.BOTTOM);
+		eraseToggle.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		select = new ImageIcon(getClass().getResource("/dotssquare.png"));
 		deselect = new ImageIcon(getClass().getResource(
 				"/dotssquare_deselect.png"));
 		selectToggle = new JButton(select);
 		selectToggle.setFocusable(false);
+		selectToggle.setText("Select");
+		selectToggle.setVerticalTextPosition(SwingConstants.BOTTOM);
+		selectToggle.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		ImageIcon copy = new ImageIcon(getClass().getResource("/copy.png"));
 		insertFrame = new JButton(copy);
 		insertFrame.setFocusable(false);
+		insertFrame.setText("Insert");
+		insertFrame.setVerticalTextPosition(SwingConstants.BOTTOM);
+		insertFrame.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		this.add(drawToggle);
 		this.add(eraseToggle);
@@ -115,8 +131,10 @@ public class ToolbarView extends JPanel implements IView {
 		if (state == MainModel.State.selection
 				&& model.getSelectedIndices().size() > 0) {
 			selectToggle.setIcon(deselect);
+			selectToggle.setText("Deselect");
 		} else {
 			selectToggle.setIcon(select);
+			selectToggle.setText("Select");
 		}
 	}
 }

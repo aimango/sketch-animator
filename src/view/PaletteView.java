@@ -31,7 +31,6 @@ public class PaletteView extends JPanel implements IView {
 		super();
 		
 		this.setLayout(new GridBagLayout());
-		this.setSize(4000,100);
 		this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		tcc = new JColorChooser();
 		tcc.setBorder(BorderFactory.createTitledBorder("Choose Draw Color"));
@@ -85,7 +84,7 @@ public class PaletteView extends JPanel implements IView {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		constraints.ipady = 20;
+		constraints.ipady = 18;
 
 		this.add(black, constraints);
 		constraints.gridy = 1;
