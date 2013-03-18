@@ -24,8 +24,10 @@ public class AnimatorModel extends Object {
 
 	private Color paletteColor = Color.BLACK;
 	private int strokeSize = 5;
-	Segment currSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
-	Segment selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
+	Segment currSegment = new Segment(currframe, currframe, paletteColor,
+			strokeSize);
+	Segment selectingSegment = new Segment(currframe, currframe, paletteColor,
+			strokeSize);
 
 	// Override the default constructor, making it private.
 	public AnimatorModel() {
@@ -106,7 +108,8 @@ public class AnimatorModel extends Object {
 	}
 
 	public void addSegment() {
-		currSegment = new Segment(currframe, currframe, this.getPaletteColor(), strokeSize);
+		currSegment = new Segment(currframe, currframe, this.getPaletteColor(),
+				strokeSize);
 		segments.add(currSegment);
 	}
 
@@ -159,7 +162,8 @@ public class AnimatorModel extends Object {
 	}
 
 	public void removeLasso() {
-		selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
+		selectingSegment = new Segment(currframe, currframe, paletteColor,
+				strokeSize);
 		this.updateAllViews();
 	}
 
@@ -188,7 +192,7 @@ public class AnimatorModel extends Object {
 		if (largestEndTime < totalframes) {
 			totalframes = largestEndTime;
 			currframe = largestEndTime;
-			System.out.println("Number of frames cut down to  " +totalframes);
+			System.out.println("Number of frames cut down to  " + totalframes);
 		}
 		this.updateAllViews();
 	}
@@ -246,7 +250,8 @@ public class AnimatorModel extends Object {
 
 	public void restart() {
 		segments.clear();
-		selectingSegment = new Segment(currframe, currframe, paletteColor, strokeSize);
+		selectingSegment = new Segment(currframe, currframe, paletteColor,
+				strokeSize);
 		selectedIndices.clear();
 		totalframes = 0;
 		currframe = 0;
