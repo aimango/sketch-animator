@@ -83,13 +83,15 @@ public class AnimatorModel extends Object {
 	public void insertFrame() {
 		increaseFrames(true);
 		for (Segment s : segments) {
-			if (currframe > totalframes - currframe) {
+			if (currframe > totalframes) {
 				s.createFrame(currframe);
 			} else {
 				s.copyFrame(currframe);
 			}
 		}
-		System.out.println("Inserted frame");
+		System.out.println("Inserted frame.");
+
+
 		this.updateAllViews();
 	}
 

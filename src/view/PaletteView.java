@@ -107,12 +107,12 @@ public class PaletteView extends JPanel implements IView {
 		constraints.gridy = 6;
 		this.add(p, constraints);
 
-		this.registerListeners();
+		this.registerControllers();
 		model = aModel;
 		this.model.addView(this);
 	}
 
-	private void registerListeners() {
+	private void registerControllers() {
 		tcc.getSelectionModel().addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				Color newColor = tcc.getColor();

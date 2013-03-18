@@ -139,11 +139,11 @@ public class CanvasView extends JComponent implements IView {
 			int size = selectedPathPts.size();
 			if (size > 0) {
 				selectedPath = new GeneralPath(GeneralPath.WIND_EVEN_ODD, size);
-				selectedPath.moveTo(selectedPathPts.get(0).x,
-						selectedPathPts.get(0).y);
+				selectedPath.moveTo(selectedPathPts.getPoint(0).x,
+						selectedPathPts.getPoint(0).y);
 				for (int i = 1; i < size; i++) {
-					selectedPath.lineTo(selectedPathPts.get(i).x,
-							selectedPathPts.get(i).y);
+					selectedPath.lineTo(selectedPathPts.getPoint(i).x,
+							selectedPathPts.getPoint(i).y);
 				}
 				if (!model.getStillDragging()) {
 					selectedPath.closePath();

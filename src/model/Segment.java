@@ -40,7 +40,7 @@ public class Segment extends Object {
 		points.add(point);
 	}
 
-	public Point get(int i) {
+	public Point getPoint(int i) {
 		return points.get(i);
 	}
 
@@ -88,6 +88,7 @@ public class Segment extends Object {
 	}
 
 	public void copyFrame(int frame) {
+		endTime++;
 		atList.add(frame, new AffineTransform(atList.get(frame - 1)));
 	}
 
