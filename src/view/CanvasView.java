@@ -59,18 +59,18 @@ public class CanvasView extends JComponent implements IView {
 
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		try {
-			small = tk.createCustomCursor(
-					ImageIO.read(this.getClass().getResourceAsStream(
-							"/circlesmall.png")), new Point(0, 0), "small");
-			med = tk.createCustomCursor(
-					ImageIO.read(this.getClass().getResourceAsStream(
-							"/circlemed.png")), new Point(2, 2), "med");
-			large = tk.createCustomCursor(
-					ImageIO.read(this.getClass().getResourceAsStream(
-							"/circle.png")), new Point(5, 5), "large");
-			erase = tk.createCustomCursor(
-					ImageIO.read(this.getClass().getResourceAsStream(
-							"/erasecursor.png")), new Point(5, 5), "erase");
+			small = tk.createCustomCursor(ImageIO.read(ClassLoader
+					.getSystemResource("images/circlesmall.png")), new Point(0,
+					0), "small");
+			med = tk.createCustomCursor(ImageIO.read(ClassLoader
+					.getSystemResource("images/circlemed.png")),
+					new Point(2, 2), "med");
+			large = tk.createCustomCursor(ImageIO.read(ClassLoader
+					.getSystemResource("images/circle.png")), new Point(5, 5),
+					"large");
+			erase = tk.createCustomCursor(ImageIO.read(ClassLoader
+					.getSystemResource("images/erasecursor.png")), new Point(5,
+					5), "erase");
 			setCursor(med);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -114,7 +114,8 @@ public class CanvasView extends JComponent implements IView {
 				}
 
 				int stroke = s.getStroke();
-				if (selected.contains(i) && state != AnimatorModel.State.playing) {
+				if (selected.contains(i)
+						&& state != AnimatorModel.State.playing) {
 					// highlight!
 					g2.setStroke(new BasicStroke(stroke + 6));
 					g2.setColor(new Color(255, 204, 242));

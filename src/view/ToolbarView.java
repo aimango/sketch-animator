@@ -22,37 +22,36 @@ public class ToolbarView extends JPanel implements IView {
 	public ToolbarView(AnimatorModel aModel) {
 		super();
 
-		ImageIcon trash = new ImageIcon(getClass().getResource("/trash.png"));
+		ImageIcon trash = new ImageIcon("images/trash.png");
 		clearButton = new JButton(trash);
 		clearButton.setFocusable(false);
 		clearButton.setText("Clear");
 		clearButton.setVerticalTextPosition(SwingConstants.BOTTOM);
 		clearButton.setHorizontalTextPosition(SwingConstants.CENTER);
 
-		ImageIcon draw = new ImageIcon(getClass().getResource("/draw2.png"));
+		ImageIcon draw = new ImageIcon("images/draw2.png");
 		drawToggle = new JButton(draw);
 		drawToggle.setFocusable(false);
 		drawToggle.setText("Draw");
 		drawToggle.setVerticalTextPosition(SwingConstants.BOTTOM);
 		drawToggle.setHorizontalTextPosition(SwingConstants.CENTER);
 
-		ImageIcon erase = new ImageIcon(getClass().getResource("/eraser.png"));
+		ImageIcon erase = new ImageIcon("images/eraser.png");
 		eraseToggle = new JButton(erase);
 		eraseToggle.setFocusable(false);
 		eraseToggle.setText("Erase");
 		eraseToggle.setVerticalTextPosition(SwingConstants.BOTTOM);
 		eraseToggle.setHorizontalTextPosition(SwingConstants.CENTER);
 
-		select = new ImageIcon(getClass().getResource("/dotssquare.png"));
-		deselect = new ImageIcon(getClass().getResource(
-				"/dotssquare_deselect.png"));
+		select = new ImageIcon("images/dotssquare.png");
+		deselect = new ImageIcon("images/dotssquare_deselect.png");
 		selectToggle = new JButton(select);
 		selectToggle.setFocusable(false);
 		selectToggle.setText("Select");
 		selectToggle.setVerticalTextPosition(SwingConstants.BOTTOM);
 		selectToggle.setHorizontalTextPosition(SwingConstants.CENTER);
 
-		ImageIcon copy = new ImageIcon(getClass().getResource("/copy.png"));
+		ImageIcon copy = new ImageIcon("images/copy.png");
 		insertFrame = new JButton(copy);
 		insertFrame.setFocusable(false);
 		insertFrame.setText("Insert");

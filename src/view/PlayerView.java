@@ -22,23 +22,24 @@ public class PlayerView extends JPanel implements IView {
 		super();
 		this.model = aModel;
 
-		ImageIcon fwd = new ImageIcon(getClass().getResource("/fwd.png"));
+		ImageIcon fwd = new ImageIcon("images/fwd.png");
 		fwdBtn = new JButton(fwd);
 		fwdBtn.setFocusable(false);
 
-		ImageIcon rewind = new ImageIcon(getClass().getResource("/rewind.png"));
+		ImageIcon rewind = new ImageIcon("images/rewind.png");
 		rewindBtn = new JButton(rewind);
 		rewindBtn.setFocusable(false);
 
-		ImageIcon fastfw = new ImageIcon(getClass().getResource("/end.png"));
+		ImageIcon fastfw = new ImageIcon("images/end.png");
 		fastFwd = new JButton(fastfw);
 		fastFwd.setFocusable(false);
 
-		ImageIcon fastrw = new ImageIcon(getClass().getResource("/begin.png"));
+		
+		ImageIcon fastrw = new ImageIcon("images/begin.png");
 		fastRewind = new JButton(fastrw);
 		fastRewind.setFocusable(false);
 
-		play = new ImageIcon(getClass().getResource("/play.png"));
+		play = new ImageIcon("images/play.png");
 		playBtn = new JButton(play);
 		playBtn.setFocusable(false);
 
@@ -74,8 +75,7 @@ public class PlayerView extends JPanel implements IView {
 				model.gotoZero();
 			}
 		});
-		final ImageIcon pause = new ImageIcon(getClass().getResource(
-				"/pause.png"));
+		final ImageIcon pause = new ImageIcon("images/pause.png");
 		playBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playBtn.getIcon() == play) {
@@ -83,7 +83,7 @@ public class PlayerView extends JPanel implements IView {
 					// play from 0 in this case
 					if (model.getFrame() == model.getTotalFrames()) {
 						model.gotoZero();
-					} 
+					}
 					model.setState(AnimatorModel.State.playing);
 					playBtn.setIcon(pause);
 				} else if (playBtn.getIcon() == pause) {

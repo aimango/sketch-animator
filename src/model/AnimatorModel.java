@@ -91,7 +91,6 @@ public class AnimatorModel extends Object {
 		}
 		System.out.println("Inserted frame.");
 
-
 		this.updateAllViews();
 	}
 
