@@ -24,7 +24,7 @@ public class PaletteView extends JPanel implements IView {
 	private static final long serialVersionUID = 1L;
 	private AnimatorModel model;
 	private JColorChooser tcc;
-	private JButton choose, black, blu, green, violet, pink;
+	private JButton choose, black, blue, green, violet, pink;
 	private JRadioButton small, medium, large;
 
 	public PaletteView(AnimatorModel aModel) {
@@ -55,11 +55,11 @@ public class PaletteView extends JPanel implements IView {
 		black.setOpaque(true);
 		black.setFocusable(false);
 
-		blu = new JButton();
-		blu.setBackground(new Color(51, 204, 255));
-		blu.setBorderPainted(false);
-		blu.setOpaque(true);
-		blu.setFocusable(false);
+		blue = new JButton();
+		blue.setBackground(new Color(51, 204, 255));
+		blue.setBorderPainted(false);
+		blue.setOpaque(true);
+		blue.setFocusable(false);
 
 		green = new JButton();
 		green.setBackground(new Color(51, 255, 102));
@@ -88,7 +88,7 @@ public class PaletteView extends JPanel implements IView {
 
 		this.add(black, constraints);
 		constraints.gridy = 1;
-		this.add(blu, constraints);
+		this.add(blue, constraints);
 		constraints.gridy = 2;
 		this.add(green, constraints);
 		constraints.gridy = 3;
@@ -159,7 +159,7 @@ public class PaletteView extends JPanel implements IView {
 				model.setPaletteColor(Color.BLACK);
 			}
 		});
-		blu.addActionListener(new ActionListener() {
+		blue.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.setPaletteColor(new Color(51, 204, 255));
 			}

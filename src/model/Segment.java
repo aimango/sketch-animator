@@ -92,9 +92,11 @@ public class Segment extends Object {
 		atList.add(frame, new AffineTransform(atList.get(frame - 1)));
 	}
 
-	public void addSegmentTranslate(int x, int y, int frame) {
+	public void setSegmentTranslate(int x, int y, int frame) {
+		if (x!=0 && y!=0){
 		AffineTransform a = atList.get(frame - startTime);
 		a.translate(x, y);
+		}
 	}
 
 	// get all the transforms at a particular frame

@@ -68,7 +68,7 @@ public class AnimatorModel extends Object {
 
 	public void pushFrame() {
 		for (Segment s : segments) {
-			if (!s.isErased(currframe)) {
+			if (!s.isErased(currframe) && s.getEndTime() <= currframe) {
 				s.createFrame(currframe + 1);
 			}
 		}
@@ -108,7 +108,7 @@ public class AnimatorModel extends Object {
 		this.updateAllViews();
 	}
 
-	public void addSegment() {
+	public void createSegment() {
 		currSegment = new Segment(currframe, currframe, this.getPaletteColor(),
 				strokeSize);
 		segments.add(currSegment);
@@ -124,18 +124,42 @@ public class AnimatorModel extends Object {
 
 	public void addTranslate(int x, int y) {
 		int currFrame = this.getFrame();
-		// System.out.println("Dragging the objs");
-		for (Segment s : segments) {
-			if (!s.isErased(currFrame)) {
-				s.addSegmentTranslate(0, 0, currFrame);
-			}
-		}
 		for (int index : selectedIndices) {
-			segments.get(index).addSegmentTranslate(x, y, currFrame);
+			segments.get(index).setSegmentTranslate(x, y, currFrame);
 		}
 	}
 
-	public void selectStuff(GeneralPath lassoPath) {
+	public void eraseAction(int oldX, int oldY) {
+		int largestEndTime = 0, currEndTime = 0;
+		for (Segment s : segments) {
+			ArrayList<Point> points = s.getTranslates(this.getFrame());
+
+			for (int j = 0; j < points.size(); j++) {
+				Point currPoint = points.get(j);
+				int x = currPoint.x;
+				int y = currPoint.y;
+
+				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
+						&& oldY < y + 10) {
+					// System.out.println("Erasing the " + i + "th obj");
+					s.setEndTime(currframe - 1);
+					break;
+				}
+			}
+			currEndTime = s.getEndTime();
+			if (currEndTime > largestEndTime) {
+				largestEndTime = currEndTime;
+			}
+		}
+		if (largestEndTime < totalframes) {
+			totalframes = largestEndTime;
+			currframe = largestEndTime;
+			System.out.println("Number of frames cut down to  " + totalframes);
+		}
+		this.updateAllViews();
+	}
+
+	public void selectAction(GeneralPath lassoPath) {
 		for (int i = 0; i < segments.size(); i++) {
 			ArrayList<Point> points = segments.get(i).getTranslates(
 					this.getFrame());
@@ -165,36 +189,6 @@ public class AnimatorModel extends Object {
 	public void removeLasso() {
 		selectingSegment = new Segment(currframe, currframe, paletteColor,
 				strokeSize);
-		this.updateAllViews();
-	}
-
-	public void eraseStuff(int oldX, int oldY) {
-		int largestEndTime = 0, currEndTime = 0;
-		for (Segment s : segments) {
-			ArrayList<Point> points = s.getTranslates(this.getFrame());
-
-			for (int j = 0; j < points.size(); j++) {
-				Point currPoint = points.get(j);
-				int x = currPoint.x;
-				int y = currPoint.y;
-
-				if (oldX > x - 10 && oldX < x + 10 && oldY > y - 10
-						&& oldY < y + 10) {
-					// System.out.println("Erasing the " + i + "th obj");
-					s.setEndTime(currframe - 1);
-					break;
-				}
-			}
-			currEndTime = s.getEndTime();
-			if (currEndTime > largestEndTime) {
-				largestEndTime = currEndTime;
-			}
-		}
-		if (largestEndTime < totalframes) {
-			totalframes = largestEndTime;
-			currframe = largestEndTime;
-			System.out.println("Number of frames cut down to  " + totalframes);
-		}
 		this.updateAllViews();
 	}
 

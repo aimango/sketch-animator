@@ -169,10 +169,10 @@ public class CanvasView extends JComponent implements IView {
 				oldY = e.getY();
 				AnimatorModel.State state = model.getState();
 				if (state == AnimatorModel.State.draw) {
-					model.addSegment();
+					model.createSegment();
 					model.addPointToSegment(new Point(oldX, oldY));
 				} else if (state == AnimatorModel.State.erase) {
-					model.eraseStuff(oldX, oldY);
+					model.eraseAction(oldX, oldY);
 				}
 
 				// only allow drag if press down on 1 of the selected segments
@@ -197,7 +197,7 @@ public class CanvasView extends JComponent implements IView {
 				// in select mode and have no segments selected yet
 				else if (model.getState() == AnimatorModel.State.selection
 						&& model.getSelectedIndices().size() == 0) {
-					model.selectStuff(selectedPath);
+					model.selectAction(selectedPath);
 				}
 
 			}
@@ -211,20 +211,17 @@ public class CanvasView extends JComponent implements IView {
 
 				int numSelected = model.getSelectedIndices().size();
 
-				// if dragging, add some translations!
+				// if dragging, add some translations to all selected objects
 				if (state == AnimatorModel.State.dragged && numSelected != 0) {
 					model.addTranslate(currentX - oldX, currentY - oldY);
 				}
 
 				// if in selection, add points for either segment or lasso
-				// drawing. (let model handle logic)
 				if (state == AnimatorModel.State.draw
 						|| state == AnimatorModel.State.selection) {
 					model.addPointToSegment(new Point(currentX, currentY));
-				}
-
-				else if (model.getState() == AnimatorModel.State.erase) {
-					model.eraseStuff(currentX, currentY);
+				} else if (model.getState() == AnimatorModel.State.erase) {
+					model.eraseAction(currentX, currentY);
 				}
 				oldX = currentX;
 				oldY = currentY;
