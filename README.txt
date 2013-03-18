@@ -14,6 +14,10 @@ Notes:
 -The bottom toolbar contains buttons typical of any video player.  |< allows the user to skip to frame 0, while >| allows user to skip to the last frame. << allows users to decrease by 1 frame, and >> allows users to increase by 1 frame. The play/pause button will allow user to play the animation and pause when desired. if the slider is at the last frame and the play button is pressed, the animation will be played from the beginning. Otherwise, it will be played from wherever the slider left off.
 -The right toolbar is reserved for drawing options. Users may choose from preselected colours, or choose their own colour via the colour picker dialog that appears when clicking the default grey "Picker". They also have the option of selecting from 3 stroke sizes. These stroke sizes are also reflected in the cursor size once selected.
 
+Assumptions & Scenarios:
+-If we animate an object from time frame 0 to 10, and reanimate this object from time from 2 to 5, assume the object's animation from time 6 to 10 should stay put. If they want to get rid of the future animation, they can easily erase the object at time 6. I wanted to assume this because it is very silly for a user to have a 200 frame animation, and they only wanted to reanimate frames 4-6. It is more user friendly to allow manual deletion of future frames.
+-
+
 Enhancements:
 -Colour and stroke customization for drawing.
 -Custom cursors for drawing (varies for stroke size) and erasing.
