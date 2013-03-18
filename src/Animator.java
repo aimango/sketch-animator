@@ -13,7 +13,6 @@ import view.PlayerView;
 import view.SliderView;
 import view.ToolbarView;
 
-//TODO: test minimum dimensions on VM
 public class Animator {
 	public static void main(String[] args) {
 

@@ -81,8 +81,12 @@ public class PlayerView extends JPanel implements IView {
 				if (playBtn.getIcon() == play) {
 
 					// play from 0 in this case
-					if (model.getFrame() == model.getTotalFrames())
+					if (model.getFrame() == model.getTotalFrames()){
 						model.gotoZero();
+						//System.out.println("Sup");
+					} else {
+						//System.out.println("currframe is "+model.getFrame()+" total is "+model.getTotalFrames());
+					}
 					model.setState(AnimatorModel.State.playing);
 					playBtn.setIcon(pause);
 				} else if (playBtn.getIcon() == pause) {

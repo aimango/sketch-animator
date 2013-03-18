@@ -14,8 +14,8 @@ public class AnimatorModel extends Object {
 	/* A list of the model's views. */
 	private ArrayList<IView> views = new ArrayList<IView>();;
 
-	private ArrayList<Segment> segments = new ArrayList<Segment>();;
-	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>();;
+	private ArrayList<Segment> segments = new ArrayList<Segment>();
+	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>();
 
 	private State state = State.draw;
 	private boolean stillDragging = true;
@@ -186,7 +186,9 @@ public class AnimatorModel extends Object {
 			}
 		}
 		if (largestEndTime < totalframes) {
-			totalframes = currEndTime;
+			totalframes = largestEndTime;
+			currframe = largestEndTime;
+			System.out.println("Number of frames cut down to  " +totalframes);
 		}
 		this.updateAllViews();
 	}
