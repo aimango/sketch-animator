@@ -249,26 +249,19 @@ public class CanvasView extends JComponent implements IView {
 		model.gotoZero();
 		Graphics2D cg;
 		BufferedImage b;
-		for (int i = 0; i < model.getTotalFrames(); i+=2) {
+		for (int i = 0; i < model.getTotalFrames(); i++) {
 			b = new BufferedImage(this.getWidth(), this.getHeight(),
-					BufferedImage.TYPE_INT_RGB);
+					BufferedImage.TYPE_BYTE_INDEXED);
 			cg = b.createGraphics();
 			this.paintAll(cg);
 			images.add(b);
 			model.increaseFrames(false);
 
-			int transparantColor = 0xFFFFFF; // white
-
-			b = util.convertRGBAToGIF(b, transparantColor);
-
 			// time for each frame
 			long delay = 50;
 
-			// make transparent pixels not 'shine through'
-			String disposal = GifFrame.RESTORE_TO_BGCOLOR;
-
 			// add frame to sequence
-			gifFrames.add(new GifFrame(b, delay, disposal));
+			gifFrames.add(new GifFrame(b, delay));
 			b.flush();
 			if (i%10==0){
 				System.out.print(".");
