@@ -1,5 +1,6 @@
 package view;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -7,8 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import model.IView;
 import model.AnimatorModel;
+import model.IView;
 
 // icon source: http://www.veryicon.com/icons/system/crystal-clear-actions/
 public class PlayerView extends JPanel implements IView {
@@ -16,7 +17,7 @@ public class PlayerView extends JPanel implements IView {
 	private static final long serialVersionUID = 1L;
 	private AnimatorModel model;
 	private JButton playBtn, fwdBtn, rewindBtn, fastFwd, fastRewind;
-	private ImageIcon play;
+	private ImageIcon playIcon;
 
 	public PlayerView(AnimatorModel aModel) {
 		super();
@@ -34,13 +35,12 @@ public class PlayerView extends JPanel implements IView {
 		fastFwd = new JButton(fastfw);
 		fastFwd.setFocusable(false);
 
-		
 		ImageIcon fastrw = new ImageIcon("images/begin.png");
 		fastRewind = new JButton(fastrw);
 		fastRewind.setFocusable(false);
 
-		play = new ImageIcon("images/play.png");
-		playBtn = new JButton(play);
+		playIcon = new ImageIcon("images/play.png");
+		playBtn = new JButton(playIcon);
 		playBtn.setFocusable(false);
 
 		this.add(fastRewind);
@@ -78,7 +78,7 @@ public class PlayerView extends JPanel implements IView {
 		final ImageIcon pause = new ImageIcon("images/pause.png");
 		playBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (playBtn.getIcon() == play) {
+				if (playBtn.getIcon() == playIcon) {
 
 					// play from 0 in this case
 					if (model.getFrame() == model.getTotalFrames()) {
@@ -88,7 +88,7 @@ public class PlayerView extends JPanel implements IView {
 					playBtn.setIcon(pause);
 				} else if (playBtn.getIcon() == pause) {
 					model.setState(AnimatorModel.State.draw);
-					playBtn.setIcon(play);
+					playBtn.setIcon(playIcon);
 				}
 			}
 		});
@@ -115,7 +115,7 @@ public class PlayerView extends JPanel implements IView {
 		AnimatorModel.State state = model.getState();
 		// disable everything during playback
 		if (state != AnimatorModel.State.playing) {
-			playBtn.setIcon(play);
+			playBtn.setIcon(playIcon);
 		}
 
 		// disable play if currently animating

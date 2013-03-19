@@ -1,5 +1,6 @@
 package view;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,15 +9,15 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import model.IView;
 import model.AnimatorModel;
+import model.IView;
 
 public class ToolbarView extends JPanel implements IView {
 
 	private static final long serialVersionUID = 1L;
 	private AnimatorModel model;
 	private JButton drawToggle, eraseToggle, selectToggle;
-	private JButton clearButton, insertFrame;
+	private JButton clearButton, saveButton, insertFrame;
 	ImageIcon select, deselect;
 
 	public ToolbarView(AnimatorModel aModel) {
@@ -58,11 +59,19 @@ public class ToolbarView extends JPanel implements IView {
 		insertFrame.setVerticalTextPosition(SwingConstants.BOTTOM);
 		insertFrame.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		ImageIcon save = new ImageIcon("images/save.png");
+		saveButton = new JButton(save);
+		saveButton.setFocusable(false);
+		saveButton.setText("Export");
+		saveButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+		saveButton.setHorizontalTextPosition(SwingConstants.CENTER);
+
 		this.add(drawToggle);
 		this.add(eraseToggle);
 		this.add(selectToggle);
 		this.add(insertFrame);
 		this.add(clearButton);
+		this.add(saveButton);
 		this.registerListeners();
 		model = aModel;
 		model.addView(this);
@@ -100,6 +109,12 @@ public class ToolbarView extends JPanel implements IView {
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.restart();
+			}
+		});
+
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model.setState(AnimatorModel.State.export);
 			}
 		});
 	}

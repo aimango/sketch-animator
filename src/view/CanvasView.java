@@ -1,5 +1,8 @@
 package view;
 
+import gif.GifFrame;
+import gif.ImageUtil;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -13,14 +16,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.GeneralPath;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-import model.IView;
 import model.AnimatorModel;
+import model.IView;
 import model.Segment;
 
 public class CanvasView extends JComponent implements IView {
@@ -76,7 +85,6 @@ public class CanvasView extends JComponent implements IView {
 			e.printStackTrace();
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
-
 	}
 
 	public void paintComponent(Graphics g) {
@@ -115,7 +123,8 @@ public class CanvasView extends JComponent implements IView {
 
 				int stroke = s.getStroke();
 				if (selected.contains(i)
-						&& state != AnimatorModel.State.playing) {
+						&& state != AnimatorModel.State.playing
+						&& state != AnimatorModel.State.export) {
 					// highlight!
 					g2.setStroke(new BasicStroke(stroke + 6));
 					g2.setColor(new Color(255, 204, 242));
@@ -230,6 +239,69 @@ public class CanvasView extends JComponent implements IView {
 		});
 	}
 
+	// Source: http://www.java-gaming.org/index.php?topic=24196.0
+	public void exportImage() {
+		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+		List<GifFrame> gifFrames = new ArrayList<GifFrame>();
+		ImageUtil util = new ImageUtil();
+
+		int originalFrame = model.getFrame();
+		model.gotoZero();
+		Graphics2D cg;
+		BufferedImage b;
+		for (int i = 0; i < model.getTotalFrames(); i+=2) {
+			b = new BufferedImage(this.getWidth(), this.getHeight(),
+					BufferedImage.TYPE_INT_RGB);
+			cg = b.createGraphics();
+			this.paintAll(cg);
+			images.add(b);
+			model.increaseFrames(false);
+
+			int transparantColor = 0xFFFFFF; // white
+
+			b = util.convertRGBAToGIF(b, transparantColor);
+
+			// time for each frame
+			long delay = 50;
+
+			// make transparent pixels not 'shine through'
+			String disposal = GifFrame.RESTORE_TO_BGCOLOR;
+
+			// add frame to sequence
+			gifFrames.add(new GifFrame(b, delay, disposal));
+			b.flush();
+			System.out.println("the "+i+"th frame");
+		}
+
+		int loopCount = 0; // gif will loop indefinitely
+		OutputStream out = null;
+		String filepath = "./animation0";
+		try {
+			int i = 0;
+			while (true) {
+				File f = new File(filepath + ".gif");
+				if (f.exists()) {
+					filepath = filepath.substring(0, 11);
+					i++;
+					filepath = filepath + Integer.toString(i);
+					f = new File(filepath + ".gif");
+				} else {
+					break;
+				}
+			}
+			out = new FileOutputStream(filepath + ".gif");
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			util.saveAnimatedGIF(out, gifFrames, loopCount);
+			System.out.println("Exported as " + filepath.substring(2) + ".gif");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		model.setFrame(originalFrame);
+	}
+
 	public void clearScreen(Graphics g) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getSize().width, getSize().height);
@@ -255,6 +327,9 @@ public class CanvasView extends JComponent implements IView {
 		} else if (model.getState() == AnimatorModel.State.selection
 				|| model.getState() == AnimatorModel.State.dragged) {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+		} else if (model.getState() == AnimatorModel.State.export) {
+			model.setState(AnimatorModel.State.selection);
+			exportImage();
 		}
 		repaint();
 	}

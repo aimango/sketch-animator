@@ -5,17 +5,14 @@ import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 
-//TODO: fix bug when insert in middle...... cut off at the end for some reason.
+
 public class AnimatorModel extends Object {
 	public enum State {
-		draw, erase, selection, dragged, playing
+		draw, erase, selection, dragged, playing, export
 	};
 
 	/* A list of the model's views. */
 	private ArrayList<IView> views = new ArrayList<IView>();;
-
-	private ArrayList<Segment> segments = new ArrayList<Segment>();
-	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>();
 
 	private State state = State.draw;
 	private boolean stillDragging = true;
@@ -24,10 +21,13 @@ public class AnimatorModel extends Object {
 
 	private Color paletteColor = Color.BLACK;
 	private int strokeSize = 5;
-	Segment currSegment = new Segment(currframe, currframe, paletteColor,
-			strokeSize);
-	Segment selectingSegment = new Segment(currframe, currframe, paletteColor,
-			strokeSize);
+
+	private ArrayList<Segment> segments = new ArrayList<Segment>();
+	private ArrayList<Integer> selectedIndices = new ArrayList<Integer>();
+	private Segment currSegment = new Segment(currframe, currframe,
+			paletteColor, strokeSize);
+	private Segment selectingSegment = new Segment(currframe, currframe,
+			paletteColor, strokeSize);
 
 	// Override the default constructor, making it private.
 	public AnimatorModel() {

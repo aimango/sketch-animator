@@ -1,3 +1,4 @@
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -7,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import model.AnimatorModel;
+
 import view.CanvasView;
 import view.PaletteView;
 import view.PlayerView;
@@ -44,6 +46,5 @@ public class Animator {
 		frame.setLocation(100, 100);
 		frame.setVisible(true);
 		frame.setMinimumSize(new Dimension(800, 600));
-
 	}
 }

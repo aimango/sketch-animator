@@ -1,5 +1,6 @@
 package view;
 
+
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,8 +17,8 @@ import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import model.IView;
 import model.AnimatorModel;
+import model.IView;
 
 public class PaletteView extends JPanel implements IView {
 
@@ -29,7 +30,7 @@ public class PaletteView extends JPanel implements IView {
 
 	public PaletteView(AnimatorModel aModel) {
 		super();
-		
+
 		this.setLayout(new GridBagLayout());
 		this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		tcc = new JColorChooser();

@@ -93,9 +93,9 @@ public class Segment extends Object {
 	}
 
 	public void setSegmentTranslate(int x, int y, int frame) {
-		if (x!=0 && y!=0){
-		AffineTransform a = atList.get(frame - startTime);
-		a.translate(x, y);
+		if (x != 0 && y != 0) {
+			AffineTransform a = atList.get(frame - startTime);
+			a.translate(x, y);
 		}
 	}
 

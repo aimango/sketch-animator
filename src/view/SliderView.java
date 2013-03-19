@@ -1,11 +1,12 @@
 package view;
 
+
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import model.IView;
 import model.AnimatorModel;
+import model.IView;
 
 public class SliderView extends JSlider implements IView {
 
