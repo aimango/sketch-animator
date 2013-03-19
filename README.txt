@@ -6,15 +6,15 @@ How to Run:
 -The makefile is located in the "src" directory. 
 -"make all" or "make" will compile and run the program.
 -"make run" will run the compiled program.
--"make clean" will remove all .class files in the "src", "src/view", and "src/model" directories.
+-"make clean" will remove all .class files in the "src", "src/view", and "src/model" directories, and all of the generated .gif files in the "src" folder.
 
 
 Notes:
 -The top toolbar contains buttons for drawing (pencil), erasing (eraser), selecting (dotted square), and inserting frame (copy), as required. Users can deselect selected objects by toggling the select button if they want to reselect different objects. 
 	-There is also a button for deleting the animation (trash can) to allow users to easily restart from scratch.
-	-There is also a button for exporting the animation as a gif. The gifs expired are automatically saved in the root directory. Every 2nd frame is recorded to save memory. After export, the program is set to 'selection' mode.
+	-There is also a button for exporting the animation as a gif. The gifs expired are automatically saved in the "src" directory. Every frame is recorded. The exported gif will have the same dimensions as the canvas dimensions. After export, the program is set to 'selection' mode.
 
--The slider below the canvas area is only activated when there is at least one frame. Frame ticks appear as users begin to animate. The tick spacing is set to 20 frames, and I chose not to show the labels since it would become cluttered once the animation consists of hundreds of frames.
+-The slider below the canvas area is only activated when there is at least one frame. Frame ticks appear as users begin to animate. I chose only to show the 0th and last frame label to avoid clutter that occurs when the animation consists of hundreds of frames. The tick spacing is set to number of frames divided by 10 (thus we should only see 10 ticks between the 0th and last frame). 
 
 -The bottom toolbar contains buttons typical of any video player.  |< allows the user to skip to frame 0, while >| allows user to skip to the last frame. << allows users to decrease by 1 frame, and >> allows users to increase by 1 frame. The play/pause button will allow user to play the animation and pause when desired. if the slider is at the last frame and the play button is pressed, the animation will be played from the beginning. Otherwise, it will be played from wherever the slider left off.
 
