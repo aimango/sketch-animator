@@ -4,14 +4,15 @@ Elisa Lou 20372456
 
 How to Run:
 -The makefile is located in the "src" directory. 
--"make run" or "make" will compile and run the program.
+-"make all" or "make" will compile and run the program.
+-"make run" will run the compiled program.
 -"make clean" will remove all .class files in the "src", "src/view", and "src/model" directories.
 
 
 Notes:
 -The top toolbar contains buttons for drawing (pencil), erasing (eraser), selecting (dotted square), and inserting frame (copy), as required. Users can deselect selected objects by toggling the select button if they want to reselect different objects. 
 	-There is also a button for deleting the animation (trash can) to allow users to easily restart from scratch.
-	-There is also a button for exporting the animation as a gif. The gifs expired are automatically saved in the root directory. Every 2nd frame is recorded to save memory. This feature is incomplete as the user may run into some OutOfMemory errors if using too many colours at once. 
+	-There is also a button for exporting the animation as a gif. The gifs expired are automatically saved in the root directory. Every 2nd frame is recorded to save memory. After export, the program is set to 'selection' mode.
 
 -The slider below the canvas area is only activated when there is at least one frame. Frame ticks appear as users begin to animate. The tick spacing is set to 20 frames, and I chose not to show the labels since it would become cluttered once the animation consists of hundreds of frames.
 
@@ -19,7 +20,7 @@ Notes:
 
 -The right toolbar is reserved for drawing options. Users may choose from preselected colours, or choose their own colour via the colour picker dialog that appears when clicking the default grey "Picker". They also have the option of selecting from 3 stroke sizes. These stroke sizes are also reflected in the cursor size once selected.
 
--The UML diagram is in the root directory, named "uml.pdf", created using the ObjectAid UML Class Diagram plugin. I have 1 main model, and I have my own "segment" class that holds information for each drawn segment. I have an enum class for which "state" the program is in - drawing, erasing, selection, dragging, or playing. I have 5 views for each visual component of the program - the main toolbar, slider, the playback toolbar, the colour/stroke editing toolbar, and the canvas.
+-The UML diagram is in the root directory, named "uml.pdf", created using the ObjectAid UML Class Diagram plugin. I have 1 main model, and I have my own "segment" class that holds information for each drawn segment. I have an enum class for which "state" the program is in - drawing, erasing, selection, dragging, or playing. I have 5 views for each visual component of the program - the main toolbar, slider, the playback toolbar, the colour/stroke editing toolbar, and the canvas. I did not include the classes from the "gif" folder as they were 3rd party resources (source stated in the files).
 
 
 Assumptions & Scenarios:
