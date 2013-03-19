@@ -270,7 +270,9 @@ public class CanvasView extends JComponent implements IView {
 			// add frame to sequence
 			gifFrames.add(new GifFrame(b, delay, disposal));
 			b.flush();
-			System.out.println("the "+i+"th frame");
+			if (i%10==0){
+				System.out.print(".");
+			}
 		}
 
 		int loopCount = 0; // gif will loop indefinitely
