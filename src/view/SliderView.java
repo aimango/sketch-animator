@@ -1,6 +1,8 @@
 package view;
 
+import java.util.Hashtable;
 
+import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -21,8 +23,8 @@ public class SliderView extends JSlider implements IView {
 
 		this.setValue(0);
 		this.setMaximum(1);
-		this.setMajorTickSpacing(20);
 		this.setPaintTicks(true);
+		this.setPaintLabels(true);
 	}
 
 	private void registerControllers() {
@@ -38,7 +40,14 @@ public class SliderView extends JSlider implements IView {
 
 	@Override
 	public void updateView() {
-		this.setMaximum(model.getTotalFrames());
+		int max = model.getTotalFrames();
+		this.setMaximum(max);
 		this.setValue(model.getFrame());
+		this.setMajorTickSpacing(max / 10);
+		
+		Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
+		table.put(0, new JLabel(Integer.toString(0)));
+		table.put(max, new JLabel(Integer.toString(max)));
+		this.setLabelTable(table);
 	}
 }
