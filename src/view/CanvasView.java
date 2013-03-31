@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -260,40 +261,57 @@ public class CanvasView extends JComponent implements IView {
 			Element rootElement = doc.createElement("animation");
 			doc.appendChild(rootElement);
 	 
-			Element frames = doc.createElement("frames");
-			rootElement.appendChild(frames);
+			Element segments = doc.createElement("segments");
+			rootElement.appendChild(segments);
 			
-			for (int i = 0; i <= model.getTotalFrames(); i++){
-				Element frame = doc.createElement("frame");
-				frames.appendChild(frame);
+			for (Segment s : model.getSegments()){
+				Element segment = doc.createElement("segment");
+				segments.appendChild(segment);
 				
-				// set attribute to frame element
-				Attr attr = doc.createAttribute("num");
-				attr.setValue(String.valueOf(i)); // increment this
-				frame.setAttributeNode(attr);
+				Element color = doc.createElement("color");
+				color.appendChild(doc.createTextNode(String.valueOf(s.getColor().getRGB())));
+				segment.appendChild(color);
 		 
-				for (Segment s : model.getSegments()){
-					Element segment = doc.createElement("segment");
-					frame.appendChild(segment);
+				Element stroke = doc.createElement("stroke");
+				stroke.appendChild(doc.createTextNode(String.valueOf(s.getStroke())));
+				segment.appendChild(stroke);
+		 
+				Element start = doc.createElement("start");
+				start.appendChild(doc.createTextNode(String.valueOf(s.getStartTime())));
+				segment.appendChild(start);
+				
+				Element end = doc.createElement("end");
+				end.appendChild(doc.createTextNode(String.valueOf(s.getEndTime())));
+				segment.appendChild(end);
+				
+				Element points = doc.createElement("points");
+				segment.appendChild(points);
+		 
+				for (int m = 0; m < s.size(); m++){
+					Point p = s.getPoint(m);
+					Element point = doc.createElement("point");
+					points.appendChild(point);
 					
-					// firstname elements
-					Element color = doc.createElement("color");
-					color.appendChild(doc.createTextNode(String.valueOf(s.getColor().getRGB())));
-					segment.appendChild(color);
-			 
-					// lastname elements
-					Element stroke = doc.createElement("stroke");
-					stroke.appendChild(doc.createTextNode(String.valueOf(s.getStroke())));
-					segment.appendChild(stroke);
-			 
-					// nickname elements
-					Element points = doc.createElement("points");
-					segment.appendChild(points);
-			 
-					for (int m = 0; m < s.size(); m++){
-						Point p = s.getPoint(m);
+					Element x = doc.createElement("xvalue");
+					Element y = doc.createElement("yvalue");
+					x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
+					y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
+					point.appendChild(x);
+					point.appendChild(y);
+				}
+				
+				Element transforms = doc.createElement("transforms");
+				segment.appendChild(transforms);
+				
+				for (int i = 0; i < s.getEndTime() - s.getStartTime(); i++){ // check bounds
+					
+					Element transform = doc.createElement("transform");
+					transforms.appendChild(transform);
+					
+					ArrayList<Point> pointlist = s.getTranslates(i);
+					for (Point p : pointlist){
 						Element point = doc.createElement("point");
-						points.appendChild(point);
+						transform.appendChild(point);
 						
 						Element x = doc.createElement("xvalue");
 						Element y = doc.createElement("yvalue");
@@ -303,8 +321,9 @@ public class CanvasView extends JComponent implements IView {
 						point.appendChild(y);
 					}
 				}
-				
 			}
+			
+			
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
