@@ -12,7 +12,7 @@ public class AnimatorModel extends Object {
 	};
 
 	/* A list of the model's views. */
-	private ArrayList<IView> views = new ArrayList<IView>();;
+	private ArrayList<IView> views = new ArrayList<IView>();
 
 	private State state = State.draw;
 	private boolean stillDragging = true;

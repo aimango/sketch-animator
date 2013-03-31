@@ -27,6 +27,18 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import model.AnimatorModel;
 import model.IView;
@@ -239,8 +251,82 @@ public class CanvasView extends JComponent implements IView {
 		});
 	}
 
+	public void exportImage(){
+		  try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	 
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("animation");
+			doc.appendChild(rootElement);
+	 
+			Element frames = doc.createElement("frames");
+			rootElement.appendChild(frames);
+			
+			for (int i = 0; i <= model.getTotalFrames(); i++){
+				Element frame = doc.createElement("frame");
+				frames.appendChild(frame);
+				
+				// set attribute to frame element
+				Attr attr = doc.createAttribute("num");
+				attr.setValue(String.valueOf(i)); // increment this
+				frame.setAttributeNode(attr);
+		 
+				for (Segment s : model.getSegments()){
+					Element segment = doc.createElement("segment");
+					frame.appendChild(segment);
+					
+					// firstname elements
+					Element color = doc.createElement("color");
+					color.appendChild(doc.createTextNode(String.valueOf(s.getColor().getRGB())));
+					segment.appendChild(color);
+			 
+					// lastname elements
+					Element stroke = doc.createElement("stroke");
+					stroke.appendChild(doc.createTextNode(String.valueOf(s.getStroke())));
+					segment.appendChild(stroke);
+			 
+					// nickname elements
+					Element points = doc.createElement("points");
+					segment.appendChild(points);
+			 
+					for (int m = 0; m < s.size(); m++){
+						Point p = s.getPoint(m);
+						Element point = doc.createElement("point");
+						points.appendChild(point);
+						
+						Element x = doc.createElement("xvalue");
+						Element y = doc.createElement("yvalue");
+						x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
+						y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
+						point.appendChild(x);
+						point.appendChild(y);
+					}
+				}
+				
+			}
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("../xml-files/file.xml"));
+	 
+			// Output to console for testing
+			//StreamResult result = new StreamResult(System.out);
+	 
+			transformer.transform(source, result);
+	 
+			System.out.println("File saved!");
+	 
+		  } catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		  } catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		  }
+	}
+	
 	// Source: http://www.java-gaming.org/index.php?topic=24196.0
-	public void exportImage() {
+	public void exportImageOld() {
 		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
 		List<GifFrame> gifFrames = new ArrayList<GifFrame>();
 		ImageUtil util = new ImageUtil();
