@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,18 +27,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import model.AnimatorModel;
 import model.IView;
@@ -252,97 +239,6 @@ public class CanvasView extends JComponent implements IView {
 		});
 	}
 
-	public void exportImage(){
-		  try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	 
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("animation");
-			doc.appendChild(rootElement);
-	 
-			Element segments = doc.createElement("segments");
-			rootElement.appendChild(segments);
-			
-			for (Segment s : model.getSegments()){
-				Element segment = doc.createElement("segment");
-				segments.appendChild(segment);
-				
-				Element color = doc.createElement("color");
-				color.appendChild(doc.createTextNode(String.valueOf(s.getColor().getRGB())));
-				segment.appendChild(color);
-		 
-				Element stroke = doc.createElement("stroke");
-				stroke.appendChild(doc.createTextNode(String.valueOf(s.getStroke())));
-				segment.appendChild(stroke);
-		 
-				Element start = doc.createElement("start");
-				start.appendChild(doc.createTextNode(String.valueOf(s.getStartTime())));
-				segment.appendChild(start);
-				
-				Element end = doc.createElement("end");
-				end.appendChild(doc.createTextNode(String.valueOf(s.getEndTime())));
-				segment.appendChild(end);
-				
-				Element points = doc.createElement("points");
-				segment.appendChild(points);
-		 
-				for (int m = 0; m < s.size(); m++){
-					Point p = s.getPoint(m);
-					Element point = doc.createElement("point");
-					points.appendChild(point);
-					
-					Element x = doc.createElement("xvalue");
-					Element y = doc.createElement("yvalue");
-					x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
-					y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
-					point.appendChild(x);
-					point.appendChild(y);
-				}
-				
-				Element transforms = doc.createElement("transforms");
-				segment.appendChild(transforms);
-				
-				for (int i = 0; i < s.getEndTime() - s.getStartTime(); i++){ // check bounds
-					
-					Element transform = doc.createElement("transform");
-					transforms.appendChild(transform);
-					
-					ArrayList<Point> pointlist = s.getTranslates(i);
-					for (Point p : pointlist){
-						Element point = doc.createElement("point");
-						transform.appendChild(point);
-						
-						Element x = doc.createElement("xvalue");
-						Element y = doc.createElement("yvalue");
-						x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
-						y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
-						point.appendChild(x);
-						point.appendChild(y);
-					}
-				}
-			}
-			
-			
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("../xml-files/file.xml"));
-	 
-			// Output to console for testing
-			//StreamResult result = new StreamResult(System.out);
-	 
-			transformer.transform(source, result);
-	 
-			System.out.println("File saved!");
-	 
-		  } catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		  } catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		  }
-	}
 	
 	// Source: http://www.java-gaming.org/index.php?topic=24196.0
 	public void exportImageOld() {
@@ -429,7 +325,7 @@ public class CanvasView extends JComponent implements IView {
 			setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		} else if (model.getState() == AnimatorModel.State.export) {
 			model.setState(AnimatorModel.State.selection);
-			exportImage();
+			model.exportImage();
 		}
 		repaint();
 	}

@@ -3,7 +3,20 @@ package model;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
+import java.io.File;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 public class AnimatorModel extends Object {
@@ -243,6 +256,98 @@ public class AnimatorModel extends Object {
 		}
 	}
 
+
+	public void exportImage(){
+		  try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	 
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("animation");
+			doc.appendChild(rootElement);
+	 
+			Element segments = doc.createElement("segments");
+			rootElement.appendChild(segments);
+			
+			for (Segment s : this.getSegments()){
+				Element segment = doc.createElement("segment");
+				segments.appendChild(segment);
+				
+				Element color = doc.createElement("color");
+				color.appendChild(doc.createTextNode(String.valueOf(s.getColor().getRGB())));
+				segment.appendChild(color);
+		 
+				Element stroke = doc.createElement("stroke");
+				stroke.appendChild(doc.createTextNode(String.valueOf(s.getStroke())));
+				segment.appendChild(stroke);
+		 
+				Element start = doc.createElement("start");
+				start.appendChild(doc.createTextNode(String.valueOf(s.getStartTime())));
+				segment.appendChild(start);
+				
+				Element end = doc.createElement("end");
+				end.appendChild(doc.createTextNode(String.valueOf(s.getEndTime())));
+				segment.appendChild(end);
+				
+				Element points = doc.createElement("points");
+				segment.appendChild(points);
+		 
+				for (int m = 0; m < s.size(); m++){
+					Point p = s.getPoint(m);
+					Element point = doc.createElement("point");
+					points.appendChild(point);
+					
+					Element x = doc.createElement("xvalue");
+					Element y = doc.createElement("yvalue");
+					x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
+					y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
+					point.appendChild(x);
+					point.appendChild(y);
+				}
+				
+				Element transforms = doc.createElement("transforms");
+				segment.appendChild(transforms);
+				
+				for (int i = 0; i < s.getEndTime() - s.getStartTime(); i++){ // check bounds
+					
+					Element transform = doc.createElement("transform");
+					transforms.appendChild(transform);
+					
+					ArrayList<Point> pointlist = s.getTranslates(i);
+					for (Point p : pointlist){
+						Element point = doc.createElement("point");
+						transform.appendChild(point);
+						
+						Element x = doc.createElement("xvalue");
+						Element y = doc.createElement("yvalue");
+						x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
+						y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
+						point.appendChild(x);
+						point.appendChild(y);
+					}
+				}
+			}
+			
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("../xml-files/file.xml"));
+	 
+			// Output to console for testing
+			//StreamResult result = new StreamResult(System.out);
+	 
+			transformer.transform(source, result);
+	 
+			System.out.println("File saved!");
+	 
+		  } catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		  } catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		  }
+	}
+	
 	public void restart() {
 		segments.clear();
 		selectingSegment = new Segment(currframe, currframe, paletteColor,
