@@ -282,9 +282,9 @@ public class AnimatorModel extends Object {
 			for (Segment s : this.getSegments()) {
 				Element segment = doc.createElement("segment");
 				rootElement.appendChild(segment);
-
-				segment.setAttribute("color",
-						String.valueOf(s.getColor().getRGB()));
+				String hexColor = String.format("#%06X", (0xFFFFFF & s
+						.getColor().getRGB()));
+				segment.setAttribute("color", hexColor);
 				segment.setAttribute("stroke", String.valueOf(s.getStroke()));
 				segment.setAttribute("start", String.valueOf(s.getStartTime()));
 				segment.setAttribute("end", String.valueOf(s.getEndTime()));
@@ -365,7 +365,7 @@ public class AnimatorModel extends Object {
 		System.out.println("Root element "
 				+ docc.getDocumentElement().getNodeName());
 
-		int totalFrames = 0;
+		int maxFrame = 0;
 		NodeList nodeLst = docc.getElementsByTagName("segment");
 		ArrayList<Segment> segs = new ArrayList<Segment>();
 		for (int s = 0; s < nodeLst.getLength(); s++) { // segments
@@ -373,14 +373,13 @@ public class AnimatorModel extends Object {
 			if (fstNode.getNodeType() == Node.ELEMENT_NODE) {
 
 				Element fstElmnt = (Element) fstNode;
-				Color c = new Color(Integer.parseInt(fstElmnt
-						.getAttribute("color")));
+				Color c = Color.decode(fstElmnt.getAttribute("color"));
 				int start = Integer.parseInt(fstElmnt.getAttribute("start"));
 				int end = Integer.parseInt(fstElmnt.getAttribute("end"));
 				int stroke = Integer.parseInt(fstElmnt.getAttribute("stroke"));
 
-				if (end > totalFrames)
-					totalFrames = end;
+				if (end > maxFrame)
+					maxFrame = end;
 				ArrayList<Point> points = new ArrayList<Point>();
 				NodeList pts = fstElmnt.getElementsByTagName("point");
 				for (int p = 0; p < pts.getLength(); p++) {
@@ -398,7 +397,7 @@ public class AnimatorModel extends Object {
 
 				ArrayList<AffineTransform> atList = new ArrayList<AffineTransform>();
 				NodeList ats = fstElmnt.getElementsByTagName("transform");
-				System.out.println("at len" + ats.getLength());
+				
 				for (int p = 0; p < ats.getLength(); p++) {
 					Node leNode = ats.item(p);
 					if (leNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -419,8 +418,9 @@ public class AnimatorModel extends Object {
 			}
 		}
 		this.setSegments(segs);
-		this.setTotalFrames(totalFrames);
+		this.setTotalFrames(maxFrame);
 		this.updateAllViews();
+		System.out.println("Animation imported with "+maxFrame+" frames.");
 	}
 
 	public void restart() {

@@ -68,7 +68,7 @@ public class ToolbarView extends JPanel implements IView {
 		ImageIcon load = new ImageIcon("images/open-file.png");
 		loadButton = new JButton(load);
 		loadButton.setFocusable(false);
-		loadButton.setText("Load");
+		loadButton.setText("Import");
 		loadButton.setVerticalTextPosition(SwingConstants.BOTTOM);
 		loadButton.setHorizontalTextPosition(SwingConstants.CENTER);
 
