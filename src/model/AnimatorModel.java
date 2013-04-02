@@ -2,13 +2,16 @@ package model;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -17,7 +20,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class AnimatorModel extends Object {
 	public enum State {
@@ -44,6 +49,14 @@ public class AnimatorModel extends Object {
 
 	// Override the default constructor, making it private.
 	public AnimatorModel() {
+	}
+
+	public void setSegments(ArrayList<Segment> segs) {
+		segments = segs;
+	}
+
+	public void setTotalFrames(int i) {
+		totalframes = i;
 	}
 
 	public void setPaletteColor(Color c) {
@@ -256,98 +269,160 @@ public class AnimatorModel extends Object {
 		}
 	}
 
-
-	public void exportImage(){
-		  try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	public void exportImage() {
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	 
+
 			Document doc = docBuilder.newDocument();
 			Element rootElement = doc.createElement("animation");
 			doc.appendChild(rootElement);
-	 
-			Element segments = doc.createElement("segments");
-			rootElement.appendChild(segments);
-			
-			for (Segment s : this.getSegments()){
+
+			for (Segment s : this.getSegments()) {
 				Element segment = doc.createElement("segment");
-				segments.appendChild(segment);
-				
-				Element color = doc.createElement("color");
-				color.appendChild(doc.createTextNode(String.valueOf(s.getColor().getRGB())));
-				segment.appendChild(color);
-		 
-				Element stroke = doc.createElement("stroke");
-				stroke.appendChild(doc.createTextNode(String.valueOf(s.getStroke())));
-				segment.appendChild(stroke);
-		 
-				Element start = doc.createElement("start");
-				start.appendChild(doc.createTextNode(String.valueOf(s.getStartTime())));
-				segment.appendChild(start);
-				
-				Element end = doc.createElement("end");
-				end.appendChild(doc.createTextNode(String.valueOf(s.getEndTime())));
-				segment.appendChild(end);
-				
-				Element points = doc.createElement("points");
-				segment.appendChild(points);
-		 
-				for (int m = 0; m < s.size(); m++){
+				rootElement.appendChild(segment);
+
+				segment.setAttribute("color",
+						String.valueOf(s.getColor().getRGB()));
+				segment.setAttribute("stroke", String.valueOf(s.getStroke()));
+				segment.setAttribute("start", String.valueOf(s.getStartTime()));
+				segment.setAttribute("end", String.valueOf(s.getEndTime()));
+
+				for (int m = 0; m < s.size(); m++) {
 					Point p = s.getPoint(m);
 					Element point = doc.createElement("point");
-					points.appendChild(point);
-					
-					Element x = doc.createElement("xvalue");
-					Element y = doc.createElement("yvalue");
-					x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
-					y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
-					point.appendChild(x);
-					point.appendChild(y);
+					segment.appendChild(point);
+					point.setAttribute("x", String.valueOf(p.getX()));
+					point.setAttribute("y", String.valueOf(p.getY()));
 				}
-				
-				Element transforms = doc.createElement("transforms");
-				segment.appendChild(transforms);
-				
-				for (int i = 0; i < s.getEndTime() - s.getStartTime(); i++){ // check bounds
-					
+
+				ArrayList<AffineTransform> atList = s.getAtList();
+				int i = 0;
+				for (AffineTransform a : atList) { // check bounds
 					Element transform = doc.createElement("transform");
-					transforms.appendChild(transform);
-					
-					ArrayList<Point> pointlist = s.getTranslates(i);
-					for (Point p : pointlist){
-						Element point = doc.createElement("point");
-						transform.appendChild(point);
-						
-						Element x = doc.createElement("xvalue");
-						Element y = doc.createElement("yvalue");
-						x.appendChild(doc.createTextNode(String.valueOf(p.getX())));
-						y.appendChild(doc.createTextNode(String.valueOf(p.getY())));
-						point.appendChild(x);
-						point.appendChild(y);
-					}
+					segment.appendChild(transform);
+					transform.setAttribute("frame",
+							String.valueOf(s.getStartTime() + i + 1));
+					transform.setAttribute("x",
+							String.valueOf(a.getTranslateX()));
+					transform.setAttribute("y",
+							String.valueOf(a.getTranslateY()));
+					i++;
 				}
+
 			}
-			
+
 			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("../xml-files/file.xml"));
-	 
+			StreamResult result = new StreamResult(new File(
+					"../xml-files/file.xml"));
+
 			// Output to console for testing
-			//StreamResult result = new StreamResult(System.out);
-	 
+			// StreamResult result = new StreamResult(System.out);
+
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(
+					"{http://xml.apache.org/xslt}indent-amount", "2");
 			transformer.transform(source, result);
-	 
+
 			System.out.println("File saved!");
-	 
-		  } catch (ParserConfigurationException pce) {
+
+			this.setState(State.selection);
+
+		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
-		  } catch (TransformerException tfe) {
+		} catch (TransformerException tfe) {
 			tfe.printStackTrace();
-		  }
+		}
 	}
-	
+
+	public void loadAnimation() {
+
+		File file = new File("../xml-files/file.xml");
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = null;
+		try {
+			db = dbf.newDocumentBuilder();
+		} catch (ParserConfigurationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Document docc = null;
+		try {
+			docc = db.parse(file);
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		docc.getDocumentElement().normalize();
+		System.out.println("Root element "
+				+ docc.getDocumentElement().getNodeName());
+
+		int totalFrames = 0;
+		NodeList nodeLst = docc.getElementsByTagName("segment");
+		ArrayList<Segment> segs = new ArrayList<Segment>();
+		for (int s = 0; s < nodeLst.getLength(); s++) { // segments
+			Node fstNode = nodeLst.item(s);
+			if (fstNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				Element fstElmnt = (Element) fstNode;
+				Color c = new Color(Integer.parseInt(fstElmnt
+						.getAttribute("color")));
+				int start = Integer.parseInt(fstElmnt.getAttribute("start"));
+				int end = Integer.parseInt(fstElmnt.getAttribute("end"));
+				int stroke = Integer.parseInt(fstElmnt.getAttribute("stroke"));
+
+				if (end > totalFrames)
+					totalFrames = end;
+				ArrayList<Point> points = new ArrayList<Point>();
+				NodeList pts = fstElmnt.getElementsByTagName("point");
+				for (int p = 0; p < pts.getLength(); p++) {
+					Node leNode = pts.item(p);
+					if (leNode.getNodeType() == Node.ELEMENT_NODE) {
+						Element lefirst = (Element) leNode;
+						double x = Double
+								.parseDouble(lefirst.getAttribute("x"));
+						double y = Double
+								.parseDouble(lefirst.getAttribute("y"));
+						Point point = new Point((int) x, (int) y);
+						points.add(point);
+					}
+				}
+
+				ArrayList<AffineTransform> atList = new ArrayList<AffineTransform>();
+				NodeList ats = fstElmnt.getElementsByTagName("transform");
+				System.out.println("at len" + ats.getLength());
+				for (int p = 0; p < ats.getLength(); p++) {
+					Node leNode = ats.item(p);
+					if (leNode.getNodeType() == Node.ELEMENT_NODE) {
+						Element lefirst = (Element) leNode;
+						double x = Double
+								.parseDouble(lefirst.getAttribute("x"));
+						double y = Double
+								.parseDouble(lefirst.getAttribute("y"));
+						AffineTransform at = new AffineTransform();
+						at.translate(x, y);
+						atList.add(at);
+					}
+				}
+				Segment suu = new Segment(start, end, c, stroke);
+				suu.setAtList(atList);
+				suu.setPts(points);
+				segs.add(suu);
+			}
+		}
+		this.setSegments(segs);
+		this.setTotalFrames(totalFrames);
+		this.updateAllViews();
+	}
+
 	public void restart() {
 		segments.clear();
 		selectingSegment = new Segment(currframe, currframe, paletteColor,

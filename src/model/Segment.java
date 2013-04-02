@@ -24,6 +24,16 @@ public class Segment extends Object {
 		stroke = s;
 	}
 
+	public void setAtList(ArrayList<AffineTransform> at){
+		atList = at;
+	}
+	public ArrayList<AffineTransform> getAtList(){
+		return atList;
+	}
+	public void setPts(ArrayList<Point> pts){
+		points = pts;
+	}
+	
 	public Color getColor() {
 		return color;
 	}
