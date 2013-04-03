@@ -5,7 +5,10 @@ import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -318,8 +321,25 @@ public class AnimatorModel extends Object {
 					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(
-					"../xml-files/file.xml"));
+
+			StreamResult result = null;
+			String filepath = "../xml-files/exported0";
+			int i = 0;
+			while (true) {
+				File f = new File(filepath + ".xml");
+				if (f.exists()) {
+					filepath = filepath.substring(0, 21);
+					i++;
+					filepath = filepath + Integer.toString(i);
+					f = new File(filepath + ".xml");
+				} else {
+					break;
+				}
+			}
+			result = new StreamResult(new File(filepath + ".xml"));
+
+			// StreamResult result = new StreamResult(new File(
+			// "../xml-files/file.xml"));
 
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);
@@ -339,9 +359,24 @@ public class AnimatorModel extends Object {
 			tfe.printStackTrace();
 		}
 	}
+	
+	public void walk(String path) {
+
+		File root = new File(path);
+		File[] list = root.listFiles();
+
+		for (File f : list) {
+			if (f.isDirectory()) {
+				walk(f.getAbsolutePath());
+				System.out.println("Dir:" + f.getAbsoluteFile());
+			} else {
+				System.out.println("File:" + f.getAbsoluteFile());
+			}
+		}
+	}
 
 	public void loadAnimation() {
-
+		walk("../xml-files");
 		File file = new File("../xml-files/file.xml");
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = null;
@@ -397,7 +432,7 @@ public class AnimatorModel extends Object {
 
 				ArrayList<AffineTransform> atList = new ArrayList<AffineTransform>();
 				NodeList ats = fstElmnt.getElementsByTagName("transform");
-				
+
 				for (int p = 0; p < ats.getLength(); p++) {
 					Node leNode = ats.item(p);
 					if (leNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -420,7 +455,7 @@ public class AnimatorModel extends Object {
 		this.setSegments(segs);
 		this.setTotalFrames(maxFrame);
 		this.updateAllViews();
-		System.out.println("Animation imported with "+maxFrame+" frames.");
+		System.out.println("Animation imported with " + maxFrame + " frames.");
 	}
 
 	public void restart() {
