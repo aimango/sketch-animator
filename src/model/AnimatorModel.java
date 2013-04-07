@@ -5,11 +5,10 @@ import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -338,9 +337,6 @@ public class AnimatorModel extends Object {
 			}
 			result = new StreamResult(new File(filepath + ".xml"));
 
-			// StreamResult result = new StreamResult(new File(
-			// "../xml-files/file.xml"));
-
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);
 
@@ -359,46 +355,81 @@ public class AnimatorModel extends Object {
 			tfe.printStackTrace();
 		}
 	}
-	
-	public void walk(String path) {
+
+	public static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		// only got here if we didn't return false
+		return true;
+	}
+
+	public String walk(String path) {
 
 		File root = new File(path);
 		File[] list = root.listFiles();
-
-		for (File f : list) {
-			if (f.isDirectory()) {
-				walk(f.getAbsolutePath());
-				System.out.println("Dir:" + f.getAbsoluteFile());
+		List<String> xmlFiles = new ArrayList<String>();
+		
+		System.out.println("Select file by number or press q to cancel:");
+		int i = 0;
+		for (File file : list) {
+			if (!file.isDirectory()) { // only look at files
+				String name = file.getName();
+				int j = name.lastIndexOf('.');
+				if (j > 0) {
+					String extension = name.substring(j + 1);
+					if (extension.equals("xml")) {
+						xmlFiles.add(name);
+						System.out.println("[" + i + "] " + name);
+						i++;
+					}
+				}
+			}
+		}
+		while (true) {
+			Scanner in = new Scanner(System.in);
+			String index = in.nextLine();
+			if (isInteger(index)) {
+				int ind = Integer.parseInt(index);
+				if (ind >= 0 && ind < xmlFiles.size()) {
+					return xmlFiles.get(ind);
+				} else {
+					System.out.println("Please enter an integer from 0 to "
+							+ String.valueOf(xmlFiles.size() - 1));
+				}
+			} else if (index.equals("q")) {
+				return "";
 			} else {
-				System.out.println("File:" + f.getAbsoluteFile());
+				System.out.println("Please enter an integer");
 			}
 		}
 	}
 
 	public void loadAnimation() {
-		walk("../xml-files");
-		File file = new File("../xml-files/file.xml");
+		String filename = walk("../xml-files");
+		if (filename == "") {
+			System.out.println("Import operation cancelled.");
+			return;
+		}
+		File file = new File("../xml-files/" + filename);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = null;
 		try {
 			db = dbf.newDocumentBuilder();
 		} catch (ParserConfigurationException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Document docc = null;
 		try {
 			docc = db.parse(file);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		docc.getDocumentElement().normalize();
-		System.out.println("Root element "
-				+ docc.getDocumentElement().getNodeName());
 
 		int maxFrame = 0;
 		NodeList nodeLst = docc.getElementsByTagName("segment");
@@ -455,7 +486,8 @@ public class AnimatorModel extends Object {
 		this.setSegments(segs);
 		this.setTotalFrames(maxFrame);
 		this.updateAllViews();
-		System.out.println("Animation imported with " + maxFrame + " frames.");
+		System.out.println("Animation imported from file " + filename
+				+ " with " + maxFrame + " frames.");
 	}
 
 	public void restart() {

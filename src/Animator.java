@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import model.AnimatorModel;
-
 import view.CanvasView;
 import view.PaletteView;
 import view.PlayerView;
@@ -28,8 +27,10 @@ public class Animator {
 		Container content = frame.getContentPane();
 		content.setLayout(new BorderLayout());
 		CanvasView view = new view.CanvasView(model);
+		view.setPreferredSize(new Dimension(720, 400));
 		frame.getContentPane().add(view, BorderLayout.CENTER);
 
+		System.out.println(frame.getSize());
 		ToolbarView toolbar = new view.ToolbarView(model);
 		content.add(toolbar, BorderLayout.NORTH);
 
@@ -45,10 +46,11 @@ public class Animator {
 		content.add(customizer, BorderLayout.EAST);
 
 		frame.pack();
-		frame.setSize(800, 600);
+		frame.setSize(806, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocation(100, 100);
 		frame.setVisible(true);
-		frame.setMinimumSize(new Dimension(800, 600));
+		frame.setMinimumSize(new Dimension(806, 600));
+		frame.setMaximumSize(new Dimension(806, 600));
 	}
 }
