@@ -27,7 +27,7 @@ public class Animator {
 		Container content = frame.getContentPane();
 		content.setLayout(new BorderLayout());
 		CanvasView view = new view.CanvasView(model);
-		view.setPreferredSize(new Dimension(720, 400));
+		//view.setPreferredSize(new Dimension(720, 400));
 		frame.getContentPane().add(view, BorderLayout.CENTER);
 
 		System.out.println(frame.getSize());
@@ -46,11 +46,11 @@ public class Animator {
 		content.add(customizer, BorderLayout.EAST);
 
 		frame.pack();
-		frame.setSize(806, 600);
+		frame.setSize(806, 650);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocation(100, 100);
 		frame.setVisible(true);
-		frame.setMinimumSize(new Dimension(806, 600));
-		frame.setMaximumSize(new Dimension(806, 600));
+		frame.setResizable(false);
+		System.out.println(view.getSize());
 	}
 }
