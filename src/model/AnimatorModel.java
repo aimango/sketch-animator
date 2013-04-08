@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 public class AnimatorModel extends Object {
 	public enum State {
-		draw, erase, selection, dragged, playing, export
+		draw, erase, selection, dragged, playing, export, load
 	};
 
 	/* A list of the model's views. */
@@ -111,10 +111,12 @@ public class AnimatorModel extends Object {
 	public void insertFrame() {
 		increaseFrames(true);
 		for (Segment s : segments) {
-			if (currframe > totalframes) {
-				s.createFrame(currframe);
-			} else {
-				s.copyFrame(currframe);
+			if (!s.isErased(currframe - 1)) {
+				if (currframe > totalframes) {
+					s.createFrame(currframe);
+				} else {
+					s.copyFrame(currframe);
+				}
 			}
 		}
 		System.out.println("Inserted frame.");
@@ -371,7 +373,7 @@ public class AnimatorModel extends Object {
 		File root = new File(path);
 		File[] list = root.listFiles();
 		List<String> xmlFiles = new ArrayList<String>();
-		
+
 		System.out.println("Select file by number or press q to cancel:");
 		int i = 0;
 		for (File file : list) {
@@ -408,6 +410,7 @@ public class AnimatorModel extends Object {
 	}
 
 	public void loadAnimation() {
+		this.setState(State.load);
 		String filename = walk("../xml-files");
 		if (filename == "") {
 			System.out.println("Import operation cancelled.");

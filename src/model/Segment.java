@@ -24,16 +24,18 @@ public class Segment extends Object {
 		stroke = s;
 	}
 
-	public void setAtList(ArrayList<AffineTransform> at){
+	public void setAtList(ArrayList<AffineTransform> at) {
 		atList = at;
 	}
-	public ArrayList<AffineTransform> getAtList(){
+
+	public ArrayList<AffineTransform> getAtList() {
 		return atList;
 	}
-	public void setPts(ArrayList<Point> pts){
+
+	public void setPts(ArrayList<Point> pts) {
 		points = pts;
 	}
-	
+
 	public Color getColor() {
 		return color;
 	}
@@ -99,7 +101,11 @@ public class Segment extends Object {
 
 	public void copyFrame(int frame) {
 		endTime++;
-		atList.add(frame, new AffineTransform(atList.get(frame - 1)));
+		System.out.println(frame - 1 -startTime);
+		if (endTime < frame)
+			this.createFrame(frame);
+		atList.add(frame-startTime,
+				new AffineTransform(atList.get(frame - startTime - 1)));
 	}
 
 	public void setSegmentTranslate(int x, int y, int frame) {

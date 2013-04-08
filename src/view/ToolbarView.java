@@ -130,28 +130,28 @@ public class ToolbarView extends JPanel implements IView {
 			public void actionPerformed(ActionEvent e) {
 				model.loadAnimation();
 				model.gotoZero();
+				setAllButtons(true);
 			}
 		});
 
 	}
 
+	public void setAllButtons(boolean b){
+		eraseToggle.setEnabled(b);
+		drawToggle.setEnabled(b);
+		insertFrame.setEnabled(b);
+		clearButton.setEnabled(b);
+		selectToggle.setEnabled(b);
+	}
 	@Override
 	public void updateView() {
 
 		AnimatorModel.State state = model.getState();
 		// disable everything during playback
-		if (state == AnimatorModel.State.playing) {
-			eraseToggle.setEnabled(false);
-			drawToggle.setEnabled(false);
-			insertFrame.setEnabled(false);
-			clearButton.setEnabled(false);
-			selectToggle.setEnabled(false);
+		if (state == AnimatorModel.State.playing || state == AnimatorModel.State.load) {
+			this.setAllButtons(false);
 		} else {
-			eraseToggle.setEnabled(true);
-			drawToggle.setEnabled(true);
-			insertFrame.setEnabled(true);
-			clearButton.setEnabled(true);
-			selectToggle.setEnabled(true);
+			this.setAllButtons(true);
 		}
 		if (state == AnimatorModel.State.draw) {
 			drawToggle.setEnabled(false);
