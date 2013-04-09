@@ -13,3 +13,4 @@ clean:
 		$(RM) model/*.class
 		$(RM) gif/*.class
 		$(RM) *.class
+		$(RM) *.gif
