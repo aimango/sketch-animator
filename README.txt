@@ -1,6 +1,8 @@
-CS 349 Assignment 3 README
-Elisa Lou 20372456
+This was an Animator project built using Java, built by myself (Elisa Lou). Written for a CS 349 Assignment taught at uWaterloo during the Winter 2013 term. It is based on KSketch (done in C#) http://www.k-sketch.org/
 
+Disclaimer: Policy 73 at Waterloo defines IP ownership. Students own everything that they produce as a member of the Waterloo community, and the university has no implied ownership in anything created by its students.
+
+----
 
 How to Run:
 -The makefile is located in the "src" directory. 
@@ -8,6 +10,7 @@ How to Run:
 -"make run" will run the compiled program.
 -"make clean" will remove all .class files in the "src", "src/view", and "src/model" directories, and all of the generated .gif files in the "src" folder.
 
+----
 
 Notes:
 -The top toolbar contains buttons for drawing (pencil), erasing (eraser), selecting (dotted square), and inserting frame (copy), as required. Users can deselect selected objects by toggling the select button if they want to reselect different objects. 
@@ -34,6 +37,6 @@ Enhancements:
 -Button enable/disable logic: 
 	-disallow users from clicking play until an animation exists.
 	-guides users to tell if they are in draw or erase mode as the respective buttons would be disabled during either mode. 
--Export animation as gif.
+-Import/export animation as xml.
 
 
