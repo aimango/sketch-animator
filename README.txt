@@ -8,7 +8,7 @@ How to Run:
 -The makefile is located in the "src" directory. 
 -"make all" or "make" will compile and run the program.
 -"make run" will run the compiled program.
--"make clean" will remove all .class files in the "src", "src/view", and "src/model" directories, and all of the generated .gif files in the "src" folder.
+-"make clean" will remove all .class files in the "src", "src/view", and "src/model" directories.
 
 ----
 
